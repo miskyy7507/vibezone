@@ -1,0 +1,28 @@
+{
+  "name": "vibezone-server",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "author": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc -w",
+    "build": "tsc",
+    "watch": "nodemon",
+    "start": "node ."
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.13.14",
+    "nodemon": "^3.1.9",
+    "typescript": "^5.8.2"
+  }
+}
