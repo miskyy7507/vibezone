@@ -1,8 +1,40 @@
 import express from "express";
+import mongoose from "mongoose";
+
+import { App } from "./app.js";
 import { config } from "./config.js";
+import { logger } from "./middleware/logger.js";
 
-const app = express();
+// Database connection
+try {
+    await mongoose.connect(config.databaseUri);
+    console.log("Connection with database established");
 
-app.listen(config.serverPort, () => {
-    console.log(`Listening on port ${config.serverPort}`);
+    mongoose.connection.on("disconnected", () => {
+        console.log("MongoDB disconnected.");
+    });
+
+    mongoose.connection.on("error", (error) => {
+        console.error("MongoDB connection error:", error);
+    });
+} catch (error) {
+    console.error("There was an error trying to connect to the database.\nError message:");
+    console.error(error);
+    console.error("Exiting.");
+    await mongoose.connection.destroy();
+    process.exit(1);
+}
+
+// API server creation
+const app = new App(
+    [logger, express.json()],
+    [ /* TODO */ ]
+);
+
+app.listen(config.serverPort);
+
+
+process.on("SIGINT", async () => {
+    await mongoose.connection.destroy();
+    process.exit(0);
 });
