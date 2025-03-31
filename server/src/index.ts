@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { App } from "./app.js";
 import { config } from "./config.js";
 import { logger } from "./middleware/logger.js";
+import PostController from "./controllers/post.controller.js";
 
 // Database connection
 try {
@@ -28,7 +29,9 @@ try {
 // API server creation
 const app = new App(
     [logger, express.json()],
-    [ /* TODO */ ]
+    [
+        new PostController(),
+    ]
 );
 
 app.listen(config.serverPort);
