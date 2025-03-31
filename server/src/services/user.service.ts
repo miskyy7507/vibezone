@@ -20,4 +20,14 @@ export default class UserService {
     public async getByLogin(login: string) {
         return await UserModel.findOne({ email: login });
     }
+
+    public async getById(id: string) {
+        const result = await UserModel.findById(id);
+        return result;
+    }
+
+    public async createUser(user: IUser) {
+        const dataModel = new UserModel(user);
+        return await dataModel.save();
+    }
 }
