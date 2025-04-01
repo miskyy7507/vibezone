@@ -1,5 +1,6 @@
 import UserModel from "../models/user.model.js";
 import { IUser } from "../interfaces/user.interface.js";
+import { Types } from "mongoose";
 
 export default class UserService {
     // public async createNewOrUpdate(user: IUser) {
@@ -21,7 +22,7 @@ export default class UserService {
         return await UserModel.findOne({ email: login });
     }
 
-    public async getById(id: string) {
+    public async getById(id: string | Types.ObjectId) {
         const result = await UserModel.findById(id);
         return result;
     }

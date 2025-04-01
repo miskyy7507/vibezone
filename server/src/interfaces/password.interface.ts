@@ -1,4 +1,4 @@
-import { z } from "zod";
+// import { z } from "zod";
 import { Schema } from "mongoose";
 
 export interface IPassword {
@@ -6,7 +6,7 @@ export interface IPassword {
     passwordHash: string;
 }
 
-export const passwordSchema: z.ZodType<IPassword> = z.object({
-    userId: z.instanceof(Schema.Types.ObjectId),
-    passwordHash: z.string(),
-});
+// export const passwordSchema: z.ZodType<IPassword> = z.object({
+//     userId: z.instanceof(Schema.Types.ObjectId),
+//     passwordHash: z.string(),
+// });

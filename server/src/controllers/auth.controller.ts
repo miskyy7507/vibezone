@@ -6,12 +6,14 @@ import {
     RequestHandler,
 } from "express";
 import { MongoServerError } from "mongodb";
-import z from "zod";
+import zod from "zod";
 
 import Controller from "../interfaces/controller.interface.js";
 import UserService from "../services/user.service.js";
-import { IUser, userSchema } from "../interfaces/user.interface.js";
 import PasswordService from "../services/password.service.js";
+import TokenService from "../services/token.service.js";
+import { IUser, userSchema } from "../interfaces/user.interface.js";
+
 
 export class AuthController implements Controller {
     public path = "/api/auth";
@@ -41,7 +43,9 @@ export class AuthController implements Controller {
             return response.status(401).json({ error: "Unauthorized" });
         }
 
-        return response.status(200).json({ user });
+        // return response.status(200).json({ user });
+
+        
     };
 
     private registerUser = async (
@@ -54,7 +58,7 @@ export class AuthController implements Controller {
         let validatedUserData: IUser;
         let validatedPassword: string;
 
-        const clearPasswordSchema = z
+        const clearPasswordSchema = zod
             .string()
             .nonempty("Missing password")
             .max(256, "Password too long");
@@ -63,7 +67,7 @@ export class AuthController implements Controller {
             validatedUserData = await userSchema.parseAsync(userData);
             validatedPassword = await clearPasswordSchema.parseAsync(password);
         } catch (error) {
-            if (!(error instanceof z.ZodError)) {
+            if (!(error instanceof zod.ZodError)) {
                 console.error("Unknown error:", error);
                 return response
                     .status(500)
