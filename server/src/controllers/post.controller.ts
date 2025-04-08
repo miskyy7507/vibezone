@@ -1,16 +1,10 @@
-import {
-    Request,
-    Response,
-    NextFunction,
-    Router,
-    RequestHandler,
-} from "express";
+import { Router, RequestHandler } from "express";
 import { Types } from "mongoose";
 
-import Controller from "../interfaces/controller.interface.js";
-import PostService from "../services/post.service.js";
+import { Controller } from "../interfaces/controller.interface.js";
+import { PostService } from "../services/post.service.js";
 
-export default class PostController implements Controller {
+export class PostController implements Controller {
     public path = "/api/post";
     public router = Router();
     private postService = new PostService();
@@ -28,19 +22,15 @@ export default class PostController implements Controller {
         this.router.delete("/:id", this.removePostById);
     }
 
-    private addPost: RequestHandler = async (request, response, next) => {
-        /* TODO */
+    private addPost: RequestHandler = async (request, response) => {
+        /* TODO: */
     };
 
-    private getAllPosts = async (
-        request: Request,
-        response: Response,
-        next: NextFunction
-    ) => {
-        /* TODO */
+    private getAllPosts: RequestHandler = async (request, response) => {
+        /* TODO: */
     };
 
-    private getPostById: RequestHandler = async (request, response, next) => {
+    private getPostById: RequestHandler = async (request, response) => {
         const { id } = request.params;
 
         if (!Types.ObjectId.isValid(id)) {
@@ -48,13 +38,11 @@ export default class PostController implements Controller {
                 .status(400)
                 .json({ success: false, message: "Malformed id" });
         }
+
+        /* TODO: */
     };
 
-    private removePostById = async (
-        request: Request,
-        response: Response,
-        next: NextFunction
-    ) => {
+    private removePostById: RequestHandler = async (request, response) => {
         const { id } = request.params;
 
         if (!Types.ObjectId.isValid(id)) {
@@ -62,5 +50,7 @@ export default class PostController implements Controller {
                 .status(400)
                 .json({ success: false, message: "Malformed id" });
         }
+
+        /* TODO: */
     };
 }

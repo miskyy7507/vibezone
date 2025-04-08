@@ -1,3 +1,3 @@
-export default class PostService {
+export class PostService {
 
 }
