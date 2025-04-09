@@ -17,39 +17,66 @@ export class AuthController implements Controller {
 
     private initializeRoutes() {
         this.router.post("/login", this.loginUser);
-        // this.router.post("/logout", this.logoutUser);
+        this.router.post("/logout", this.logoutUser);
         this.router.post("/register", this.registerUser);
     }
 
-    private loginUser: RequestHandler = async (request, response) => {
+    private loginUser: RequestHandler = async (request, response, next) => {
         const { login, password } = request.body;
 
-        const user = await this.userService.getByLogin(login);
-
-        if (
-            !user ||
-            !(await this.userService.authenticate(user._id, password))
-        ) {
+        if (typeof login !== "string" || typeof password !== "string") {
             return response.status(401).json({ error: "Unauthorized" });
         }
 
-        return response.status(200).json({ user });
-        // TODO: auth
+        const user = await this.userService.authenticate(login, password);
+
+        if (!user) {
+            return response.status(401).json({ error: "Unauthorized" });
+        }
+
+        request.session.regenerate(function (err) {
+            if (err) next(err);
+
+            request.session.user = {
+                id: user._id.toString(),
+                role: user.role,
+            };
+
+            request.session.save(function (err) {
+                if (err) return next(err);
+                response.status(200).send();
+            });
+        });
     };
 
-    private registerUser: RequestHandler = async (request, response) => {
-        const { userRegisterForm } = request.body;
+    private logoutUser: RequestHandler = async (request, response, next) => {
+        if (!request.session.user) {
+            return response.status(401).json({ error: "Unauthorized" });
+        }
 
-        let validatedUserRegisterForm;
+        delete request.session.user;
+
+        request.session.destroy(function (err) {
+            if (err) next(err);
+
+            response.status(200).send();
+        });
+    };
+
+    private registerUser: RequestHandler = async (request, response, next) => {
+        const userRegisterForm = request.body;
+
+        let validatedForm;
 
         try {
-            validatedUserRegisterForm = await userRegisterFormSchema.parseAsync(userRegisterForm);
+            validatedForm = userRegisterFormSchema.parse(userRegisterForm);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);
-                return response
-                    .status(400)
-                    .json({ error: error.errors[0].message });
+                return response.status(400).json({
+                    error: error.errors[0].message,
+                    item: error.errors[0].path.at(-1),
+                });
             }
             console.error("Unknown error:", error);
             return response
@@ -58,7 +85,9 @@ export class AuthController implements Controller {
         }
 
         try {
-            const user = await this.userService.createUser(validatedUserRegisterForm);
+            const user = await this.userService.createUser(
+                validatedForm
+            );
             response.status(200).json(user);
         } catch (error) {
             if (error instanceof MongoServerError && error.code == 11000) {

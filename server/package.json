@@ -12,7 +12,8 @@
     "build": "tsc",
     "watch": "nodemon",
     "start": "node .",
-    "start-with-maps": "node --enable-source-maps ."
+    "start-with-maps": "node --enable-source-maps .",
+    "clean": "rm -r ./dist/"
   },
   "dependencies": {
     "argon2": "^0.41.1",

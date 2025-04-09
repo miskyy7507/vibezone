@@ -4,7 +4,7 @@ import { IPost } from "../interfaces/post.interface.js";
 
 export const PostModel = model<IPost>(
     "Post",
-    new Schema(
+    new Schema<IPost>(
         {
             authorId: {
                 type: Schema.Types.ObjectId,

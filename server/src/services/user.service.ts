@@ -19,8 +19,22 @@ export class UserService {
         return await dataModel.save();
     }
 
+    public async authenticate(login: string, clearPassword: string) {
+        const user = await this.getByLogin(login);
+        if (!user || !(await argon2.verify(user.passwordHash, clearPassword))) {
+            return null;
+        }
+        // return await bcrypt.compare(password, result.password);
+        return user;
+    }
+
     public async getByLogin(login: string) {
-        return await UserModel.findOne({ email: login });
+        return await UserModel.findOne({
+            $or: [
+                { email: login },
+                { username: login }
+            ]
+        });
     }
 
     public async getById(id: string | Types.ObjectId) {
@@ -47,20 +61,6 @@ export class UserService {
         newPassword: string
     ) {
         // TODO: 
-    }
-
-    public async authenticate(userId: Types.ObjectId, clearPassword: string) {
-        try {
-            const result = await UserModel.findOne({ userId });
-            if (!result) {
-                return false;
-            }
-            // return await bcrypt.compare(password, result.password);
-            return await argon2.verify(result.passwordHash, clearPassword);
-        } catch (error) {
-            console.error("Wystąpił błąd podczas tworzenia danych:", error);
-            throw new Error("Wystąpił błąd podczas tworzenia danych");
-        }
     }
 
     private async hashPassword(clearPassword: string) {

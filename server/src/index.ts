@@ -40,6 +40,8 @@ const sessionOptions: session.SessionOptions = {
         maxAge: 30 * 60 * 1000, // 30 minutes for testing
         sameSite: "strict",
     },
+    name: "session",
+    unset: "destroy",
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,

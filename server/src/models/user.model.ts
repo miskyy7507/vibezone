@@ -4,7 +4,7 @@ import { IUser } from "../interfaces/user.interface.js";
 
 export const UserModel = model<IUser>(
     "User",
-    new Schema(
+    new Schema<IUser>(
         {
             email: { type: String, required: true, unique: true },
             username: { type: String, required: true, unique: true },
