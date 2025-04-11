@@ -1,11 +1,10 @@
 import { Router, RequestHandler } from "express";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { MongoServerError } from "mongodb";
 
 import { Controller } from "../interfaces/controller.interface.js";
 import { UserService } from "../services/user.service.js";
 import { ProfileService } from "../services/profile.service.js";
-import { userRegisterFormSchema } from "../interfaces/user.interface.js";
 
 export class AuthController implements Controller {
     public path = "/api/auth";
@@ -66,7 +65,26 @@ export class AuthController implements Controller {
         let validatedForm;
 
         try {
-            validatedForm = userRegisterFormSchema.parse(userRegisterForm);
+            validatedForm = await z.object({
+                email: z
+                    .string()
+                    .regex(
+                        /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
+                        "Invalid email"
+                    ),
+                username: z
+                    .string()
+                    .min(3, "Username too short")
+                    .max(32, "Username too long"),
+                displayName: z
+                    .string()
+                    .nonempty("Display name cannot be empty")
+                    .max(32, "Display name too long"),
+                password: z
+                    .string()
+                    .nonempty("Missing password")
+                    .max(256, "Password too long"),
+            }).parseAsync(userRegisterForm);
         } catch (error) {
             if (error instanceof ZodError) {
                 console.error("Validation error:", error);
@@ -90,7 +108,7 @@ export class AuthController implements Controller {
                 profile._id,
                 validatedForm.email,
                 "user",
-                true,
+                true, // TODO: add email verification or smth
                 validatedForm.password
             );
             response.status(200).json(user);
