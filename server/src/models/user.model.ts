@@ -6,13 +6,27 @@ export const UserModel = model<IUser>(
     "User",
     new Schema<IUser>(
         {
-            email: { type: String, required: true, unique: true },
-            username: { type: String, required: true, unique: true },
+            profileId: {
+                type: Schema.Types.ObjectId,
+                ref: "Profile",
+                required: true,
+            },
+            email: {
+                type: String,
+                required: true,
+                unique: true,
+                match: /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
+            },
             role: {
                 type: String,
                 enum: ["admin", "moderator", "user"],
                 default: "user",
-                required: true
+                required: true,
+            },
+            active: {
+                type: Boolean,
+                required: true,
+                default: true,
             },
             passwordHash: { type: String, required: true },
         },

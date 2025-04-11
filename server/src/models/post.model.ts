@@ -8,12 +8,12 @@ export const PostModel = model<IPost>(
         {
             authorId: {
                 type: Schema.Types.ObjectId,
-                ref: "User",
+                ref: "Profile",
                 required: true,
             },
             content: { type: String, required: true },
             imageUrl: { type: String },
-            usersWhoLiked: [{ type: Schema.Types.ObjectId, ref: "User" }],
+            usersWhoLiked: [{ type: Schema.Types.ObjectId, ref: "Profile" }],
         },
         {
             timestamps: true,

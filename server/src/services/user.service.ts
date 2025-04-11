@@ -2,19 +2,20 @@ import argon2 from "argon2";
 import { Types } from "mongoose";
 
 import { UserModel } from "../models/user.model.js";
-import { IUser, IUserRegisterForm } from "../interfaces/user.interface.js";
+import { IUser } from "../interfaces/user.interface.js";
 
 export class UserService {
-    public async createUser(validatedUserRegisterForm: IUserRegisterForm) {
-        const passwordHash = await this.hashPassword(
-            validatedUserRegisterForm.password
-        );
+    public async createUser(
+        profileId: Types.ObjectId,
+        email: string,
+        role: IUser["role"],
+        active: boolean,
+        clearPassword: string
+    ) {
+        const passwordHash = await this.hashPassword(clearPassword);
 
         const dataModel = new UserModel<IUser>({
-            email: validatedUserRegisterForm.email,
-            passwordHash: passwordHash,
-            username: validatedUserRegisterForm.username,
-            role: "user",
+            profileId, email, role, active, passwordHash
         });
         return await dataModel.save();
     }
@@ -29,12 +30,8 @@ export class UserService {
     }
 
     public async getByLogin(login: string) {
-        return await UserModel.findOne({
-            $or: [
-                { email: login },
-                { username: login }
-            ]
-        });
+        // TODO: allow login by the username
+        return await UserModel.findOne({ email: login });
     }
 
     public async getById(id: string | Types.ObjectId) {
@@ -42,25 +39,25 @@ export class UserService {
         return result;
     }
 
-    public async createOrUpdatePassword(
-        userId: Types.ObjectId,
-        clearPassword: string
-    ) {
-        const hashedPassword = await this.hashPassword(clearPassword);
+    // public async createOrUpdatePassword(
+    //     userId: Types.ObjectId,
+    //     clearPassword: string
+    // ) {
+    //     const hashedPassword = await this.hashPassword(clearPassword);
 
-        return await UserModel.findOneAndUpdate(
-            { userId: userId },
-            { $set: { passwordHash: hashedPassword } },
-            { new: true, upsert: true }
-        );
-    }
+    //     return await UserModel.findOneAndUpdate(
+    //         { userId: userId },
+    //         { $set: { passwordHash: hashedPassword } },
+    //         { new: true, upsert: true }
+    //     );
+    // }
 
     public async changePassword(
         userId: string,
         oldPassword: string,
         newPassword: string
     ) {
-        // TODO: 
+        // TODO:
     }
 
     private async hashPassword(clearPassword: string) {

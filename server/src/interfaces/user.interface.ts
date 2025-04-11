@@ -1,9 +1,11 @@
+import { Types } from "mongoose";
 import { z } from "zod";
 
 export interface IUser {
+    profileId: Types.ObjectId;
     email: string;
-    username: string;
     role: "admin" | "moderator" | "user";
+    active: boolean;
     passwordHash: string;
 }
 
@@ -22,7 +24,12 @@ export interface IUserRegisterForm {
 }
 
 export const userRegisterFormSchema: z.ZodType<IUserRegisterForm> = z.object({
-    email: z.string().email("Invalid email"),
+    email: z
+        .string()
+        .regex(
+            /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
+            "Invalid email"
+        ),
     username: z
         .string()
         .min(3, "Username too short")

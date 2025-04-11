@@ -1,11 +1,11 @@
 // import { z } from "zod";
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 
 export interface IPost {
-    authorId: Schema.Types.ObjectId;
+    authorId: Types.ObjectId;
     content: string;
     imageUrl: string;
-    usersWhoLiked: Schema.Types.ObjectId[];
+    usersWhoLiked: Types.ObjectId[];
 }
 
 // export const postSchema: z.ZodType<IPost> = z.object({
