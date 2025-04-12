@@ -20,10 +20,24 @@ export class AuthController implements Controller {
     }
 
     private loginUser: RequestHandler = async (request, response, next) => {
-        const { login, password } = request.body;
-
-        if (typeof login !== "string" || typeof password !== "string") {
-            return response.status(401).json({ error: "Unauthorized" });
+        let login, password;
+        try {
+            ({ login, password } = await z.object({
+                login: z.string(),
+                password: z.string()
+            }).parseAsync(request.body));
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                console.error("Validation error:", error);
+                return response.status(400).json({
+                    error: error.errors[0].message,
+                    item: error.errors[0].path.at(-1),
+                });
+            }
+            console.error("Unknown error:", error);
+            return response
+                .status(500)
+                .json({ error: "Internal server error" });
         }
 
         const user = await this.userService.authenticate(login, password);
@@ -39,13 +53,16 @@ export class AuthController implements Controller {
             request.session.role = user.role;
 
             request.session.save((err) => {
-                if (err) return next(err);
+                if (err) {
+                    next(err);
+                    return;
+                }
                 response.status(200).send();
             });
         });
     };
 
-    private logoutUser: RequestHandler = async (request, response, next) => {
+    private logoutUser: RequestHandler = (request, response, next) => {
         if (!request.session.profileId) {
             return response.status(401).json({ error: "Unauthorized" });
         }
@@ -60,8 +77,6 @@ export class AuthController implements Controller {
     };
 
     private registerUser: RequestHandler = async (request, response, next) => {
-        const userRegisterForm = request.body;
-
         let validatedForm;
 
         try {
@@ -84,7 +99,7 @@ export class AuthController implements Controller {
                     .string()
                     .nonempty("Missing password")
                     .max(256, "Password too long"),
-            }).parseAsync(userRegisterForm);
+            }).parseAsync(request.body);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);
@@ -113,10 +128,10 @@ export class AuthController implements Controller {
             );
             response.status(200).json(user);
         } catch (error) {
-            if (error instanceof MongoServerError && error.code == 11000) {
+            if (error instanceof MongoServerError && error.code === 11000) {
                 return response.status(422).json({
                     error: "User already exists",
-                    item: error.keyValue,
+                    item: error,
                 });
             }
             console.error("Unknown error:", error);

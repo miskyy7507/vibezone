@@ -54,7 +54,7 @@ export class ProfileController implements Controller {
             return response.status(401).json({ error: "Unauthorized" });
         }
 
-        const update = request.body;
+        // const update = ;
 
         let validatedUpdate;
         try {
@@ -71,7 +71,7 @@ export class ProfileController implements Controller {
                         .optional()
                         .nullable(),
                 })
-                .parseAsync(update);
+                .parseAsync(request.body);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { Types } from "mongoose";
 import { ProfileModel } from "../models/profile.model.js";
 import { IProfile } from "../interfaces/profile.interface.js";

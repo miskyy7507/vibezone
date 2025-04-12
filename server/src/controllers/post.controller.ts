@@ -14,23 +14,23 @@ export class PostController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.post("/", this.addPost);
+        // this.router.post("/", this.addPost);
 
-        this.router.get("/all", this.getAllPosts);
+        // this.router.get("/all", this.getAllPosts);
         this.router.get("/:id", this.getPostById);
 
         this.router.delete("/:id", this.removePostById);
     }
 
-    private addPost: RequestHandler = async (request, response) => {
-        /* TODO: */
-    };
+    // private addPost: RequestHandler = async (request, response) => {
+    //     /* TODO: */
+    // };
 
-    private getAllPosts: RequestHandler = async (request, response) => {
-        /* TODO: */
-    };
+    // private getAllPosts: RequestHandler = async (request, response) => {
+    //     /* TODO: */
+    // };
 
-    private getPostById: RequestHandler = async (request, response) => {
+    private getPostById: RequestHandler = (request, response) => {
         const { id } = request.params;
 
         if (!Types.ObjectId.isValid(id)) {
@@ -42,7 +42,7 @@ export class PostController implements Controller {
         /* TODO: */
     };
 
-    private removePostById: RequestHandler = async (request, response) => {
+    private removePostById: RequestHandler = (request, response) => {
         const { id } = request.params;
 
         if (!Types.ObjectId.isValid(id)) {

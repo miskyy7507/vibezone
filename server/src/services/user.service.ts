@@ -52,13 +52,13 @@ export class UserService {
     //     );
     // }
 
-    public async changePassword(
-        userId: string,
-        oldPassword: string,
-        newPassword: string
-    ) {
-        // TODO:
-    }
+    // public async changePassword(
+    //     userId: string,
+    //     oldPassword: string,
+    //     newPassword: string
+    // ) {
+    //     // TODO:
+    // }
 
     private async hashPassword(clearPassword: string) {
         const hashedPassword = await argon2.hash(clearPassword, {

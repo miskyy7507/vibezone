@@ -1,8 +1,10 @@
 import express from "express";
 import { Controller } from "./interfaces/controller.interface.js";
+import { Server } from "http";
 
 export class App {
     private app: express.Application;
+    private server: Server | null = null;
 
     constructor(middleware: express.RequestHandler[], controllers: Controller[]) {
         this.app = express();
@@ -23,8 +25,12 @@ export class App {
     }
 
     public listen(port: number) {
-        this.app.listen(port, () => {
-            console.log(`App listening on the port ${port}`);
+        this.server = this.app.listen(port, () => {
+            console.log(`App listening on the port ${port.toString()}`);
         });
+    }
+
+    public closeServer(callback: () => void) {
+        this.server?.close(callback);
     }
 }

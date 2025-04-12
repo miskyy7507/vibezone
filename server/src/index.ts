@@ -68,7 +68,14 @@ const app = new App(
 
 app.listen(config.serverPort);
 
-process.on("SIGINT", async () => {
-    await mongoose.connection.destroy();
-    process.exit(0);
+process.on("SIGINT", () => {
+    console.log("SIGINT received, winding up!")
+    app.closeServer(() => {
+        console.log("API server closed.")
+        mongoose.connection.destroy(true)
+            .catch(() => {
+                console.error("Failed to destroy database connection.")
+                process.exit(1);
+            });
+    });
 });
