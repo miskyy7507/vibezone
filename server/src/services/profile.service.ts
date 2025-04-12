@@ -1,13 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { Types } from "mongoose";
 import { ProfileModel } from "../models/profile.model.js";
 import { IProfile } from "../interfaces/profile.interface.js";
-
-type Nullable<T> = {
-    [P in keyof T]: T[P] | null;
-};
+import { Nullable } from "../utils/nullable.js";
+import { toUpdateQuery } from "../utils/toUpdateQuery.js";
 
 export class ProfileService {
     public async createProfile(username: string, displayName: string) {
@@ -23,20 +18,6 @@ export class ProfileService {
         id: Types.ObjectId,
         updateData: Partial<Nullable<IProfile>>
     ) {
-        const setFields: Record<string, any> = {};
-        const unsetFields: Record<string, any> = {};
-
-        for (const key in updateData) {
-            const value = (updateData as Record<string, any>)[key]
-            if (value !== null) {
-                setFields[key] = value;
-            } else {
-                unsetFields[key] = "";
-            }
-        }
-
-        const update: Record<"$set" | "$unset", Record<string, any>> = {"$set": setFields, "$unset": unsetFields};
-
-        return await ProfileModel.findByIdAndUpdate(id, update, { new: true });
+        return await ProfileModel.findByIdAndUpdate(id, toUpdateQuery(updateData), { new: true });
     }
 }
