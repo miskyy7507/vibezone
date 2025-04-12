@@ -15,7 +15,7 @@ export const ProfileModel = model<IProfile>(
             displayName: {
                 type: String,
                 required: true,
-                max: 40
+                max: 32
             },
             profilePictureUri: {
                 type: String,
