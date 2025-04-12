@@ -1,5 +1,5 @@
 import { Router, RequestHandler } from "express";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import { MongoServerError } from "mongodb";
 
 import { Controller } from "../interfaces/controller.interface.js";
@@ -86,7 +86,7 @@ export class AuthController implements Controller {
                     .max(256, "Password too long"),
             }).parseAsync(userRegisterForm);
         } catch (error) {
-            if (error instanceof ZodError) {
+            if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);
                 return response.status(400).json({
                     error: error.errors[0].message,
@@ -125,4 +125,6 @@ export class AuthController implements Controller {
                 .json({ error: "Internal server error" });
         }
     };
+
+    // TODO: implement updating email address
 }
