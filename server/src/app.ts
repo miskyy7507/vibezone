@@ -1,18 +1,18 @@
-import express from "express";
+import express, { Application, RequestHandler, ErrorRequestHandler } from "express";
 import { Controller } from "./interfaces/controller.interface.js";
 import { Server } from "http";
 
 export class App {
-    private app: express.Application;
+    private app: Application;
     private server: Server | null = null;
 
-    constructor(middleware: express.RequestHandler[], controllers: Controller[]) {
+    constructor(middleware: (RequestHandler | ErrorRequestHandler)[], controllers: Controller[]) {
         this.app = express();
         this.initializeMiddleware(middleware);
         this.initializeControllers(controllers);
     }
 
-    private initializeMiddleware(middleware: express.RequestHandler[]) {
+    private initializeMiddleware(middleware: (RequestHandler | ErrorRequestHandler)[]) {
         for (const mw of middleware) {
             this.app.use(mw);
         }

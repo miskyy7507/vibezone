@@ -34,10 +34,8 @@ export class AuthController implements Controller {
                     item: error.errors[0].path.at(-1),
                 });
             }
-            console.error("Unknown error:", error);
-            return response
-                .status(500)
-                .json({ error: "Internal server error" });
+            next(error);
+            return;
         }
 
         const user = await this.userService.authenticate(login, password);
@@ -108,10 +106,8 @@ export class AuthController implements Controller {
                     item: error.errors[0].path.at(-1),
                 });
             }
-            console.error("Unknown error:", error);
-            return response
-                .status(500)
-                .json({ error: "Internal server error" });
+            next(error);
+            return;
         }
 
         try {
@@ -134,10 +130,8 @@ export class AuthController implements Controller {
                     item: error,
                 });
             }
-            console.error("Unknown error:", error);
-            return response
-                .status(500)
-                .json({ error: "Internal server error" });
+            next(error);
+            return;
         }
     };
 

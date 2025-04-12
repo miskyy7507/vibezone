@@ -9,6 +9,7 @@ import { logger } from "./middleware/logger.js";
 import { PostController } from "./controllers/post.controller.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { ProfileController } from "./controllers/profile.controller.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Database connection
 try {
@@ -62,7 +63,7 @@ const sessionOptions: session.SessionOptions = {
 
 // API server creation
 const app = new App(
-    [logger, session(sessionOptions), express.json()],
+    [logger, session(sessionOptions), express.json(), errorHandler],
     [new PostController(), new AuthController(), new ProfileController()]
 );
 

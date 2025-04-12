@@ -38,10 +38,8 @@ export class ProfileController implements Controller {
             }
             return response.status(200).json(profile);
         } catch (error) {
-            console.error("Unknown error:", error);
-            return response
-                .status(500)
-                .json({ error: "Internal server error" });
+            next(error);
+            return;
         }
     };
 
@@ -80,10 +78,8 @@ export class ProfileController implements Controller {
                     item: error.errors[0].path.at(-1),
                 });
             }
-            console.error("Unknown error:", error);
-            return response
-                .status(500)
-                .json({ error: "Internal server error" });
+            next(error);
+            return;
         }
 
         try {
@@ -93,10 +89,8 @@ export class ProfileController implements Controller {
             );
             return response.status(200).json(result);
         } catch (error) {
-            console.error("Unknown error:", error);
-            return response
-                .status(500)
-                .json({ error: "Internal server error" });
+            next(error);
+            return;
         }
     };
 }
