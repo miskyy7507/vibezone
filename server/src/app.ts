@@ -10,6 +10,7 @@ export class App {
         this.app = express();
         this.initializeMiddleware(middleware);
         this.initializeControllers(controllers);
+        this.app.use('/uploads', express.static('/tmp/uploads'));
     }
 
     private initializeMiddleware(middleware: (RequestHandler | ErrorRequestHandler)[]) {

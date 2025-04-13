@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { Controller } from "../interfaces/controller.interface.js";
 import { ProfileService } from "../services/profile.service.js";
+import { imageUpload } from "../middleware/imageUpload.js";
 
 export class ProfileController implements Controller {
     public path = "/api/profile";
@@ -16,8 +17,12 @@ export class ProfileController implements Controller {
 
         this.router.patch("/update", this.updateProfile);
 
-        // this.router.post("/pfp", this.updatePfp);
-        // this.router.delete("/pfp", this.removePfp);
+        this.router.post(
+            "/picture",
+            imageUpload.single("picture"),
+            this.uploadPicture
+        );
+        this.router.delete("/picture", this.removePicture);
     }
 
     private getProfile: RequestHandler = async (request, response, next) => {
@@ -93,4 +98,41 @@ export class ProfileController implements Controller {
             return;
         }
     };
+
+    private uploadPicture: RequestHandler = async (request, response, next) => {
+        if (!request.session.profileId) {
+            return response.status(401).json({ error: "Unauthorized" });
+        }
+
+        try {
+            const file = request.file;
+            if (!file) {
+                return response.status(400).json({ message: 'No file uploaded' });
+            }
+
+            const result = await this.profileService.updateProfile(
+                new Types.ObjectId(request.session.profileId),
+                { profilePictureUri: file.filename }
+            );
+            return response.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    private removePicture: RequestHandler = async (request, response, next) => {
+        if (!request.session.profileId) {
+            return response.status(401).json({ error: "Unauthorized" });
+        }
+        
+        try {
+            const result = await this.profileService.updateProfile(
+                new Types.ObjectId(request.session.profileId),
+                { profilePictureUri: null }
+            );
+            return response.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
