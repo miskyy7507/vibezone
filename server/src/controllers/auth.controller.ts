@@ -5,6 +5,7 @@ import { MongoServerError } from "mongodb";
 import { Controller } from "../interfaces/controller.interface.js";
 import { UserService } from "../services/user.service.js";
 import { ProfileService } from "../services/profile.service.js";
+import { auth } from "../middleware/auth.js";
 
 export class AuthController implements Controller {
     public path = "/api/auth";
@@ -15,7 +16,7 @@ export class AuthController implements Controller {
 
     constructor() {
         this.router.post("/login", this.loginUser);
-        this.router.post("/logout", this.logoutUser);
+        this.router.post("/logout", auth ,this.logoutUser);
         this.router.post("/register", this.registerUser);
     }
 
@@ -61,10 +62,6 @@ export class AuthController implements Controller {
     };
 
     private logoutUser: RequestHandler = (request, response, next) => {
-        if (!request.session.profileId) {
-            return response.status(401).json({ error: "Unauthorized" });
-        }
-
         delete request.session.profileId;
 
         request.session.destroy((err) => {

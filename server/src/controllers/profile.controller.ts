@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Controller } from "../interfaces/controller.interface.js";
 import { ProfileService } from "../services/profile.service.js";
 import { imageUpload } from "../middleware/imageUpload.js";
+import { auth } from "../middleware/auth.js";
 
 export class ProfileController implements Controller {
     public path = "/api/profile";
@@ -15,14 +16,15 @@ export class ProfileController implements Controller {
     constructor() {
         this.router.get("/:id", this.getProfile);
 
-        this.router.patch("/update", this.updateProfile);
+        this.router.patch("/update", auth, this.updateProfile);
 
         this.router.post(
             "/picture",
+            auth,
             imageUpload.single("picture"),
             this.uploadPicture
         );
-        this.router.delete("/picture", this.removePicture);
+        this.router.delete("/picture", auth, this.removePicture);
     }
 
     private getProfile: RequestHandler = async (request, response, next) => {
@@ -48,17 +50,7 @@ export class ProfileController implements Controller {
         }
     };
 
-    private updateProfile: RequestHandler = async (
-        request,
-        response,
-        next
-    ) => {
-        if (!request.session.profileId) {
-            return response.status(401).json({ error: "Unauthorized" });
-        }
-
-        // const update = ;
-
+    private updateProfile: RequestHandler = async (request, response, next) => {
         let validatedUpdate;
         try {
             validatedUpdate = await z
@@ -100,10 +92,6 @@ export class ProfileController implements Controller {
     };
 
     private uploadPicture: RequestHandler = async (request, response, next) => {
-        if (!request.session.profileId) {
-            return response.status(401).json({ error: "Unauthorized" });
-        }
-
         try {
             const file = request.file;
             if (!file) {
@@ -121,10 +109,6 @@ export class ProfileController implements Controller {
     };
 
     private removePicture: RequestHandler = async (request, response, next) => {
-        if (!request.session.profileId) {
-            return response.status(401).json({ error: "Unauthorized" });
-        }
-        
         try {
             const result = await this.profileService.updateProfile(
                 new Types.ObjectId(request.session.profileId),
