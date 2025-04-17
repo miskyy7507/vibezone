@@ -1,4 +1,4 @@
-import { IUser } from "./user.interface.js";
+import type { IUser } from "./user.interface.js";
 
 declare module "express-session" {
     interface SessionData {

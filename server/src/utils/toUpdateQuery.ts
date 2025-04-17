@@ -1,4 +1,4 @@
-import { Nullable } from "./nullable.js";
+import type { Nullable } from "./nullable.js";
 
 type sets<T> = Partial<T>;
 type unsets<T> = Partial<Record<keyof T, null>>

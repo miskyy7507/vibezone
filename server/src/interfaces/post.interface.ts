@@ -1,5 +1,5 @@
 // import { z } from "zod";
-import { Types } from "mongoose";
+import type { Types } from "mongoose";
 
 export interface IPost {
     authorId: Types.ObjectId;

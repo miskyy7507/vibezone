@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-import { IPost } from "../interfaces/post.interface.js";
+import type { IPost } from "../interfaces/post.interface.js";
 
 export const PostModel = model<IPost>(
     "Post",

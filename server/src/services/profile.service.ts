@@ -1,8 +1,9 @@
-import { Types } from "mongoose";
 import { ProfileModel } from "../models/profile.model.js";
-import { IProfile } from "../interfaces/profile.interface.js";
-import { Nullable } from "../utils/nullable.js";
 import { toUpdateQuery } from "../utils/toUpdateQuery.js";
+
+import type { Types } from "mongoose";
+import type { IProfile } from "../interfaces/profile.interface.js";
+import type { Nullable } from "../utils/nullable.js";
 
 export class ProfileService {
     public async createProfile(username: string, displayName: string) {

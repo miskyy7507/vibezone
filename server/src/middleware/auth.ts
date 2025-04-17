@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import type { RequestHandler } from "express";
 
 export const auth: RequestHandler = (request, response, next) => {
     if (!request.session.profileId) {

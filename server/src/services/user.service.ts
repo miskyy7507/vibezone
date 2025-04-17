@@ -1,8 +1,8 @@
 import argon2 from "argon2";
-import { Types } from "mongoose";
-
 import { UserModel } from "../models/user.model.js";
-import { IUser } from "../interfaces/user.interface.js";
+
+import type { Types } from "mongoose";
+import type { IUser } from "../interfaces/user.interface.js";
 
 export class UserService {
     public async createUser(

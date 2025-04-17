@@ -1,8 +1,9 @@
-import { Router, RequestHandler } from "express";
+import { Router } from "express";
 import { Types } from "mongoose";
-
-import { Controller } from "../interfaces/controller.interface.js";
 import { PostService } from "../services/post.service.js";
+
+import type { Controller } from "../interfaces/controller.interface.js";
+import type { RequestHandler } from "express";
 
 export class PostController implements Controller {
     public path = "/api/post";
@@ -33,7 +34,7 @@ export class PostController implements Controller {
     private getPostById: RequestHandler = (request, response) => {
         const { id } = request.params;
 
-        if (!Types.ObjectId.isValid(id)) {
+        if (typeof id === "string" && !Types.ObjectId.isValid(id)) {
             return response
                 .status(400)
                 .json({ success: false, message: "Malformed id" });
@@ -45,7 +46,7 @@ export class PostController implements Controller {
     private removePostById: RequestHandler = (request, response) => {
         const { id } = request.params;
 
-        if (!Types.ObjectId.isValid(id)) {
+        if (typeof id === "string" && !Types.ObjectId.isValid(id)) {
             return response
                 .status(400)
                 .json({ success: false, message: "Malformed id" });

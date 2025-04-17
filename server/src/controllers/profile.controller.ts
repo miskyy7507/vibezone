@@ -1,11 +1,13 @@
-import { RequestHandler, Router } from "express";
+import { Router } from "express";
 import { Types } from "mongoose";
 import { z } from "zod";
 
-import { Controller } from "../interfaces/controller.interface.js";
 import { ProfileService } from "../services/profile.service.js";
 import { imageUpload } from "../middleware/imageUpload.js";
 import { auth } from "../middleware/auth.js";
+
+import type { Controller } from "../interfaces/controller.interface.js";
+import type { RequestHandler } from "express";
 
 export class ProfileController implements Controller {
     public path = "/api/profile";
@@ -30,7 +32,7 @@ export class ProfileController implements Controller {
     private getProfile: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        if (!Types.ObjectId.isValid(id)) {
+        if (typeof id === "string" && !Types.ObjectId.isValid(id)) {
             return response
                 .status(400)
                 .json({ success: false, message: "Malformed id" });
@@ -71,8 +73,8 @@ export class ProfileController implements Controller {
             if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);
                 return response.status(400).json({
-                    error: error.errors[0].message,
-                    item: error.errors[0].path.at(-1),
+                    error: error.errors[0]?.message,
+                    item: error.errors[0]?.path.at(-1),
                 });
             }
             next(error);

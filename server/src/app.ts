@@ -1,6 +1,8 @@
-import express, { Application, RequestHandler, ErrorRequestHandler } from "express";
-import { Controller } from "./interfaces/controller.interface.js";
-import { Server } from "http";
+import express from "express";
+
+import type { Server } from "http";
+import type { Application, RequestHandler, ErrorRequestHandler } from "express";
+import type { Controller } from "./interfaces/controller.interface.js";
 
 export class App {
     private app: Application;

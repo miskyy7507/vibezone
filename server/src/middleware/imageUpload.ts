@@ -3,14 +3,19 @@ import crypto from "crypto";
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
-        callback(null, '/tmp/uploads')
+        callback(null, "/tmp/uploads");
     },
     filename: (request, file, callback) => {
         const uniqueSuffix = crypto.randomBytes(16).toString("hex");
-        const fileExtension = "." + file.mimetype.split("/")[1];
+        const fileExtension = file.mimetype.split("/")[1];
         // callback(null, file.fieldname + '-' + uniqueSuffix)
-        callback(null, `${file.fieldname}-${uniqueSuffix}${fileExtension}`);
-    }
+        callback(
+            null,
+            `${file.fieldname}-${uniqueSuffix}${
+                fileExtension ? "." + fileExtension : ""
+            }`
+        );
+    },
 });
 
 export const imageUpload = multer({
@@ -25,5 +30,5 @@ export const imageUpload = multer({
     limits: {
         fileSize: 10 * 1024 * 1024, // 10 MB
         // files: 1
-    }
+    },
 });

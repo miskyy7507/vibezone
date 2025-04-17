@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-import { IProfile } from "../interfaces/profile.interface.js";
+import type { IProfile } from "../interfaces/profile.interface.js";
 
 export const ProfileModel = model<IProfile>(
     "Profile",

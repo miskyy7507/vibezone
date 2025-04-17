@@ -1,11 +1,12 @@
-import { Router, RequestHandler } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { MongoServerError } from "mongodb";
-
-import { Controller } from "../interfaces/controller.interface.js";
 import { UserService } from "../services/user.service.js";
 import { ProfileService } from "../services/profile.service.js";
 import { auth } from "../middleware/auth.js";
+
+import type { Controller } from "../interfaces/controller.interface.js";
+import type { RequestHandler } from "express";
 
 export class AuthController implements Controller {
     public path = "/api/auth";
@@ -31,8 +32,8 @@ export class AuthController implements Controller {
             if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);
                 return response.status(400).json({
-                    error: error.errors[0].message,
-                    item: error.errors[0].path.at(-1),
+                    error: error.errors[0]?.message,
+                    item: error.errors[0]?.path.at(-1),
                 });
             }
             next(error);
@@ -99,8 +100,8 @@ export class AuthController implements Controller {
             if (error instanceof z.ZodError) {
                 console.error("Validation error:", error);
                 return response.status(400).json({
-                    error: error.errors[0].message,
-                    item: error.errors[0].path.at(-1),
+                    error: error.errors[0]?.message,
+                    item: error.errors[0]?.path.at(-1),
                 });
             }
             next(error);

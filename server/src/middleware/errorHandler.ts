@@ -1,4 +1,4 @@
-import { ErrorRequestHandler } from "express";
+import type { ErrorRequestHandler } from "express";
 
 export const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
     console.error("Something went wrong!\nError trace:");

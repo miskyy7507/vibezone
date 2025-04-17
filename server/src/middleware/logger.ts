@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
 import chalk from "chalk";
 
-export const logger: RequestHandler = (request: Request, response: Response, next: NextFunction) => {
+import type { RequestHandler } from "express";
+
+export const logger: RequestHandler = (request, response, next) => {
     let methodText = "";
     if (request.method === "GET") {
         methodText = chalk.bgGreenBright(request.method);
