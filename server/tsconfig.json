@@ -21,7 +21,6 @@
         "noImplicitAny": true,
         "alwaysStrict": true,
         "noUncheckedIndexedAccess": true,
-        "noImplicitOverride": true,
-        "rewriteRelativeImportExtensions": true
+        "noImplicitOverride": true
     }
 }
