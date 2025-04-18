@@ -93,8 +93,7 @@ export class AuthController implements Controller {
                     .max(32, "Display name too long"),
                 password: z
                     .string()
-                    .nonempty("Missing password")
-                    .max(256, "Password too long"),
+                    .nonempty("Required")
             }).parseAsync(request.body);
         } catch (error) {
             if (error instanceof z.ZodError) {
