@@ -7,7 +7,10 @@ import type { Nullable } from "../utils/nullable.js";
 
 export class ProfileService {
     public async createProfile(username: string, displayName: string) {
-        const dataModel = new ProfileModel<IProfile>({ username: username.trim(), displayName });
+        const dataModel = new ProfileModel<IProfile>({
+            username: username.trim(),
+            displayName: displayName,
+        });
         return dataModel.save();
     }
 
@@ -19,6 +22,10 @@ export class ProfileService {
         id: Types.ObjectId,
         updateData: Partial<Nullable<IProfile>>
     ) {
-        return await ProfileModel.findByIdAndUpdate(id, toUpdateQuery(updateData), { new: true });
+        const updateQuery = toUpdateQuery(updateData);
+
+        return await ProfileModel.findByIdAndUpdate(id, updateQuery, {
+            new: true,
+        });
     }
 }

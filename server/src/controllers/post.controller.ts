@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { Types } from "mongoose";
 import { PostService } from "../services/post.service.js";
+import { auth } from "../middleware/auth.js";
+import { z } from "zod";
 
 import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
@@ -8,50 +10,111 @@ import type { RequestHandler } from "express";
 export class PostController implements Controller {
     public path = "/api/post";
     public router = Router();
+
     private postService = new PostService();
 
     constructor() {
-        this.initializeRoutes();
-    }
-
-    private initializeRoutes() {
-        // this.router.post("/", this.addPost);
-
-        // this.router.get("/all", this.getAllPosts);
         this.router.get("/:id", this.getPostById);
+        this.router.get("/all", this.getAllPosts);
 
-        this.router.delete("/:id", this.removePostById);
+        this.router.post("/", auth, this.addPost);
+
+        this.router.delete("/:id", auth, this.removePostById);
     }
 
-    // private addPost: RequestHandler = async (request, response) => {
-    //     /* TODO: */
-    // };
+    private addPost: RequestHandler = async (request, response, next) => {
+        try {
+            const newPost = await z
+                .object({
+                    content: z
+                        .string()
+                        .nonempty("Post content cannot be empty")
+                        .max(
+                            150,
+                            "Post content cannot be more than 150 characters"
+                        ),
+                    imageUrl: z.string().url("Invalid image URL").optional(),
+                })
+                .parseAsync(request.body);
 
-    // private getAllPosts: RequestHandler = async (request, response) => {
-    //     /* TODO: */
-    // };
-
-    private getPostById: RequestHandler = (request, response) => {
-        const { id } = request.params;
-
-        if (typeof id === "string" && !Types.ObjectId.isValid(id)) {
-            return response
-                .status(400)
-                .json({ success: false, message: "Malformed id" });
+            const result = await this.postService.createPost({
+                authorId: new Types.ObjectId(request.session.profileId),
+                ...newPost,
+            });
+            return response.status(200).json(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                console.error("Validation error:", error);
+                return response.status(400).json({
+                    error: error.errors[0]?.message,
+                    item: error.errors[0]?.path.at(-1),
+                });
+            } else {
+                next(error);
+                return;
+            }
         }
-
-        /* TODO: */
     };
 
-    private removePostById: RequestHandler = (request, response) => {
+    private getAllPosts: RequestHandler = async (request, response, next) => {
+        try {
+            const result = await this.postService.getAllPosts();
+            return response.status(200).json(result);
+        } catch (error) {
+            next(error);
+            return;
+        }
+    };
+
+    private getPostById: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        if (typeof id === "string" && !Types.ObjectId.isValid(id)) {
+        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
             return response
                 .status(400)
                 .json({ success: false, message: "Malformed id" });
         }
 
-        /* TODO: */
+        try {
+            const result = await this.postService.getById(
+                new Types.ObjectId(id)
+            );
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
+            return response.status(200).json(result);
+        } catch (error) {
+            next(error);
+            return;
+        }
+    };
+
+    private removePostById: RequestHandler = async (request, response, next) => {
+        const { id } = request.params;
+
+        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
+            return response
+                .status(400)
+                .json({ success: false, message: "Malformed id" });
+        }
+
+        try {
+            const postToDelete = await this.postService.getById(
+                new Types.ObjectId(id)
+            );
+            if (!postToDelete) {
+                return response.status(404).json({ error: "Not found" });
+            }
+            if (postToDelete.authorId.toHexString() !== request.session.profileId) {
+                return response.status(403).json({ error: "Forbidden" })
+            }
+
+            await this.postService.removePostId(postToDelete._id);
+
+            return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
+        }
     };
 }

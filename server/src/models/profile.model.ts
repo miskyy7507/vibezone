@@ -10,7 +10,8 @@ export const ProfileModel = model<IProfile>(
                 type: String,
                 required: true,
                 unique: true,
-                match: /^[a-zA-Z0-9._-]{3,32}$/
+                match: /^[a-zA-Z0-9._-]{3,32}$/,
+                immutable: true
             },
             displayName: {
                 type: String,

@@ -10,6 +10,7 @@ export const PostModel = model<IPost>(
                 type: Schema.Types.ObjectId,
                 ref: "Profile",
                 required: true,
+                immutable: true,
             },
             content: { type: String, required: true },
             imageUrl: { type: String },

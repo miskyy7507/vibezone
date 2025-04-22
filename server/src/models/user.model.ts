@@ -10,6 +10,7 @@ export const UserModel = model<IUser>(
                 type: Schema.Types.ObjectId,
                 ref: "Profile",
                 required: true,
+                immutable: true,
             },
             email: {
                 type: String,
