@@ -49,7 +49,7 @@ export class AuthController implements Controller {
         request.session.regenerate((err) => {
             if (err) next(err);
 
-            request.session.profileId = user.profileId.toString();
+            request.session.profileId = user.profileId.toHexString();
             request.session.role = user.role;
 
             request.session.save((err) => {
