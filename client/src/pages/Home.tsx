@@ -1,11 +1,37 @@
+import { PostCard, PostData } from "../components/PostCard";
+
 export function Home() {
+    const placeholderPosts: Array<PostData> = [
+        {
+            id: "1",
+            authorDisplayName: "Arthur",
+            authorUsername: "arthuro",
+            authorPfpUri: null,
+            content: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. At unde ea iste!",
+            isLikedByUser: false,
+            likes: 0,
+            timestamp: new Date(Date.now()).toISOString()
+        },
+        {
+            id: "2",
+            authorDisplayName: "/[Mm]iskyy?/g",
+            authorUsername: "miskyy_",
+            authorPfpUri: null,
+            content: "Cool photo I took on the last day of vacation! 😎",
+            imageUri: "https://travel.usnews.com/images/Maldives_beach1_Getty_levente_bodo.jpg",
+            isLikedByUser: true,
+            likes: 4,
+            timestamp: new Date(Date.now()).toISOString()
+        }
+    ]
+
     return (
-        <>
-            <h1>Home</h1>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum possimus, amet fuga error est voluptatum, nihil dolores eaque, enim nam magnam eligendi labore blanditiis. Fugiat, ipsum iusto laborum debitis sit et nostrum, mollitia maiores dolorem neque dolores ut sapiente aut natus, cum repudiandae eos aliquid. Esse corrupti ipsa consequatur fugit quae aut, officia ad modi ipsum numquam, tempora dicta doloribus sint facere similique. Aspernatur fuga alias sit, cumque dolorem sunt, sint quo accusamus expedita eos adipisci at quibusdam saepe velit, magnam suscipit vel culpa. Ducimus odit, eveniet in fugit vero distinctio dignissimos dolor iste, ab voluptatibus eaque ad qui repudiandae.</p>
-            <p>Sint quod incidunt natus sapiente expedita error, numquam, quisquam, deleniti mollitia fugiat provident veniam quia! Numquam aut autem voluptatem dolor omnis hic eius, pariatur animi, natus nisi neque? Illo nam numquam officia sit ducimus debitis necessitatibus tempore pariatur facilis! Deleniti eos qui dolore reiciendis dolor odit, nesciunt temporibus quod perspiciatis, vitae recusandae repudiandae aliquam laboriosam soluta numquam mollitia explicabo voluptatum unde voluptate! Temporibus debitis amet similique perspiciatis quasi ut, sit omnis itaque aliquid magnam repellat deserunt maxime quidem consectetur, quaerat praesentium minima voluptatem quas dolorem deleniti incidunt necessitatibus magni. Hic, non totam! Unde laboriosam ab ex accusantium facere quaerat architecto.</p>
-            <p>Quisquam repudiandae placeat enim facilis in obcaecati consequatur, autem sunt, atque quod consequuntur doloremque recusandae itaque tempore excepturi laudantium saepe, sed possimus velit ipsam pariatur iure eum vero iusto. Asperiores animi ullam non expedita eaque ad, ex magni doloremque deleniti iste, culpa alias nulla voluptatum placeat. Dolorum assumenda totam iure veniam. Quisquam similique veritatis quidem neque perspiciatis quibusdam tenetur dolores incidunt sint magni? Ipsam et sequi saepe nihil quibusdam quae consequatur. Consectetur cumque deserunt ad quod provident. Vero repellat excepturi tempore, similique fugiat laborum dolor facere! Facere, cum quam! Dolor voluptatum explicabo beatae! Numquam nemo eum velit repellendus vitae modi.</p>
-            <p>Velit corporis veritatis molestias repudiandae quasi, voluptates ex similique praesentium qui odit porro consequuntur animi et vero dolores libero iusto! Temporibus nulla impedit optio recusandae illo, provident eius distinctio adipisci. Aut similique adipisci ex, quo obcaecati dignissimos consequatur labore natus, tempora illum, recusandae cupiditate ratione ipsam pariatur impedit cum molestiae veniam. Unde, accusantium corrupti! Consequatur nam culpa, debitis tempore amet harum architecto sit doloribus explicabo nisi id rerum quam delectus ducimus distinctio, qui unde hic natus numquam alias adipisci? Neque accusamus, explicabo voluptate consectetur rem qui odit numquam dignissimos. Expedita ad nobis voluptatem doloribus reiciendis dolores quae quis nesciunt explicabo.</p>
-        </>
+        <div className="flex flex-col items-center">
+            {
+                placeholderPosts.map((post) => (
+                    <PostCard postData={post} />
+                ))
+            }
+        </div>
     );
 }
