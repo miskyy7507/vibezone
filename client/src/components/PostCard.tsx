@@ -6,7 +6,7 @@ export interface PostData {
     id: string;
     authorDisplayName?: string;
     authorUsername: string;
-    authorPfpUri: string | null;
+    authorPfpUri?: string;
     content: string;
     imageUri?: string;
     likes: number;
@@ -29,7 +29,12 @@ export function PostCard({ postData }: { postData: PostData }) {
     return (
         <div className="flex flex-col p-4 border-b border-gray-200 max-w-2xl w-full">
             <div className="flex flex-row">
-                <ProfilePicture uri={postData.authorPfpUri} />
+                <ProfilePicture
+                    uri={postData.authorPfpUri}
+                    username={
+                        postData.authorDisplayName ?? postData.authorUsername
+                    }
+                />
                 <div className="flex flex-col ml-2 ">
                     <div className="flex flex-row space-x-2 items-center">
                         <UserNamesDisplay
@@ -37,7 +42,7 @@ export function PostCard({ postData }: { postData: PostData }) {
                             displayName={postData.authorDisplayName}
                         />
                     </div>
-                    <span className="text-gray-600 text-sm">
+                    <span className="text-gray-600">
                         {postData.timestamp}
                     </span>
                 </div>
