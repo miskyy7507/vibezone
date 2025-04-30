@@ -14,8 +14,8 @@ export class PostController implements Controller {
     private postService = new PostService();
 
     constructor() {
-        this.router.get("/:id", this.getPostById);
         this.router.get("/all", this.getAllPosts);
+        this.router.get("/:id", this.getPostById);
 
         this.router.post("/", auth, this.addPost);
 
