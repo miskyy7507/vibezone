@@ -1,15 +1,8 @@
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
+import type { User } from "../interfaces/user.interface";
 
-export interface UserData {
-    id: string,
-    username: string;
-    displayName?: string;
-    profilePictureUri?: string;
-    aboutDesc?: string;
-}
-
-export function UserListItem({ user }: { user: UserData }) {
+export function UserListItem({ user }: { user: User }) {
     return (
         <div className="flex flex-row p-4 border-b border-gray-200 max-w-2xl w-full">
             <ProfilePicture

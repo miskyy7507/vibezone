@@ -1,20 +1,9 @@
 import { useState } from "react";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
+import type { Post } from "../interfaces/post.interface";
 
-export interface PostData {
-    id: string;
-    authorDisplayName?: string;
-    authorUsername: string;
-    authorPfpUri?: string;
-    content: string;
-    imageUri?: string;
-    likes: number;
-    isLikedByUser: boolean;
-    timestamp: string;
-}
-
-export function PostCard({ postData }: { postData: PostData }) {
+export function PostCard({ postData }: { postData: Post }) {
     const [isLiked, setIsLiked] = useState(postData.isLikedByUser);
     const [likes, setLikes] = useState(postData.likes);
 

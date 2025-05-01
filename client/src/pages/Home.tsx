@@ -1,7 +1,8 @@
-import { PostCard, PostData } from "../components/PostCard";
+import { PostCard } from "../components/PostCard";
+import type { Post } from "../interfaces/post.interface";
 
 export function Home() {
-    const placeholderPosts: Array<PostData> = [
+    const placeholderPosts: Array<Post> = [
         {
             id: "1",
             authorDisplayName: "Arthur",
@@ -27,7 +28,7 @@ export function Home() {
         <div className="flex flex-col items-center">
             {
                 placeholderPosts.map((post) => (
-                    <PostCard postData={post} />
+                    <PostCard postData={post} key={post.id} />
                 ))
             }
         </div>
