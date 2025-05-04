@@ -23,7 +23,7 @@ export function Navbar() {
                         <ProfilePicture uri={user.profilePictureUri} username={user.username} />
                         <UserNamesDisplay username={user.username} displayName={user.displayName} />
                     </div>
-                ) : <NavLink to="login" end>Login</NavLink>}
+                ) : <NavLink to="login" end>Sign in</NavLink>}
             </div>
         </nav>
     );
