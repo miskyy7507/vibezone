@@ -18,6 +18,10 @@ export class ProfileService {
         return await ProfileModel.findById(id);
     }
 
+    public async getAllProfiles() {
+        return await ProfileModel.find();
+    }
+
     public async updateProfile(
         id: Types.ObjectId,
         updateData: Partial<Nullable<IProfile>>

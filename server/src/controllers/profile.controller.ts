@@ -16,6 +16,7 @@ export class ProfileController implements Controller {
     private profileService = new ProfileService();
 
     constructor() {
+        this.router.get("/all", this.getAllProfiles);
         this.router.get("/:id", this.getProfile);
 
         this.router.patch("/update", auth, this.updateProfile);
@@ -27,6 +28,16 @@ export class ProfileController implements Controller {
             this.uploadPicture
         );
         this.router.delete("/picture", auth, this.removePicture);
+    }
+
+    private getAllProfiles: RequestHandler = async (request, response, next) => {
+        try {
+            const result = await this.profileService.getAllProfiles();
+            return response.status(200).json(result);
+        } catch (error) {
+            next(error);
+            return;
+        }
     }
 
     private getProfile: RequestHandler = async (request, response, next) => {
