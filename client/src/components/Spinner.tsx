@@ -27,10 +27,10 @@ export function Spinner({ size, theme }: SpinnerProps) {
                     cy="16"
                     r="13.5"
                     fill="none"
-                    stroke-width="5"
-                    stroke-linecap="round"
-                    stroke-dasharray="63.617 21.206"
-                    stroke-dashoffset="-23.206"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    strokeDasharray="63.617 21.206"
+                    strokeDashoffset="-23.206"
                 ></circle>
             </svg>
         </div>
