@@ -6,11 +6,12 @@ import type { IProfile } from "../interfaces/profile.interface.js";
 import type { Nullable } from "../utils/nullable.js";
 
 export class ProfileService {
-    public async createProfile(username: string, displayName: string) {
-        const dataModel = new ProfileModel<IProfile>({
-            username: username.trim(),
-            displayName: displayName,
-        });
+    public async createProfile(username: string, displayName?: string) {
+        const dataModel = new ProfileModel<IProfile>();
+        dataModel.username = username.trim();
+        if (displayName) {
+            dataModel.displayName = displayName
+        }
         return dataModel.save();
     }
 

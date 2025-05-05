@@ -90,7 +90,8 @@ export class AuthController implements Controller {
                 displayName: z
                     .string()
                     .nonempty("Display name cannot be empty")
-                    .max(32, "Display name too long"),
+                    .max(32, "Display name too long")
+                    .optional(),
                 password: z
                     .string()
                     .nonempty("Required")

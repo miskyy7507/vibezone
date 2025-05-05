@@ -5,10 +5,16 @@ import { Spinner } from "../components/Spinner";
 import { Link } from "react-router";
 
 export function Signup() {
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setLoading(true);
+
+
+
+
+        setLoading(false);
     }
 
     return (
@@ -35,10 +41,10 @@ export function Signup() {
                 <p className="hidden peer-focus:block text-sm">Your unique user identifier.</p>
                 <input
                     className="peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
-                    type="text" required
+                    type="text"
                     placeholder="Display name"
                 />
-                <p className="hidden peer-focus:block text-sm">Custom name displayed next to posts and comments. Can be changed later.</p>
+                <p className="hidden peer-focus:block text-sm">Custom name displayed next to posts and comments. Optional, can be changed later.</p>
                 <input
                     className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="password" required
@@ -55,15 +61,15 @@ export function Signup() {
                 />
                 <button
                     className={clsx(
-                        isLoggingIn
+                        isLoading
                             ? "py-4.75 bg-zinc-200/55"
                             : "py-5.25 bg-zinc-200 hover:bg-zinc-200/85",
                         "text-zinc-900 rounded-xl cursor-pointer h-80px focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     )}
                     type="submit"
-                    disabled={isLoggingIn}
+                    disabled={isLoading}
                 >
-                    {isLoggingIn ? (
+                    {isLoading ? (
                         <Spinner size="small" theme="light" />
                     ) : (
                         "Sign up"
