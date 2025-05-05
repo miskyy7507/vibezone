@@ -78,17 +78,18 @@ export class AuthController implements Controller {
             validatedForm = await z.object({
                 email: z
                     .string()
+                    .nonempty("Required")
                     .regex(
                         /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
                         "Invalid email"
                     ),
                 username: z
                     .string()
+                    .nonempty("Required")
                     .min(3, "Username too short")
                     .max(32, "Username too long"),
                 displayName: z
                     .string()
-                    .nonempty("Display name cannot be empty")
                     .max(32, "Display name too long")
                     .optional(),
                 password: z
@@ -97,7 +98,7 @@ export class AuthController implements Controller {
             }).parseAsync(request.body);
         } catch (error) {
             if (error instanceof z.ZodError) {
-                console.error("Validation error:", error);
+                // console.error("Validation error:", error);
                 return response.status(400).json({
                     error: error.errors[0]?.message,
                     item: error.errors[0]?.path.at(-1),

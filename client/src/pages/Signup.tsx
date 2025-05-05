@@ -4,13 +4,7 @@ import { clsx } from "clsx";
 import { Spinner } from "../components/Spinner";
 import { Link, useNavigate } from "react-router";
 
-interface RegisterForm {
-    email: string;
-    username: string;
-    displayName: string;
-    password: string;
-    confirmPassword: string;
-}
+import type { RegisterForm } from "../interfaces/registerForm.interface";
 
 export function Signup() {
     const [isLoading, setLoading] = useState(false);
@@ -31,9 +25,15 @@ export function Signup() {
         setErrors((prev) => ({ ...prev, [name]: null }));
     };
 
-    const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value.trim() }));
+    const trimValues = () => {
+        const newForm = {
+            ...form,
+            email: form.email.trim(),
+            username: form.username.trim(),
+        }
+        setForm(newForm);
+
+        return newForm;
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -74,11 +74,7 @@ export function Signup() {
                 "http://localhost:6660/api/auth/register",
                 {
                     method: "POST",
-                    body: JSON.stringify({
-                        ...form,
-                        email: form.email.trim(),
-                        username: form.username.trim(),
-                    }),
+                    body: JSON.stringify(trimValues()),
                     headers: {
                         "Accept": "application/json",
                         "Content-Type": "application/json",
@@ -127,7 +123,7 @@ export function Signup() {
                     placeholder="Email"
                     value={form.email}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    onBlur={trimValues}
                     name="email"
                     autoComplete="email"
                 />
@@ -144,7 +140,7 @@ export function Signup() {
                     placeholder="Username"
                     value={form.username}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    onBlur={trimValues}
                     name="username"
                     autoComplete="off"
                 />
