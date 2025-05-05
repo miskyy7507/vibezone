@@ -123,11 +123,11 @@ export class ProfileController implements Controller {
 
     private removePicture: RequestHandler = async (request, response, next) => {
         try {
-            const result = await this.profileService.updateProfile(
+            await this.profileService.updateProfile(
                 new Types.ObjectId(request.session.profileId),
                 { profilePictureUri: null }
             );
-            return response.status(200).json(result);
+            return response.status(204).send();
         } catch (error) {
             next(error);
         }
