@@ -1,28 +1,73 @@
 import { useState } from "react";
-import { clsx } from "clsx";
-
-import { Spinner } from "../components/Spinner";
+// import { clsx } from "clsx";
 import { Link, useNavigate } from "react-router";
+
+// import { Spinner } from "../components/Spinner";
+// import { FormItemInput } from "../components/FormItemInput";
+import { Form2 } from "../components/Form2";
+import { ItemInfo } from "../components/Form2";
 
 import type { RegisterForm } from "../interfaces/registerForm.interface";
 
 export function Signup() {
-    const [isLoading, setLoading] = useState(false);
-    const [form, setForm] = useState<RegisterForm>({
+    type RegisterFormKeys =
+        | "email"
+        | "username"
+        | "displayName"
+        | "password"
+        | "confirmPassword";
+
+    const registerForm: Record<RegisterFormKeys, ItemInfo> = {
+        email: {
+            type: "text",
+            placeholder: "Email",
+            autoComplete: "email",
+        },
+        username: {
+            type: "text",
+            placeholder: "Username",
+            autoComplete: "off",
+            tip: "Your unique user identifier.",
+        },
+        displayName: {
+            type: "text",
+            placeholder: "Display name",
+            autoComplete: "off",
+            tip: "Custom name displayed next to posts and comments. Optional, can be changed later.",
+        },
+        password: {
+            type: "password",
+            placeholder: "Password",
+        },
+        confirmPassword: {
+            type: "password",
+            placeholder: "Confirm password",
+        },
+    } as const;
+
+    const [form, setForm] = useState<Record<RegisterFormKeys, string>>({
         email: "",
         username: "",
         displayName: "",
         password: "",
         confirmPassword: "",
     });
-    const [errors, setErrors] = useState<Partial<RegisterForm>>({});
+
+    const [errors, setErrors] = useState<
+        Partial<Record<RegisterFormKeys, string>>
+    >({});
+
+    const [isLoading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
-        setErrors((prev) => ({ ...prev, [name]: null }));
+        setErrors((prev) => {
+            delete prev[name as keyof RegisterForm];
+            return prev;
+        });
     };
 
     const trimValues = () => {
@@ -46,19 +91,16 @@ export function Signup() {
             newErrors.confirmPassword = "Passwords do not match.";
         }
 
-        if (!/[^a-zA-Z\d]/.test(form.password)) {
-            newErrors.password =
-                "Password must contain at least one special character.";
-        }
-        if (!/\d/.test(form.password)) {
-            newErrors.password = "Password must contain at least one digit.";
-        }
-        if (!/[A-Z]/.test(form.password)) {
-            newErrors.password =
-                "Password must contain at least one capital letter.";
-        }
         if (form.password.length < 8) {
             newErrors.password = "Password must contain at least 8 characters.";
+        } else if (!/[A-Z]/.test(form.password)) {
+            newErrors.password =
+                "Password must contain at least one capital letter.";
+        } else if (!/\d/.test(form.password)) {
+            newErrors.password = "Password must contain at least one digit.";
+        } else if (!/[^a-zA-Z\d]/.test(form.password)) {
+            newErrors.password =
+                "Password must contain at least one special character.";
         }
 
         setErrors(newErrors);
@@ -111,119 +153,71 @@ export function Signup() {
             <h1 className="text-5xl text-center my-6 font-bold">
                 Create your account
             </h1>
-            <form
+            <Form2
+                items={registerForm}
+                values={form}
+                errors={errors}
+                onChange={handleChange}
+                onBlur={trimValues}
+                onSubmit={handleSubmit}
+                loading={isLoading}
+                submitButtonText="Sign up"
+            ></Form2>
+            {/* <form
                 className="flex flex-col gap-5 text-xl "
                 onSubmit={handleSubmit}
             >
-                <div className="flex flex-col gap-1.5">
-                    <input
-                        className={clsx(
-                            "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                            errors?.email &&
-                                "outline-3 outline-red-500 outline-offset-1"
-                        )}
-                        type="text"
-                        placeholder="Email"
-                        value={form.email}
-                        onChange={handleChange}
-                        onBlur={trimValues}
-                        name="email"
-                        autoComplete="email"
-                    />
-                    {errors?.email && (
-                        <p className="text-red-500 text-sm">{errors.email}</p>
-                    )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                    <input
-                        className={clsx(
-                            "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                            errors?.username &&
-                                "outline-3 outline-red-500 outline-offset-1"
-                        )}
-                        type="text"
-                        placeholder="Username"
-                        value={form.username}
-                        onChange={handleChange}
-                        onBlur={trimValues}
-                        name="username"
-                        autoComplete="off"
-                    />
-                    {(errors?.username && (
-                        <p className="text-red-500 text-sm">
-                            {errors.username}
-                        </p>
-                    )) || (
-                        <p className="hidden peer-focus:block text-sm">
-                            Your unique user identifier.
-                        </p>
-                    )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                    <input
-                        className={clsx(
-                            "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                            errors?.displayName &&
-                                "outline-3 outline-red-500 outline-offset-1"
-                        )}
-                        type="text"
-                        placeholder="Display name"
-                        value={form.displayName}
-                        onChange={handleChange}
-                        name="displayName"
-                        autoComplete="off"
-                    />
-                    {(errors?.displayName && (
-                        <p className="text-red-500 text-sm">
-                            {errors.displayName}
-                        </p>
-                    )) || (
-                        <p className="hidden peer-focus:block text-sm">
-                            Custom name displayed next to posts and comments.
-                            Optional, can be changed later.
-                        </p>
-                    )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                    <input
-                        className={clsx(
-                            "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                            errors?.password &&
-                                "outline-3 outline-red-500 outline-offset-1"
-                        )}
-                        type="password"
-                        placeholder="Password"
-                        value={form.password}
-                        onChange={handleChange}
-                        name="password"
-                        autoComplete="new-password"
-                    />
-                    {errors?.password && (
-                        <p className="text-red-500 text-sm">
-                            {errors.password}
-                        </p>
-                    )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                    <input
-                        className={clsx(
-                            "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                            errors?.confirmPassword &&
-                                "outline-3 outline-red-500 outline-offset-1"
-                        )}
-                        type="password"
-                        placeholder="Confirm password"
-                        value={form.confirmPassword}
-                        onChange={handleChange}
-                        name="confirmPassword"
-                        autoComplete="new-password"
-                    />
-                    {errors?.confirmPassword && (
-                        <p className="text-red-500 text-sm">
-                            {errors.confirmPassword}
-                        </p>
-                    )}
-                </div>
+                <FormItemInput
+                    name="email"
+                    value={form.email}
+                    type="text"
+                    placeholder="Email"
+                    autoComplete="email"
+                    onChange={handleChange}
+                    onBlur={trimValues}
+                    errorMsg={errors.email}
+                />
+                <FormItemInput
+                    name="username"
+                    value={form.username}
+                    type="text"
+                    placeholder="Username"
+                    autoComplete="off"
+                    onChange={handleChange}
+                    onBlur={trimValues}
+                    errorMsg={errors.username}
+                    tip="Your unique user identifier."
+                />
+                <FormItemInput
+                    name="displayName"
+                    value={form.displayName}
+                    type="text"
+                    placeholder="Display name"
+                    autoComplete="off"
+                    onChange={handleChange}
+                    onBlur={trimValues}
+                    errorMsg={errors.displayName}
+                    tip="Custom name displayed next to posts and comments. Optional, can be changed later."
+                />
+                <FormItemInput
+                    name="password"
+                    value={form.password}
+                    type="password"
+                    placeholder="Password"
+                    onChange={handleChange}
+                    onBlur={trimValues}
+                    errorMsg={errors.password}
+                />
+                <FormItemInput
+                    name="confirmPassword"
+                    value={form.confirmPassword}
+                    type="password"
+                    placeholder="Confirm password"
+                    onChange={handleChange}
+                    onBlur={trimValues}
+                    errorMsg={errors.confirmPassword}
+                />
+
                 <button
                     className={clsx(
                         isLoading
@@ -240,7 +234,7 @@ export function Signup() {
                         "Sign up"
                     )}
                 </button>
-            </form>
+            </form> */}
             <p className="text-sm mt-5">
                 Already have an account? <Link to={"/login"}>Sign in here</Link>
             </p>
