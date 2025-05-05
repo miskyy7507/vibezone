@@ -39,6 +39,7 @@ export class PostController implements Controller {
 
             const result = await this.postService.createPost({
                 authorId: new Types.ObjectId(request.session.profileId),
+                usersWhoLiked: [],
                 ...newPost,
             });
             return response.status(200).json(result);
@@ -105,7 +106,7 @@ export class PostController implements Controller {
             if (!postToDelete) {
                 return response.status(404).json({ error: "Not found" });
             }
-            if (postToDelete.authorId.toHexString() !== request.session.profileId) {
+            if (postToDelete.authorId._id.toHexString() !== request.session.profileId) {
                 return response.status(403).json({ error: "Forbidden" })
             }
 
