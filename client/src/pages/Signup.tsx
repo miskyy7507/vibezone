@@ -1,9 +1,6 @@
 import { useState } from "react";
-// import { clsx } from "clsx";
 import { Link, useNavigate } from "react-router";
 
-// import { Spinner } from "../components/Spinner";
-// import { FormItemInput } from "../components/FormItemInput";
 import { Form2 } from "../components/Form2";
 import { ItemInfo } from "../components/Form2";
 
