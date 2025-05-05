@@ -15,26 +15,24 @@
 } */
 
 @theme {
-    --animate-spinner-dash: spinner-dash 2s cubic-bezier(0.85, 0, 0.15, 1)
-        infinite;
-    --animate-spinner-fade-in: spinner-fade-in 1s cubic-bezier(0.85, 0, 0.15, 1)
-        1;
-
     @keyframes spinner-dash {
         0% {
             stroke-dasharray: 1, 84.823;
             stroke-dashoffset: -1;
             stroke-width: 5;
+            animation-timing-function: cubic-bezier(1,0,.6,1);
         }
         50% {
             stroke-dasharray: 63.617, 21.206;
             stroke-dashoffset: -23.206;
             stroke-width: 2.5;
+            animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
         }
         100% {
             stroke-dasharray: 1, 84.823;
             stroke-dashoffset: -86.823;
             stroke-width: 5;
+            animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
         }
     }
 
@@ -50,7 +48,7 @@
 
 @layer utilities {
     .animate-spinner {
-        animation: spinner-dash 2s cubic-bezier(0.85, 0, 0.15, 1) infinite,
-            spinner-fade-in 0.75s cubic-bezier(0.85, 0, 0.15, 1) 1;
+        animation: -.25s spinner-dash 2s cubic-bezier(1,0,.6,1) infinite,
+            spinner-fade-in 0.6s ease-in-out 1;
     }
 }
