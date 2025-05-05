@@ -1,0 +1,158 @@
+API dokumentacja:
+
+POST /api/auth/login
+Logowanie użytkownika
+body: JSON {
+    login: string
+    password: string
+}
+response:
+    400: Validation error
+    401: Unauthorized - w przypadku kiedy niepoprawne dane zostaną wprowadzone (zły login/hasło)
+    200: OK - zwraca cookie
+
+------------------------------------
+POST /api/auth/logout
+Wylogowywuje użytkownika. Wymagana autentyfikacja użytkownika ciasteczkiem.
+body: none
+session cookie required
+response:
+    200: OK - wylogowano
+    401: Unauthorized - kiedy użytkownik nie jest zalogowany (brak/zły session cookie)
+
+------------------------------------
+POST /api/auth/register
+Rejestruje nowego użytkownika.
+body: {
+    email: string
+    username: string
+    displayName: string
+    password: string
+}
+response:
+    200: OK - użytkownik zajerestrowany
+    400: Validation error
+    422: użytkownik już istnieje - email lub username
+    e.g.
+{
+    "error": "Username already in use",
+    "item": "username"
+}
+
+
+====================================
+POST /api/post
+Tworzy nowy post w imieniu użytkownika zautoryzowanego. Wymagana autentyfikacja użytkownika ciasteczkiem.
+session cookie required
+body: {
+    content: string
+    imageUrl: string?
+}
+response:
+    200: OK - utworzono post
+    400: Validation error
+    401: Unauthorized - użytkownik nie jest zalogowany, nie może postować.
+
+------------------------------------
+GET /api/post/all
+Pobiera wszyskie posty z serwera.
+response:
+    200: OK - zwraca wszystkie posty
+{
+    _id: ObjectId,
+    authorId: {
+        _id: ObjectId,
+        username: string,
+        displayName?: string,
+        profilePictureUri?: string
+    },
+    content: string
+    imageUrl?: string
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    likeCount: number
+}[]
+
+------------------------------------
+GET /api/post/:id
+Pobiera pots o danym id.
+repsonse:
+    200: OK - zwraca post
+    404: Not found - nie ma takiego posta o takim id
+    400: Bad Request - zły format id
+
+------------------------------------
+
+DELETE /api/post/:id
+Usuwa post o danym id. Tylko autor posta lub moderator może usunąć posta.
+session cookie required
+repsonse:
+    204: No content - pomyślnie usunięto post.
+    404: Not found - nie ma posta o takim id
+    403: Forbidden - brak uprawnień do usunięcia posta (moderator lub autor posta)
+
+====================================
+
+GET /api/profile/all
+Zwraca publiczne dane wszystkich użytkowników.
+response:
+    200: OK
+{
+    _id: ObjectId,
+    username: string,
+    displayName?: string,
+    profilePictureUri?: string,
+    aboutDesc?: string
+    createdAt: timestamp,
+    updatedAt: timestamp,
+}
+
+------------------------------------
+
+GET /api/profile/:id
+Zwraca publiczne dane użytkownika o danym id.
+repsonse:
+    200: OK - zwraca publiczne dane użytkownika
+    404: Not found - nie ma użytkownika o takim id
+    400: Bad Request - zły format id
+
+------------------------------------
+
+PATCH /api/profile/update
+Aktualizacja danych użytkownika.
+session cookie required
+body:
+{
+    displayName?: string | null,
+    aboutDesc?: string | null
+}
+Brak pozycji w body: dana nie zostanie zaktualizowana.
+null w miejscu pozycji: pozycja w bazie danych zostanie usunięta.
+Wszelkie inne pozycje zostaną zignorowane.
+
+response:
+    200: OK - zwraca dane użytkownika ze zmienionymi danymi
+    400: Bad Request
+    401: Unauthorized
+
+------------------------------------
+
+POST /api/profile/picture
+Aktualizacja zdjęcia profilowego.
+session cookie required
+body: multipart/form-data - picture: <zdjęcie>
+
+response:
+    200: OK
+    400: Bad request (kiedy żadne zdjęcie nie znajdzie się w requestcie)
+    401: Unauthorized
+
+------------------------------------
+
+DELETE /api/profile/picture
+Usunięcie zdjęcia profilowego i powrót do domyślnego.
+session cookie required
+
+response:
+    204: ok
+    401: Unauthorized
