@@ -26,17 +26,19 @@ export function Signup() {
                     placeholder="Email"
                 />
                 <input
-                    className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
+                    className="peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="text" required
                     placeholder="Username"
                     // value={username}
                     // onChange={(e) => setUsername(e.target.value)}
                 />
+                <p className="hidden peer-focus:block text-sm">Your unique user identifier.</p>
                 <input
-                    className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
+                    className="peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="text" required
                     placeholder="Display name"
                 />
+                <p className="hidden peer-focus:block text-sm">Custom name displayed next to posts and comments. Can be changed later.</p>
                 <input
                     className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="password" required
