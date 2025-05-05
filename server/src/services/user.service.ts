@@ -38,8 +38,7 @@ export class UserService {
         return user;
     }
 
-    private async getByLogin(login: string) {
-        // TODO: allow login by the username
+    public async getByLogin(login: string) {
         return await UserModel.findOne({ email: login });
     }
 

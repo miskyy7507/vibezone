@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { z } from "zod";
-import { MongoServerError } from "mongodb";
 import { UserService } from "../services/user.service.js";
 import { ProfileService } from "../services/profile.service.js";
 import { auth } from "../middleware/auth.js";
@@ -108,6 +107,19 @@ export class AuthController implements Controller {
             return;
         }
 
+        if (await this.userService.getByLogin(validatedForm.email)) {
+            return response.status(422).json({
+                error: "Email already in use",
+                item: "email"
+            });
+        }
+        if (await this.profileService.getByUsername(validatedForm.username)) {
+            return response.status(422).json({
+                error: "Username already in use",
+                item: "username"
+            });
+        }
+
         try {
             const profile = await this.profileService.createProfile(
                 validatedForm.username,
@@ -117,21 +129,13 @@ export class AuthController implements Controller {
                 profile._id,
                 validatedForm.email,
                 "user",
-                true, // TODO: add email verification or smth
+                true,
                 validatedForm.password
             );
             response.status(200).json(user);
         } catch (error) {
-            if (error instanceof MongoServerError && error.code === 11000) {
-                return response.status(422).json({
-                    error: "User already exists",
-                    item: error,
-                });
-            }
             next(error);
             return;
         }
     };
-
-    // TODO: implement updating email address
 }

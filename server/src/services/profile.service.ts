@@ -19,6 +19,10 @@ export class ProfileService {
         return await ProfileModel.findById(id);
     }
 
+    public async getByUsername(username: string) {
+        return await ProfileModel.findOne({ username });
+    }
+
     public async getAllProfiles() {
         return await ProfileModel.find();
     }
