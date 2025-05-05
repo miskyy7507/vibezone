@@ -30,30 +30,32 @@ export function Signup() {
             ...form,
             email: form.email.trim(),
             username: form.username.trim(),
-        }
+        };
         setForm(newForm);
 
         return newForm;
-    }
+    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
 
-        const newErrors: Partial<RegisterForm> = {...errors};
+        const newErrors: Partial<RegisterForm> = { ...errors };
 
         if (form.password !== form.confirmPassword) {
             newErrors.confirmPassword = "Passwords do not match.";
         }
 
         if (!/[^a-zA-Z\d]/.test(form.password)) {
-            newErrors.password = "Password must contain at least one special character.";
+            newErrors.password =
+                "Password must contain at least one special character.";
         }
         if (!/\d/.test(form.password)) {
             newErrors.password = "Password must contain at least one digit.";
         }
         if (!/[A-Z]/.test(form.password)) {
-            newErrors.password = "Password must contain at least one capital letter.";
+            newErrors.password =
+                "Password must contain at least one capital letter.";
         }
         if (form.password.length < 8) {
             newErrors.password = "Password must contain at least 8 characters.";
@@ -76,7 +78,7 @@ export function Signup() {
                     method: "POST",
                     body: JSON.stringify(trimValues()),
                     headers: {
-                        "Accept": "application/json",
+                        Accept: "application/json",
                         "Content-Type": "application/json",
                     },
                 }
@@ -113,97 +115,115 @@ export function Signup() {
                 className="flex flex-col gap-5 text-xl "
                 onSubmit={handleSubmit}
             >
-                <input
-                    className={clsx(
-                        "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                        errors?.email &&
-                            "outline-3 outline-red-500 outline-offset-1"
+                <div className="flex flex-col gap-1.5">
+                    <input
+                        className={clsx(
+                            "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
+                            errors?.email &&
+                                "outline-3 outline-red-500 outline-offset-1"
+                        )}
+                        type="text"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={handleChange}
+                        onBlur={trimValues}
+                        name="email"
+                        autoComplete="email"
+                    />
+                    {errors?.email && (
+                        <p className="text-red-500 text-sm">{errors.email}</p>
                     )}
-                    type="text"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={handleChange}
-                    onBlur={trimValues}
-                    name="email"
-                    autoComplete="email"
-                />
-                {errors?.email && (
-                    <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
-                <input
-                    className={clsx(
-                        "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                        errors?.username &&
-                            "outline-3 outline-red-500 outline-offset-1"
+                </div>
+                <div className="flex flex-col gap-1.5">
+                    <input
+                        className={clsx(
+                            "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
+                            errors?.username &&
+                                "outline-3 outline-red-500 outline-offset-1"
+                        )}
+                        type="text"
+                        placeholder="Username"
+                        value={form.username}
+                        onChange={handleChange}
+                        onBlur={trimValues}
+                        name="username"
+                        autoComplete="off"
+                    />
+                    {(errors?.username && (
+                        <p className="text-red-500 text-sm">
+                            {errors.username}
+                        </p>
+                    )) || (
+                        <p className="hidden peer-focus:block text-sm">
+                            Your unique user identifier.
+                        </p>
                     )}
-                    type="text"
-                    placeholder="Username"
-                    value={form.username}
-                    onChange={handleChange}
-                    onBlur={trimValues}
-                    name="username"
-                    autoComplete="off"
-                />
-                <p className="hidden peer-focus:block text-sm">
-                    Your unique user identifier.
-                </p>
-                {errors?.username && (
-                    <p className="text-red-500 text-sm">{errors.username}</p>
-                )}
-                <input
-                    className={clsx(
-                        "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                        errors?.displayName &&
-                            "outline-3 outline-red-500 outline-offset-1"
+                </div>
+                <div className="flex flex-col gap-1.5">
+                    <input
+                        className={clsx(
+                            "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
+                            errors?.displayName &&
+                                "outline-3 outline-red-500 outline-offset-1"
+                        )}
+                        type="text"
+                        placeholder="Display name"
+                        value={form.displayName}
+                        onChange={handleChange}
+                        name="displayName"
+                        autoComplete="off"
+                    />
+                    {(errors?.displayName && (
+                        <p className="text-red-500 text-sm">
+                            {errors.displayName}
+                        </p>
+                    )) || (
+                        <p className="hidden peer-focus:block text-sm">
+                            Custom name displayed next to posts and comments.
+                            Optional, can be changed later.
+                        </p>
                     )}
-                    type="text"
-                    placeholder="Display name"
-                    value={form.displayName}
-                    onChange={handleChange}
-                    name="displayName"
-                    autoComplete="off"
-                />
-                <p className="hidden peer-focus:block text-sm">
-                    Custom name displayed next to posts and comments. Optional,
-                    can be changed later.
-                </p>
-                {errors?.displayName && (
-                    <p className="text-red-500 text-sm">{errors.displayName}</p>
-                )}
-                <input
-                    className={clsx(
-                        "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                        errors?.password &&
-                            "outline-3 outline-red-500 outline-offset-1"
+                </div>
+                <div className="flex flex-col gap-1.5">
+                    <input
+                        className={clsx(
+                            "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
+                            errors?.password &&
+                                "outline-3 outline-red-500 outline-offset-1"
+                        )}
+                        type="password"
+                        placeholder="Password"
+                        value={form.password}
+                        onChange={handleChange}
+                        name="password"
+                        autoComplete="new-password"
+                    />
+                    {errors?.password && (
+                        <p className="text-red-500 text-sm">
+                            {errors.password}
+                        </p>
                     )}
-                    type="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    name="password"
-                    autoComplete="new-password"
-                />
-                {errors?.password && (
-                    <p className="text-red-500 text-sm">{errors.password}</p>
-                )}
-                <input
-                    className={clsx(
-                        "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                        errors?.confirmPassword &&
-                            "outline-3 outline-red-500 outline-offset-1"
+                </div>
+                <div className="flex flex-col gap-1.5">
+                    <input
+                        className={clsx(
+                            "border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
+                            errors?.confirmPassword &&
+                                "outline-3 outline-red-500 outline-offset-1"
+                        )}
+                        type="password"
+                        placeholder="Confirm password"
+                        value={form.confirmPassword}
+                        onChange={handleChange}
+                        name="confirmPassword"
+                        autoComplete="new-password"
+                    />
+                    {errors?.confirmPassword && (
+                        <p className="text-red-500 text-sm">
+                            {errors.confirmPassword}
+                        </p>
                     )}
-                    type="password"
-                    placeholder="Confirm password"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    name="confirmPassword"
-                    autoComplete="new-password"
-                />
-                {errors?.confirmPassword && (
-                    <p className="text-red-500 text-sm">
-                        {errors.confirmPassword}
-                    </p>
-                )}
+                </div>
                 <button
                     className={clsx(
                         isLoading
