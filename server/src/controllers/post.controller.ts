@@ -28,10 +28,10 @@ export class PostController implements Controller {
                 .object({
                     content: z
                         .string()
-                        .nonempty("Post content cannot be empty")
+                        .nonempty("Post content cannot be empty.")
                         .max(
                             150,
-                            "Post content cannot be more than 150 characters"
+                            "Post content cannot be more than 150 characters in length."
                         ),
                     imageUrl: z.string().url("Invalid image URL").optional(),
                 })

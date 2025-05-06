@@ -81,16 +81,17 @@ export class AuthController implements Controller {
                     .nonempty("Required")
                     .regex(
                         /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
-                        "Invalid email"
+                        "Invalid email address."
                     ),
                 username: z
                     .string()
                     .nonempty("Required")
-                    .min(3, "Username too short")
-                    .max(32, "Username too long"),
+                    .min(3, "Username must be at least 3 characters.")
+                    .max(32, "Username must not exceed 32 characters."),
                 displayName: z
                     .string()
-                    .max(32, "Display name too long")
+                    .nonempty("Display name must not be empty.")
+                    .max(32, "Display name must not exceed 32 characters.")
                     .optional(),
                 password: z
                     .string()
@@ -110,13 +111,13 @@ export class AuthController implements Controller {
 
         if (await this.userService.getByLogin(validatedForm.email)) {
             return response.status(422).json({
-                error: "Email already in use",
+                error: "This email is already in use.",
                 item: "email"
             });
         }
         if (await this.profileService.getByUsername(validatedForm.username)) {
             return response.status(422).json({
-                error: "Username already in use",
+                error: "This username is not available. Use another one.",
                 item: "username"
             });
         }

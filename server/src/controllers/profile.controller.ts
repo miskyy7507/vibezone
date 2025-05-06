@@ -70,12 +70,12 @@ export class ProfileController implements Controller {
                 .object({
                     displayName: z
                         .string()
-                        .nonempty("Display name cannot be empty")
-                        .max(32, "Display name too long")
+                        .nonempty("Display name must not be empty.")
+                        .max(32, "Display name must not exceed 32 characters.")
                         .optional(),
                     aboutDesc: z
                         .string()
-                        .max(150, "Description too long")
+                        .max(150, "Description cannot exceed 150 characters.")
                         .optional()
                         .nullable(),
                 })
