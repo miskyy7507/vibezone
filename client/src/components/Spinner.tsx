@@ -15,7 +15,7 @@ export function Spinner({ size, theme }: SpinnerProps) {
     const sizePx = sizeMap[size];
 
     return (
-        <div className="mx-auto" style={{ width: `${sizePx}px`, height: `${sizePx}px` }}>
+        <div className="mx-auto" style={{ width: `${sizePx.toString()}px`, height: `${sizePx.toString()}px` }}>
             <svg className="animate-spin" viewBox="0 0 32 32">
                 <circle
                     className={clsx(

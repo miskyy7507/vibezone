@@ -7,6 +7,8 @@ import { placeholderUsers } from "../placeholderUsers";
 import { Spinner } from "../components/Spinner";
 
 export function Login() {
+    // type LoginFormNames = "login" | "password";
+
     const { login } = useAuth();
 
     const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -15,6 +17,8 @@ export function Login() {
     const [password, setPassword] = useState("");
 
     const navigate = useNavigate();
+
+    const buttonDisabled = isLoggingIn || !username || !password;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -35,7 +39,7 @@ export function Login() {
 
             login(userToLogIn);
 
-            navigate("/");
+            void navigate("/");
         }, 2500);
     };
 
@@ -53,27 +57,27 @@ export function Login() {
                     type="text"
                     placeholder="Username"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {setUsername(e.target.value)}}
                 />
                 <input
                     className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="password"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {setPassword(e.target.value)}}
                 />
                 <button
                     className={clsx(
-                        isLoggingIn
-                            ? "py-4.75 bg-zinc-200/55"
-                            : "py-5.25 bg-zinc-200 hover:bg-zinc-200/85",
-                        "text-zinc-900 rounded-xl cursor-pointer h-80px focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
+                        buttonDisabled
+                            ? "opacity-55"
+                            : "hover:opacity-85 cursor-pointer",
+                        "py-5.25 text-zinc-900 bg-zinc-200 rounded-xl h-80px focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     )}
                     type="submit"
-                    disabled={isLoggingIn}
+                    disabled={buttonDisabled}
                 >
                     {isLoggingIn ? (
-                        <Spinner size="small" theme="light" />
+                        <div className="-m-0.5"><Spinner size="small" theme="light" /></div>
                     ) : (
                         "Sign in"
                     )}

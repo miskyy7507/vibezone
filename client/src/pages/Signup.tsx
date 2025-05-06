@@ -3,46 +3,49 @@ import { Link, useNavigate } from "react-router";
 
 import { Form2 } from "../components/Form2";
 import { ItemInfo } from "../components/Form2";
-
-import type { RegisterForm } from "../interfaces/registerForm.interface";
+import { ValidationErrorResponse } from "../interfaces/validationErrorResponse.interface";
 
 export function Signup() {
-    type RegisterFormKeys =
+    type RegisterFormNames =
         | "email"
         | "username"
         | "displayName"
         | "password"
         | "confirmPassword";
 
-    const registerForm: Record<RegisterFormKeys, ItemInfo> = {
+    const registerForm: Record<RegisterFormNames, ItemInfo> = {
         email: {
             type: "text",
             placeholder: "Email",
             autoComplete: "email",
+            required: true,
         },
         username: {
             type: "text",
             placeholder: "Username",
             autoComplete: "off",
             tip: "Your unique user identifier.",
+            required: true,
         },
         displayName: {
             type: "text",
             placeholder: "Display name",
             autoComplete: "off",
-            tip: "Custom name displayed next to posts and comments. Optional, can be changed later.",
+            tip: "Custom name displayed next to your posts and comments. Optional, can be changed later.",
         },
         password: {
             type: "password",
             placeholder: "Password",
+            required: true,
         },
         confirmPassword: {
             type: "password",
             placeholder: "Confirm password",
+            required: true,
         },
     } as const;
 
-    const [form, setForm] = useState<Record<RegisterFormKeys, string>>({
+    const [form, setForm] = useState<Record<RegisterFormNames, string>>({
         email: "",
         username: "",
         displayName: "",
@@ -51,18 +54,18 @@ export function Signup() {
     });
 
     const [errors, setErrors] = useState<
-        Partial<Record<RegisterFormKeys, string>>
+        Partial<Record<RegisterFormNames, string>>
     >({});
 
     const [isLoading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+        const { name, value } = e.currentTarget;
         setForm((prev) => ({ ...prev, [name]: value }));
         setErrors((prev) => {
-            delete prev[name as keyof RegisterForm];
+            delete prev[name as RegisterFormNames];
             return prev;
         });
     };
@@ -82,7 +85,9 @@ export function Signup() {
         event.preventDefault();
         setLoading(true);
 
-        const newErrors: Partial<RegisterForm> = { ...errors };
+        const newErrors: Partial<Partial<Record<RegisterFormNames, string>>> = {
+            ...errors,
+        };
 
         if (form.password !== form.confirmPassword) {
             newErrors.confirmPassword = "Passwords do not match.";
@@ -102,10 +107,7 @@ export function Signup() {
 
         setErrors(newErrors);
 
-        if (
-            Object.keys(newErrors).length !== 0 &&
-            Object.values(newErrors).some((e) => e !== null)
-        ) {
+        if (Object.keys(newErrors).length !== 0) {
             setLoading(false);
             return;
         }
@@ -115,7 +117,13 @@ export function Signup() {
                 "http://localhost:6660/api/auth/register",
                 {
                     method: "POST",
-                    body: JSON.stringify(trimValues()),
+                    body: JSON.stringify(
+                        Object.fromEntries(
+                            Object.entries(trimValues()).filter(
+                                ([_, value]) => value !== ""
+                            )
+                        )
+                    ),
                     headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
@@ -125,13 +133,14 @@ export function Signup() {
 
             if (response.ok) {
                 alert("Registered successfully! Now you can sign in.");
-                navigate("/login");
+                void navigate("/login");
             } else if (response.status === 400 || response.status === 422) {
-                const data = await response.json();
+                const data = (await response.json()) as ValidationErrorResponse;
                 setErrors({ [data.item]: data.error });
             } else {
-                const error = await response.json();
-                alert(`Something went wrong. Error message: ${error}`);
+                // const error = await response.json();
+                // alert(`Something went wrong. Error message: ${error}`);
+                alert("Something went wrong.");
             }
         } catch (error) {
             if (error instanceof TypeError) {
@@ -148,13 +157,13 @@ export function Signup() {
     return (
         <div className="m-auto p-4 max-w-2xl w-full">
             <h1 className="text-5xl text-center my-6 font-bold">
-                Create your account
+                Create a new account
             </h1>
             <Form2
                 items={registerForm}
                 values={form}
                 errors={errors}
-                onChange={handleChange}
+                onInput={handleInput}
                 onBlur={trimValues}
                 onSubmit={handleSubmit}
                 loading={isLoading}

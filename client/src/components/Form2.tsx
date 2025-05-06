@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import { clsx } from "clsx";
 
 import { FormItemInput } from "./FormItemInput";
@@ -8,15 +9,16 @@ export interface ItemInfo {
     placeholder?: string;
     autoComplete?: React.HTMLInputAutoCompleteAttribute;
     tip?: string;
+    required?: boolean;
 }
 
 interface Form2Props<T> {
     items: Record<keyof T, ItemInfo>;
     values: { [key in keyof T]: string };
     errors: { [key in keyof T]: string };
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onBlur: (e?: React.ChangeEvent<HTMLInputElement>) => void;
-    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    onInput: (e: React.FormEvent<HTMLInputElement>) => void;
+    onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
     loading: boolean;
     submitButtonText: string;
 }
@@ -25,22 +27,44 @@ export function Form2<T>({
     items,
     values,
     errors,
-    onChange,
+    onInput,
     onBlur,
     onSubmit,
     loading,
-    submitButtonText
+    submitButtonText,
 }: Form2Props<T>) {
+    const form = useRef<HTMLFormElement | null>(null);
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+
+    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+        if (!form.current?.checkValidity()) {
+            setButtonDisabled(true);
+        }
+
+        // disable button if there are any "unresolved" errors in the form
+        if (Object.values(errors).some((e) => e !== null)) {
+            setButtonDisabled(true);
+        }
+
+        onInput(e);
+    };
+
     return (
-        <form className="flex flex-col gap-5 text-xl " onSubmit={onSubmit}>
+        <form
+            ref={form}
+            className="flex flex-col gap-5 text-xl "
+            onSubmit={(e) => void onSubmit(e)}
+        >
             {(Object.keys(items) as (keyof T)[]).map((i) => (
                 <FormItemInput
+                    key={i as string}
                     name={i as string}
                     value={values[i]}
                     type={items[i].type}
+                    required={items[i].required}
                     placeholder={items[i].placeholder}
                     autoComplete={items[i].autoComplete}
-                    onChange={onChange}
+                    onInput={handleInput}
                     onBlur={onBlur}
                     errorMsg={errors[i]}
                     tip={items[i].tip}
@@ -48,15 +72,21 @@ export function Form2<T>({
             ))}
             <button
                 className={clsx(
-                    loading
-                        ? "py-4.75 bg-zinc-200/55"
-                        : "py-5.25 bg-zinc-200 hover:bg-zinc-200/85",
-                    "text-zinc-900 rounded-xl cursor-pointer h-80px focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
+                    buttonDisabled
+                        ? "opacity-55 cursor-not-allowed"
+                        : "hover:opacity-85 cursor-pointer",
+                    "py-5.25 text-zinc-900 bg-zinc-200 rounded-xl h-80px focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                 )}
                 type="submit"
-                disabled={loading}
+                disabled={loading || buttonDisabled}
             >
-                {loading ? <Spinner size="small" theme="light" /> : submitButtonText}
+                {loading ? (
+                    <div className="-m-0.5">
+                        <Spinner size="small" theme="light" />
+                    </div>
+                ) : (
+                    submitButtonText
+                )}
             </button>
         </form>
     );
