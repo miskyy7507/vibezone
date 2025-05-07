@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { Form2 } from "../components/Form2";
-import { ItemInfo } from "../components/Form2";
+import { TextForm } from "../components/TextForm";
+import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 import { ValidationErrorResponse } from "../interfaces/validationErrorResponse.interface";
 
 export function Signup() {
@@ -13,7 +13,7 @@ export function Signup() {
         | "password"
         | "confirmPassword";
 
-    const registerForm: Record<RegisterFormNames, ItemInfo> = {
+    const registerForm: Record<RegisterFormNames, TextFormItemOptions> = {
         email: {
             type: "text",
             placeholder: "Email",
@@ -159,7 +159,7 @@ export function Signup() {
             <h1 className="text-5xl text-center my-6 font-bold">
                 Create a new account
             </h1>
-            <Form2
+            <TextForm
                 items={registerForm}
                 values={form}
                 errors={errors}
@@ -168,7 +168,7 @@ export function Signup() {
                 onSubmit={handleSubmit}
                 loading={isLoading}
                 submitButtonText="Sign up"
-            ></Form2>
+            ></TextForm>
             <p className="text-sm mt-5">
                 Already have an account? <Link to={"/login"}>Sign in here</Link>
             </p>

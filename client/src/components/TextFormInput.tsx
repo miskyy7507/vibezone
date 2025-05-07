@@ -1,6 +1,6 @@
 import { clsx } from "clsx";
 
-interface FormItemInputParams {
+interface TextFormInputParams {
     name: string;
     value: string;
     type: React.HTMLInputTypeAttribute;
@@ -13,7 +13,7 @@ interface FormItemInputParams {
     onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-export function FormItemInput({
+export function TextFormInput({
     name,
     value,
     type,
@@ -24,7 +24,7 @@ export function FormItemInput({
     tip,
     onInput,
     onBlur,
-}: FormItemInputParams) {
+}: TextFormInputParams) {
     return (
         <div className="flex flex-col gap-1.5">
             <input

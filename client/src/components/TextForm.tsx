@@ -1,19 +1,12 @@
 import { useState, useRef } from "react";
 import { clsx } from "clsx";
 
-import { FormItemInput } from "./FormItemInput";
+import { TextFormInput } from "./TextFormInput";
 import { Spinner } from "./Spinner";
+import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 
-export interface ItemInfo {
-    type: React.HTMLInputTypeAttribute;
-    placeholder?: string;
-    autoComplete?: React.HTMLInputAutoCompleteAttribute;
-    tip?: string;
-    required?: boolean;
-}
-
-interface Form2Props<T> {
-    items: Record<keyof T, ItemInfo>;
+interface TextFormProps<T> {
+    items: Record<keyof T, TextFormItemOptions>;
     values: { [key in keyof T]: string };
     errors: Map<keyof T, string>;
     onInput: (e: React.FormEvent<HTMLInputElement>) => void;
@@ -23,7 +16,7 @@ interface Form2Props<T> {
     submitButtonText: string;
 }
 
-export function Form2<T>({
+export function TextForm<T>({
     items,
     values,
     errors,
@@ -32,7 +25,7 @@ export function Form2<T>({
     onSubmit,
     loading,
     submitButtonText,
-}: Form2Props<T>) {
+}: TextFormProps<T>) {
     const form = useRef<HTMLFormElement | null>(null);
     // const [buttonDisabled, setButtonDisabled] = useState(true);
     const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -65,7 +58,7 @@ export function Form2<T>({
             onSubmit={(e) => void onSubmit(e)}
         >
             {(Object.keys(items) as (keyof T)[]).map((i) => (
-                <FormItemInput
+                <TextFormInput
                     key={i as string}
                     name={i as string}
                     value={values[i]}
