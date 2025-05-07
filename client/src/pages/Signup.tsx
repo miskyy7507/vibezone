@@ -53,9 +53,11 @@ export function Signup() {
         confirmPassword: "",
     });
 
-    const [errors, setErrors] = useState<
-        Partial<Record<RegisterFormNames, string>>
-    >({});
+    // const [errors, setErrors] = useState<
+    //     Partial<Record<RegisterFormNames, string>>
+    // >({});
+
+    const [errors, setErrors] = useState(new Map<RegisterFormNames, string>());
 
     const [isLoading, setLoading] = useState(false);
 
@@ -65,8 +67,9 @@ export function Signup() {
         const { name, value } = e.currentTarget;
         setForm((prev) => ({ ...prev, [name]: value }));
         setErrors((prev) => {
-            delete prev[name as RegisterFormNames];
-            return prev;
+            const n = new Map(prev);
+            n.delete(name as RegisterFormNames);
+            return n;
         });
     };
 
@@ -85,29 +88,26 @@ export function Signup() {
         event.preventDefault();
         setLoading(true);
 
-        const newErrors: Partial<Partial<Record<RegisterFormNames, string>>> = {
-            ...errors,
-        };
+        const newErrors = new Map(errors);
 
         if (form.password !== form.confirmPassword) {
-            newErrors.confirmPassword = "Passwords do not match.";
+            newErrors.set("confirmPassword", "Passwords do not match.");
         }
 
         if (form.password.length < 8) {
-            newErrors.password = "Password must contain at least 8 characters.";
+            newErrors.set("password", "Password must contain at least 8 characters.");
         } else if (!/[A-Z]/.test(form.password)) {
-            newErrors.password =
-                "Password must contain at least one capital letter.";
+            newErrors.set("password", "Password must contain at least one capital letter.");
         } else if (!/\d/.test(form.password)) {
-            newErrors.password = "Password must contain at least one digit.";
+            newErrors.set("password", "Password must contain at least one digit.");
         } else if (!/[^a-zA-Z\d]/.test(form.password)) {
-            newErrors.password =
-                "Password must contain at least one special character.";
+            newErrors.set("password", "Password must contain at least one special character.");
         }
 
         setErrors(newErrors);
 
-        if (Object.keys(newErrors).length !== 0) {
+        // do not call server if client-side validation errors haven't been resolved yet
+        if (newErrors.size !== 0) {
             setLoading(false);
             return;
         }
@@ -136,7 +136,7 @@ export function Signup() {
                 void navigate("/login");
             } else if (response.status === 400 || response.status === 422) {
                 const data = (await response.json()) as ValidationErrorResponse;
-                setErrors({ [data.item]: data.error });
+                setErrors((prev) => new Map(prev).set(data.item as RegisterFormNames, data.error))
             } else {
                 // const error = await response.json();
                 // alert(`Something went wrong. Error message: ${error}`);

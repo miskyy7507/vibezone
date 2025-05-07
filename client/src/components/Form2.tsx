@@ -15,7 +15,7 @@ export interface ItemInfo {
 interface Form2Props<T> {
     items: Record<keyof T, ItemInfo>;
     values: { [key in keyof T]: string };
-    errors: { [key in keyof T]: string };
+    errors: Map<keyof T, string>;
     onInput: (e: React.FormEvent<HTMLInputElement>) => void;
     onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -34,20 +34,29 @@ export function Form2<T>({
     submitButtonText,
 }: Form2Props<T>) {
     const form = useRef<HTMLFormElement | null>(null);
-    const [buttonDisabled, setButtonDisabled] = useState(true);
+    // const [buttonDisabled, setButtonDisabled] = useState(true);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
-    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-        if (!form.current?.checkValidity()) {
-            setButtonDisabled(true);
-        }
+    // const [formState, setFormState] = useState<Record<keyof T, string>>(() => {
+    //     const initialState = {} as Record<keyof T, string>;
+    //     for (const key in items) {
+    //         initialState[key] = ""; // or maybe values[key] if you want to prefill
+    //     }
+    //     return initialState;
+    // });
 
-        // disable button if there are any "unresolved" errors in the form
-        if (Object.values(errors).some((e) => e !== null)) {
-            setButtonDisabled(true);
-        }
+    // const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    //     if (!form.current?.checkValidity()) {
+    //         setButtonDisabled(true);
+    //     }
 
-        onInput(e);
-    };
+    //     // disable button if there are any "unresolved" errors in the form
+    //     if (Object.values(errors).some((e) => e !== null)) {
+    //         setButtonDisabled(true);
+    //     }
+
+    //     onInput(e);
+    // };
 
     return (
         <form
@@ -64,9 +73,10 @@ export function Form2<T>({
                     required={items[i].required}
                     placeholder={items[i].placeholder}
                     autoComplete={items[i].autoComplete}
-                    onInput={handleInput}
+                    // onInput={handleInput}
+                    onInput={onInput}
                     onBlur={onBlur}
-                    errorMsg={errors[i]}
+                    errorMsg={errors.get(i)}
                     tip={items[i].tip}
                 />
             ))}
