@@ -27,29 +27,16 @@ export function TextForm<T>({
     submitButtonText,
 }: TextFormProps<T>) {
     const form = useRef<HTMLFormElement | null>(null);
-    // const [buttonDisabled, setButtonDisabled] = useState(true);
-    const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(true);
 
-    // const [formState, setFormState] = useState<Record<keyof T, string>>(() => {
-    //     const initialState = {} as Record<keyof T, string>;
-    //     for (const key in items) {
-    //         initialState[key] = ""; // or maybe values[key] if you want to prefill
-    //     }
-    //     return initialState;
-    // });
+    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+        setButtonDisabled(
+            !form.current?.checkValidity() ||
+            errors.size !== 0 // disable button if there are any "unresolved" errors in the form
+        );
 
-    // const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-    //     if (!form.current?.checkValidity()) {
-    //         setButtonDisabled(true);
-    //     }
-
-    //     // disable button if there are any "unresolved" errors in the form
-    //     if (Object.values(errors).some((e) => e !== null)) {
-    //         setButtonDisabled(true);
-    //     }
-
-    //     onInput(e);
-    // };
+        onInput(e);
+    };
 
     return (
         <form
@@ -66,8 +53,8 @@ export function TextForm<T>({
                     required={items[i].required}
                     placeholder={items[i].placeholder}
                     autoComplete={items[i].autoComplete}
-                    // onInput={handleInput}
-                    onInput={onInput}
+                    onInput={handleInput}
+                    // onInput={onInput}
                     onBlur={onBlur}
                     errorMsg={errors.get(i)}
                     tip={items[i].tip}

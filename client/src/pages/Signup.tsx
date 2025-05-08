@@ -19,6 +19,7 @@ export function Signup() {
             placeholder: "Email",
             autoComplete: "email",
             required: true,
+            trim: true,
         },
         username: {
             type: "text",
@@ -26,6 +27,7 @@ export function Signup() {
             autoComplete: "off",
             tip: "Your unique user identifier.",
             required: true,
+            trim: true,
         },
         displayName: {
             type: "text",

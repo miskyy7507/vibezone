@@ -5,4 +5,5 @@ export interface TextFormItemOptions {
     autoComplete?: React.HTMLInputAutoCompleteAttribute;
     tip?: string;
     required?: boolean;
+    trim?: boolean;
 }
