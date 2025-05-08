@@ -87,7 +87,8 @@ export class AuthController implements Controller {
                     .string()
                     .nonempty("Required")
                     .min(3, "Username must be at least 3 characters.")
-                    .max(32, "Username must not exceed 32 characters."),
+                    .max(32, "Username must not exceed 32 characters.")
+                    .regex(/^[a-zA-Z0-9._-]{3,32}$/, "Invalid characters. Allowed characters are: `a-zA-Z0-9._-`"),
                 displayName: z
                     .string()
                     .nonempty("Display name must not be empty.")
