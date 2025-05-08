@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { TextForm } from "../components/TextForm";
 import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 import { ValidationErrorResponse } from "../interfaces/validationErrorResponse.interface";
+import { useForm } from "../useForm";
 
 export function Signup() {
     type RegisterFormNames =
@@ -24,7 +24,7 @@ export function Signup() {
         username: {
             type: "text",
             placeholder: "Username",
-            autoComplete: "off",
+            autoComplete: "username",
             tip: "Your unique user identifier.",
             required: true,
             trim: true,
@@ -32,86 +32,73 @@ export function Signup() {
         displayName: {
             type: "text",
             placeholder: "Display name",
-            autoComplete: "off",
+            autoComplete: "nickname",
             tip: "Custom name displayed next to your posts and comments. Optional, can be changed later.",
         },
         password: {
             type: "password",
             placeholder: "Password",
+            autoComplete: "new-password",
             required: true,
         },
         confirmPassword: {
             type: "password",
             placeholder: "Confirm password",
+            autoComplete: "new-password",
             required: true,
         },
     } as const;
 
-    const [form, setForm] = useState<Record<RegisterFormNames, string>>({
-        email: "",
-        username: "",
-        displayName: "",
-        password: "",
-        confirmPassword: "",
-    });
-
-    // const [errors, setErrors] = useState<
-    //     Partial<Record<RegisterFormNames, string>>
-    // >({});
-
-    const [errors, setErrors] = useState(new Map<RegisterFormNames, string>());
-
-    const [isLoading, setLoading] = useState(false);
-
     const navigate = useNavigate();
 
-    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-        const { name, value } = e.currentTarget;
-        setForm((prev) => ({ ...prev, [name]: value }));
-        setErrors((prev) => {
-            const n = new Map(prev);
-            n.delete(name as RegisterFormNames);
-            return n;
-        });
-    };
-
-    const trimValues = () => {
-        const newForm = {
-            ...form,
-            email: form.email.trim(),
-            username: form.username.trim(),
-        };
-        setForm(newForm);
-
-        return newForm;
-    };
-
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setLoading(true);
-
-        const newErrors = new Map(errors);
+    const {
+        values,
+        errors,
+        loading,
+        buttonDisabled,
+        handleInput,
+        handleSubmit,
+        handleBlur,
+    } = useForm(registerForm, async (form, setErrors) => {
+        const newErrors = { ...errors };
 
         if (form.password !== form.confirmPassword) {
-            newErrors.set("confirmPassword", "Passwords do not match.");
+            newErrors.confirmPassword = "Passwords do not match.";
         }
 
+        const passwordErrors: string[] = [];
         if (form.password.length < 8) {
-            newErrors.set("password", "Password must contain at least 8 characters.");
-        } else if (!/[A-Z]/.test(form.password)) {
-            newErrors.set("password", "Password must contain at least one capital letter.");
-        } else if (!/\d/.test(form.password)) {
-            newErrors.set("password", "Password must contain at least one digit.");
-        } else if (!/[^a-zA-Z\d]/.test(form.password)) {
-            newErrors.set("password", "Password must contain at least one special character.");
+            // newErrors.password = "Password must contain at least 8 characters.";
+            passwordErrors.push("Password must contain at least 8 characters.");
         }
+        if (!/[A-Z]/.test(form.password)) {
+            passwordErrors.push("Password must contain at least one capital letter.");
+        }
+        if (!/\d/.test(form.password)) {
+            passwordErrors.push("Password must contain at least one digit.");
+        }
+        if (!/[^a-zA-Z\d]/.test(form.password)) {
+            passwordErrors.push("Password must contain at least one special character.");
+        }
+        if (passwordErrors.length !== 0) {
+            newErrors.password = passwordErrors.join("\n");
+        }
+
 
         setErrors(newErrors);
 
         // do not call server if client-side validation errors haven't been resolved yet
-        if (newErrors.size !== 0) {
-            setLoading(false);
+        if (Object.keys(newErrors).length !== 0) {
             return;
+        }
+
+        const reqBody: Record<string, string> = {
+            email: form.email,
+            username: form.username,
+            password: form.password,
+        };
+        if (form.displayName !== "") {
+            reqBody.displayName = form.displayName;
         }
 
         try {
@@ -119,13 +106,7 @@ export function Signup() {
                 "http://localhost:6660/api/auth/register",
                 {
                     method: "POST",
-                    body: JSON.stringify(
-                        Object.fromEntries(
-                            Object.entries(trimValues()).filter(
-                                ([_, value]) => value !== ""
-                            )
-                        )
-                    ),
+                    body: JSON.stringify(reqBody),
                     headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
@@ -138,11 +119,10 @@ export function Signup() {
                 void navigate("/login");
             } else if (response.status === 400 || response.status === 422) {
                 const data = (await response.json()) as ValidationErrorResponse;
-                setErrors((prev) => new Map(prev).set(data.item as RegisterFormNames, data.error))
+                setErrors((prev) => ({ ...prev, [data.item]: data.error }));
             } else {
-                // const error = await response.json();
-                // alert(`Something went wrong. Error message: ${error}`);
-                alert("Something went wrong.");
+                const error = await response.text();
+                alert(`Something went wrong. Error message: ${error}`);
             }
         } catch (error) {
             if (error instanceof TypeError) {
@@ -151,10 +131,8 @@ export function Signup() {
             } else {
                 throw error;
             }
-        } finally {
-            setLoading(false);
         }
-    };
+    });
 
     return (
         <div className="m-auto p-4 max-w-2xl w-full">
@@ -163,12 +141,13 @@ export function Signup() {
             </h1>
             <TextForm
                 items={registerForm}
-                values={form}
+                values={values}
                 errors={errors}
                 onInput={handleInput}
-                onBlur={trimValues}
+                onBlur={handleBlur}
                 onSubmit={handleSubmit}
-                loading={isLoading}
+                loading={loading}
+                buttonDisabled={buttonDisabled}
                 submitButtonText="Sign up"
             ></TextForm>
             <p className="text-sm mt-5">

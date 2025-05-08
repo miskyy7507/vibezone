@@ -7,7 +7,10 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
     { ignores: ["dist"] },
     {
-        extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked],
+        extends: [
+            js.configs.recommended,
+            ...tseslint.configs.strictTypeChecked,
+        ],
         files: ["**/*.{ts,tsx}"],
         languageOptions: {
             ecmaVersion: 2020,
@@ -29,7 +32,7 @@ export default tseslint.config(
             ],
             "@typescript-eslint/no-unused-vars": [
                 "error",
-                { argsIgnorePattern: "^_" },
+                { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
             ],
             "max-depth": ["error", { max: 4 }],
             eqeqeq: "error",

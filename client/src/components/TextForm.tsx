@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+// import { useState, useRef } from "react";
 import { clsx } from "clsx";
 
 import { TextFormInput } from "./TextFormInput";
@@ -8,11 +8,12 @@ import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 interface TextFormProps<T> {
     items: Record<keyof T, TextFormItemOptions>;
     values: { [key in keyof T]: string };
-    errors: Map<keyof T, string>;
+    errors: Partial<Record<keyof T, string>>;
     onInput: (e: React.FormEvent<HTMLInputElement>) => void;
     onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
     loading: boolean;
+    buttonDisabled: boolean;
     submitButtonText: string;
 }
 
@@ -24,25 +25,14 @@ export function TextForm<T>({
     onBlur,
     onSubmit,
     loading,
+    buttonDisabled,
     submitButtonText,
 }: TextFormProps<T>) {
-    const form = useRef<HTMLFormElement | null>(null);
-    const [buttonDisabled, setButtonDisabled] = useState(true);
-
-    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-        setButtonDisabled(
-            !form.current?.checkValidity() ||
-            errors.size !== 0 // disable button if there are any "unresolved" errors in the form
-        );
-
-        onInput(e);
-    };
-
     return (
         <form
-            ref={form}
             className="flex flex-col gap-5 text-xl "
             onSubmit={(e) => void onSubmit(e)}
+            noValidate
         >
             {(Object.keys(items) as (keyof T)[]).map((i) => (
                 <TextFormInput
@@ -53,10 +43,9 @@ export function TextForm<T>({
                     required={items[i].required}
                     placeholder={items[i].placeholder}
                     autoComplete={items[i].autoComplete}
-                    onInput={handleInput}
-                    // onInput={onInput}
+                    onInput={onInput}
                     onBlur={onBlur}
-                    errorMsg={errors.get(i)}
+                    errorMsg={errors[i]}
                     tip={items[i].tip}
                 />
             ))}

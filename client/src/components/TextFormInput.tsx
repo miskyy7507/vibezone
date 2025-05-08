@@ -7,7 +7,7 @@ interface TextFormInputParams {
     placeholder?: string;
     required?: boolean;
     autoComplete?: React.HTMLInputAutoCompleteAttribute;
-    errorMsg?: string | null;
+    errorMsg?: string;
     tip?: string;
     onInput: (e: React.FormEvent<HTMLInputElement>) => void;
     onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
@@ -30,7 +30,7 @@ export function TextFormInput({
             <input
                 className={clsx(
                     "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                    errorMsg && "outline-3 outline-red-500 outline-offset-1"
+                    (errorMsg !== undefined) && "outline-3 outline-red-500 outline-offset-1"
                 )}
                 name={name}
                 value={value}
@@ -42,7 +42,7 @@ export function TextFormInput({
                 onBlur={onBlur}
             />
             {errorMsg ? (
-                <p className="text-red-500 text-sm">{errorMsg}</p>
+                <p className="text-red-500 text-sm whitespace-pre-line">{errorMsg}</p>
             ) : (
                 tip && <p className="hidden peer-focus:block text-sm">{tip}</p>
             )}
