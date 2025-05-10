@@ -58,7 +58,7 @@ export class PostService {
                 ...post,
                 likeCount: post.usersWhoLiked.length,
                 usersWhoLiked: undefined,
-                isLikedByUser: (profileId !== undefined && post.usersWhoLiked.some(id => id === profileId)),
+                isLikedByUser: (profileId !== undefined && post.usersWhoLiked.some(id => id.equals(profileId))),
             };
 
             delete p.usersWhoLiked;
