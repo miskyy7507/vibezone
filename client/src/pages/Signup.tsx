@@ -72,25 +72,26 @@ export function Signup() {
             passwordErrors.push("Password must contain at least 8 characters.");
         }
         if (!/[A-Z]/.test(form.password)) {
-            passwordErrors.push("Password must contain at least one capital letter.");
+            passwordErrors.push(
+                "Password must contain at least one capital letter."
+            );
         }
         if (!/\d/.test(form.password)) {
             passwordErrors.push("Password must contain at least one digit.");
         }
         if (!/[^a-zA-Z\d]/.test(form.password)) {
-            passwordErrors.push("Password must contain at least one special character.");
+            passwordErrors.push(
+                "Password must contain at least one special character."
+            );
         }
         if (passwordErrors.length !== 0) {
             newErrors.password = passwordErrors.join("\n");
         }
 
-
         setErrors(newErrors);
 
         // do not call server if client-side validation errors haven't been resolved yet
-        if (Object.keys(newErrors).length !== 0) {
-            return;
-        }
+        if (Object.keys(newErrors).length !== 0) return;
 
         const reqBody: Record<string, string> = {
             email: form.email,
@@ -114,7 +115,7 @@ export function Signup() {
                 }
             );
 
-            if (response.ok) {
+            if (response.status === 200) {
                 alert("Registered successfully! Now you can sign in.");
                 void navigate("/login");
             } else if (response.status === 400 || response.status === 422) {
@@ -149,7 +150,7 @@ export function Signup() {
                 loading={loading}
                 buttonDisabled={buttonDisabled}
                 submitButtonText="Sign up"
-            ></TextForm>
+            />
             <p className="text-sm mt-5">
                 Already have an account? <Link to={"/login"}>Sign in here</Link>
             </p>
