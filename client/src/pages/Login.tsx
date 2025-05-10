@@ -3,8 +3,9 @@ import { useNavigate, Link } from "react-router";
 import { clsx } from "clsx";
 
 import { useAuth } from "../auth";
-import { placeholderUsers } from "../placeholderUsers";
 import { Spinner } from "../components/Spinner";
+
+import type { User } from "../interfaces/user.interface";
 
 export function Login() {
     // type LoginFormNames = "login" | "password";
@@ -13,34 +14,52 @@ export function Login() {
 
     const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-    const [username, setUsername] = useState("");
+    const [loginInput, setLoginInput] = useState("");
     const [password, setPassword] = useState("");
 
     const navigate = useNavigate();
 
-    const buttonDisabled = isLoggingIn || !username || !password;
+    const buttonDisabled = isLoggingIn || !loginInput || !password;
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         setIsLoggingIn(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            const userToLogIn = placeholderUsers.find(
-                (user) => user.username === username
+        try {
+            const response = await fetch(
+                "http://localhost:6660/api/auth/login",
+                {
+                    method: "POST",
+                    body: JSON.stringify({ login: loginInput, password }),
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include', // crucial for cookies
+                }
             );
 
-            if (!userToLogIn) {
+            if (response.status === 200) {
+                const user = (await response.json()) as User;
+                login(user);
+                await navigate("/");
+            } else if (response.status === 401) {
                 alert("Incorrect username or password.");
-                setIsLoggingIn(false);
-                return false;
+            } else {
+                console.error(await response.text());
+                alert(`Something went wrong when trying to log in.`);
             }
-
-            login(userToLogIn);
-
-            void navigate("/");
-        }, 2500);
+        } catch (error) {
+            if (error instanceof TypeError) {
+                console.error("Fetch failed.", error);
+                alert(`Something went wrong. Error message: ${error.message}`);
+            } else {
+                throw error;
+            }
+        } finally {
+            setIsLoggingIn(false);
+        }
     };
 
     return (
@@ -50,21 +69,25 @@ export function Login() {
             </h1>
             <form
                 className="flex flex-col gap-5 text-xl "
-                onSubmit={handleSubmit}
+                onSubmit={(e) => void handleSubmit(e)}
             >
                 <input
                     className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="text"
                     placeholder="Username"
-                    value={username}
-                    onChange={(e) => {setUsername(e.target.value)}}
+                    value={loginInput}
+                    onChange={(e) => {
+                        setLoginInput(e.target.value);
+                    }}
                 />
                 <input
                     className="border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1"
                     type="password"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => {setPassword(e.target.value)}}
+                    onChange={(e) => {
+                        setPassword(e.target.value);
+                    }}
                 />
                 <button
                     className={clsx(
@@ -77,15 +100,17 @@ export function Login() {
                     disabled={buttonDisabled}
                 >
                     {isLoggingIn ? (
-                        <div className="-m-0.5"><Spinner size="small" theme="light" /></div>
+                        <div className="-m-0.5">
+                            <Spinner size="small" theme="light" />
+                        </div>
                     ) : (
                         "Sign in"
                     )}
                 </button>
             </form>
             <p className="text-sm mt-5">
-                    Don't have an account yet?{" "}
-                    <Link to={"/signup"}>Sign up today!</Link>
+                Don't have an account yet?{" "}
+                <Link to={"/signup"}>Sign up today!</Link>
             </p>
         </div>
     );
