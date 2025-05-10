@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import cors from "cors";
 
 import { App } from "./app.js";
 import { config } from "./config.js";
@@ -37,10 +38,12 @@ const sessionOptions: session.SessionOptions = {
     cookie: {
         path: "/",
         httpOnly: true,
-        secure: false,
-        // maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
-        maxAge: 30 * 60 * 1000, // 30 minutes for testing
-        sameSite: "strict",
+        secure: config.nodeEnv === "production" ? true : false,
+        maxAge:
+            config.nodeEnv === "production"
+                ? 7 * 24 * 60 * 60 * 1000
+                : 30 * 60 * 1000, // 7 days in milliseconds (30 minutes for testing)
+        sameSite: config.nodeEnv === "production" ? "strict" : undefined,
     },
     name: "session",
     unset: "destroy",
@@ -49,34 +52,45 @@ const sessionOptions: session.SessionOptions = {
     saveUninitialized: false,
     store: MongoStore.create({
         client: mongoose.connection.getClient(),
-        ttl: 30 * 60, // 30 minutes for testing
+        ttl:
+            config.nodeEnv === "production"
+                ? 7 * 24 * 60 * 60 * 1000
+                : 30 * 60 * 1000,
     }),
 };
 
-/* TODO: do the proper configuration for production
- * when express.js is behind reverse proxy like nginx
- */
-// if (app.get('env') === 'production') {
-//     app.set('trust proxy', 1) // trust first proxy
-//     sess.cookie.secure = true // serve secure cookies
-// }
+const middleware = [
+    logger,
+    session(sessionOptions),
+    express.json(),
+    errorHandler,
+];
+
+if (config.nodeEnv === "development") {
+    middleware.unshift(
+        cors({
+            origin: "http://localhost:5173",
+            credentials: true,
+        })
+    );
+}
 
 // API server creation
 const app = new App(
-    [logger, session(sessionOptions), express.json(), errorHandler],
-    [new PostController(), new AuthController(), new ProfileController()]
+    middleware,
+    [new PostController(), new AuthController(), new ProfileController()],
+    { "trust proxy": 1 }
 );
 
 app.listen(config.serverPort);
 
 process.on("SIGINT", () => {
-    console.log("SIGINT received, winding up!")
+    console.log("SIGINT received, winding up!");
     app.closeServer(() => {
-        console.log("API server closed.")
-        mongoose.connection.destroy(true)
-            .catch(() => {
-                console.error("Failed to destroy database connection.")
-                process.exit(1);
-            });
+        console.log("API server closed.");
+        mongoose.connection.destroy(true).catch(() => {
+            console.error("Failed to destroy database connection.");
+            process.exit(1);
+        });
     });
 });

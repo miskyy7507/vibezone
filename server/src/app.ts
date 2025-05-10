@@ -3,16 +3,22 @@ import express from "express";
 import type { Server } from "http";
 import type { Application, RequestHandler, ErrorRequestHandler } from "express";
 import type { Controller } from "./interfaces/controller.interface.js";
+import { config } from "./config.js";
 
 export class App {
     private app: Application;
     private server: Server | null = null;
 
-    constructor(middleware: (RequestHandler | ErrorRequestHandler)[], controllers: Controller[]) {
+    constructor(middleware: (RequestHandler | ErrorRequestHandler)[], controllers: Controller[], settings: Record<string, unknown>) {
         this.app = express();
         this.initializeMiddleware(middleware);
         this.initializeControllers(controllers);
-        this.app.use('/uploads', express.static('/tmp/uploads'));
+        if (config.nodeEnv === "development") {
+            this.app.use('/uploads', express.static('/tmp/uploads'));
+        }
+        for (const [name, value] of Object.entries(settings)) {
+            this.app.set(name, value);
+        }
     }
 
     private initializeMiddleware(middleware: (RequestHandler | ErrorRequestHandler)[]) {
