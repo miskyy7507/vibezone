@@ -47,61 +47,57 @@ export function PostCard({ postData }: { postData: Post }) {
     };
 
     return (
-        <div className="flex flex-col p-4 border-b border-gray-200 max-w-2xl w-full">
-            <div className="flex flex-row">
-                <ProfilePicture
-                    user={author}
-                />
-                <div className="flex flex-col ml-2 ">
+        <div className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 ring-zinc-700">
+            <div className="flex flex-row gap-3">
+                <ProfilePicture user={author} />
+                <div className="flex flex-col">
                     <div className="flex flex-row space-x-2 items-center">
-                        <UserNamesDisplay
-                            user={author}
-                        />
+                        <UserNamesDisplay user={author} />
                     </div>
                     <span
                         className="text-gray-500"
-                        title={new Date(createdAt).toLocaleString(
-                            "en-GB",
-                            { dateStyle: "long", timeStyle: "short" }
-                        )}
+                        title={new Date(createdAt).toLocaleString("en-GB", {
+                            dateStyle: "long",
+                            timeStyle: "short",
+                        })}
                     >
                         {getRelativeTime(new Date(createdAt))}
                     </span>
                 </div>
             </div>
 
-            <div>
-                <p className="mt-2">{content}</p>
-                {imageUrl && (
+            <p className="px-0.5 pb-1">{content}</p>
+            {imageUrl && (
+                <div className="-mx-5 -mb-3.25 border-y border-zinc-700">
                     <img
                         src={imageUrl}
                         alt="Post image"
-                        className="rounded-xl border border-gray-200 mt-3 size-160 object-cover"
+                        className="object-cover"
                     />
-                )}
-                <div className="flex items-center space-x-2 mt-3 text-gray-500 text-sm">
-                    <button
-                        className="flex items-center space-x-1 hover:text-pink-500 transition"
-                        onClick={() => void likeButtonClick()}
-                        disabled={likeButtonDisabled}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill={isLiked ? "currentColor" : "none"}
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            className="w-5 h-5"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 15l7-7 7 7"
-                            />
-                        </svg>
-                        <span>{likeCount}</span>
-                    </button>
                 </div>
+            )}
+            <div className="-mx-5 px-4.5 pt-4 flex items-center text-gray-500 text-sm border-t border-zinc-700 ">
+                <button
+                    className="flex items-center space-x-1 hover:text-pink-500 transition"
+                    onClick={() => void likeButtonClick()}
+                    disabled={likeButtonDisabled}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill={isLiked ? "currentColor" : "none"}
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 15l7-7 7 7"
+                        />
+                    </svg>
+                    <span>{likeCount}</span>
+                </button>
             </div>
         </div>
     );

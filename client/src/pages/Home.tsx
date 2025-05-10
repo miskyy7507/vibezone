@@ -37,7 +37,7 @@ export function Home() {
       }, []);
 
     return (
-        <div className={"flex flex-col items-center"}>
+        <div className="flex flex-col items-center gap-6 m-6">
             {
                 posts ?
                 posts.map((post) => (
