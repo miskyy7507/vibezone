@@ -20,7 +20,7 @@ export class PostService {
         return await postModel.save();
     }
 
-    public async getById(id: Types.ObjectId) {
+    public async getById(id: Types.ObjectId, profileId?: Types.ObjectId) {
         const post: PopulatedPost | null = await PostModel.findById(id)
             .populate<{ author: IProfile & { _id: Types.ObjectId } }>(
                 "author",
@@ -37,13 +37,14 @@ export class PostService {
             ...post,
             likeCount: post.usersWhoLiked.length,
             usersWhoLiked: undefined,
+            isLikedByUser: (profileId !== undefined && post.usersWhoLiked.some(id => id === profileId)),
         };
         delete result.usersWhoLiked;
 
         return result;
     }
 
-    public async getAllPosts() {
+    public async getAllPosts(profileId?: Types.ObjectId) {
         const posts: PopulatedPost[] = await PostModel.find()
             .populate<{ author: IProfile & { _id: Types.ObjectId } }>(
                 "author",
@@ -57,6 +58,7 @@ export class PostService {
                 ...post,
                 likeCount: post.usersWhoLiked.length,
                 usersWhoLiked: undefined,
+                isLikedByUser: (profileId !== undefined && post.usersWhoLiked.some(id => id === profileId)),
             };
 
             delete p.usersWhoLiked;

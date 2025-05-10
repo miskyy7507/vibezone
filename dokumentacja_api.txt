@@ -71,6 +71,7 @@ response:
     createdAt: timestamp,
     updatedAt: timestamp,
     likeCount: number
+    isLikedByUser: boolean
 }[]
 
 ------------------------------------

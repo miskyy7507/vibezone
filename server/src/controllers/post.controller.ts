@@ -59,7 +59,10 @@ export class PostController implements Controller {
 
     private getAllPosts: RequestHandler = async (request, response, next) => {
         try {
-            const result = await this.postService.getAllPosts();
+            const profileId = request.session.profileId
+                ? new Types.ObjectId(request.session.profileId)
+                : undefined;
+            const result = await this.postService.getAllPosts(profileId);
             return response.status(200).json(result);
         } catch (error) {
             next(error);
