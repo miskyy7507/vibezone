@@ -1,21 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
+import { useAuth } from "../auth";
 
 export function PostCard({ postData }: { postData: Post }) {
-    const { _id, author, content, imageUrl, createdAt, updatedAt } = postData;
+    const { user } = useAuth();
 
-    const [isLiked, setIsLiked] = useState(postData.isLikedByUser);
+    const { _id, author, content, imageUrl, createdAt } = postData;
+
+    const [isLiked, setIsLiked] = useState(user !== null && postData.isLikedByUser);
     const [likeCount, setLikeCount] = useState(postData.likeCount);
+    const [likeButtonDisabled, setLikeButtonDisabled] = useState(user === null);
 
-    const likeButtonClick = () => {
+    useEffect(() => {
+        if (user === null) {
+            setIsLiked(false);
+            setLikeButtonDisabled(true);
+        }
+    }, [user]);
+
+    const likeButtonClick = async () => {
+        setLikeButtonDisabled(true);
+
         const toLike = !isLiked;
 
-        setIsLiked(toLike);
+        try {
+            await fetch(`http://localhost:6660/api/post/${_id}/like`, {
+                method: toLike ? "PUT" : "DELETE",
+                credentials: "include"
+            });
+            setIsLiked(toLike);
 
-        setLikeCount((count) => count + (toLike ? 1 : -1));
+            setLikeCount((count) => count + (toLike ? 1 : -1));
+        } catch (error) {
+            if (error instanceof TypeError) {
+                console.error("Fetch failed.", error);
+                alert(`Something went wrong: ${error.message}`);
+            } else {
+                throw error;
+            }
+        } finally {
+            setLikeButtonDisabled(false);
+        }
     };
 
     return (
@@ -31,7 +59,7 @@ export function PostCard({ postData }: { postData: Post }) {
                         />
                     </div>
                     <span
-                        className="text-gray-600"
+                        className="text-gray-500"
                         title={new Date(createdAt).toLocaleString(
                             "en-GB",
                             { dateStyle: "long", timeStyle: "short" }
@@ -54,7 +82,8 @@ export function PostCard({ postData }: { postData: Post }) {
                 <div className="flex items-center space-x-2 mt-3 text-gray-500 text-sm">
                     <button
                         className="flex items-center space-x-1 hover:text-pink-500 transition"
-                        onClick={likeButtonClick}
+                        onClick={() => void likeButtonClick()}
+                        disabled={likeButtonDisabled}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
