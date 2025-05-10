@@ -10,7 +10,7 @@ export function Home() {
             content: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. At unde ea iste!",
             isLikedByUser: false,
             likes: 0,
-            timestamp: new Date(Date.now()).toISOString()
+            timestamp: new Date(Date.now() - Math.floor(Math.random() * 10000)).toISOString(),
         },
         {
             id: "2",
@@ -20,7 +20,7 @@ export function Home() {
             imageUri: "https://travel.usnews.com/images/Maldives_beach1_Getty_levente_bodo.jpg",
             isLikedByUser: true,
             likes: 4,
-            timestamp: new Date(Date.now()).toISOString()
+            timestamp: new Date(Date.now() - Math.floor(Math.random() * 63072000000)).toISOString(),
         }
     ]
 

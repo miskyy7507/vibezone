@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
+import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
 
 export function PostCard({ postData }: { postData: Post }) {
@@ -31,8 +32,14 @@ export function PostCard({ postData }: { postData: Post }) {
                             displayName={postData.authorDisplayName}
                         />
                     </div>
-                    <span className="text-gray-600">
-                        {postData.timestamp}
+                    <span
+                        className="text-gray-600"
+                        title={new Date(postData.timestamp).toLocaleString(
+                            "en-GB",
+                            { dateStyle: "long", timeStyle: "short" }
+                        )}
+                    >
+                        {getRelativeTime(new Date(postData.timestamp))}
                     </span>
                 </div>
             </div>
