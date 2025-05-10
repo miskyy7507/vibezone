@@ -4,4 +4,5 @@ export interface User {
     displayName?: string;
     profilePictureUri?: string;
     aboutDesc?: string;
+    createdAt: string;
 }
