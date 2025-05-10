@@ -83,7 +83,6 @@ repsonse:
     400: Bad Request - zły format id
 
 ------------------------------------
-
 DELETE /api/post/:id
 Usuwa post o danym id. Tylko autor posta lub moderator może usunąć posta.
 session cookie required
@@ -91,6 +90,22 @@ repsonse:
     204: No content - pomyślnie usunięto post.
     404: Not found - nie ma posta o takim id
     403: Forbidden - brak uprawnień do usunięcia posta (moderator lub autor posta)
+
+------------------------------------
+PUT /api/post/:id/like
+Polubienie posta.
+session cookie required
+response:
+    204: No content - pomyślnie. Jeżeli post został już polubiony, to zapytanie nic nie robi.
+    401: Unauthorized - użytkownik nie jest zalogowany.
+
+------------------------------------
+DELETE /api/post/:id/like
+Usunięcie polubienia posta.
+session cookie required
+response:
+    204: No content - pomyślnie. Jeżeli post nie był wcześniej polubiony, to zapytanie nic nie robi.
+    401: Unauthorized - użytkownik nie jest zalogowany.
 
 ====================================
 

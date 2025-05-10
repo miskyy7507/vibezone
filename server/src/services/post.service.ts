@@ -72,4 +72,18 @@ export class PostService {
     public async removePostId(id: Types.ObjectId) {
         return await PostModel.findByIdAndDelete(id);
     }
+
+    public async likePost(id: Types.ObjectId, userId?: Types.ObjectId) {
+        if (!userId) {
+            return;
+        }
+        await PostModel.findByIdAndUpdate(id, { $addToSet: { usersWhoLiked: userId } });
+    }
+
+    public async unlikePost(id: Types.ObjectId, userId?: Types.ObjectId) {
+        if (!userId) {
+            return;
+        }
+        await PostModel.findByIdAndUpdate(id, { $pull: { usersWhoLiked: userId } });
+    }
 }

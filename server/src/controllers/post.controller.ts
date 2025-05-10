@@ -20,6 +20,9 @@ export class PostController implements Controller {
         this.router.post("/", auth, this.addPost);
 
         this.router.delete("/:id", auth, this.removePostById);
+
+        this.router.put("/:id/like", auth, this.likePost);
+        this.router.delete("/:id/like", auth, this.unlikePost);
     }
 
     private addPost: RequestHandler = async (request, response, next) => {
@@ -58,10 +61,11 @@ export class PostController implements Controller {
     };
 
     private getAllPosts: RequestHandler = async (request, response, next) => {
+        const profileId = request.session.profileId
+            ? new Types.ObjectId(request.session.profileId)
+            : undefined;
+
         try {
-            const profileId = request.session.profileId
-                ? new Types.ObjectId(request.session.profileId)
-                : undefined;
             const result = await this.postService.getAllPosts(profileId);
             return response.status(200).json(result);
         } catch (error) {
@@ -73,6 +77,10 @@ export class PostController implements Controller {
     private getPostById: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
+        const profileId = request.session.profileId
+            ? new Types.ObjectId(request.session.profileId)
+            : undefined;
+
         if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
             return response
                 .status(400)
@@ -81,7 +89,7 @@ export class PostController implements Controller {
 
         try {
             const result = await this.postService.getById(
-                new Types.ObjectId(id)
+                new Types.ObjectId(id), profileId
             );
             if (!result) {
                 return response.status(404).json({ error: "Not found" });
@@ -121,4 +129,38 @@ export class PostController implements Controller {
             return;
         }
     };
+
+    private likePost: RequestHandler = async (request, response, next) => {
+        const { id } = request.params;
+
+        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
+            return response
+                .status(400)
+                .json({ success: false, message: "Malformed id" });
+        }
+
+        await this.postService.likePost(
+            new Types.ObjectId(id),
+            new Types.ObjectId(request.session.profileId)
+        );
+
+        return response.status(204).send();
+    }
+
+    private unlikePost: RequestHandler = async (request, response, next) => {
+        const { id } = request.params;
+
+        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
+            return response
+                .status(400)
+                .json({ success: false, message: "Malformed id" });
+        }
+
+        await this.postService.unlikePost(
+            new Types.ObjectId(id),
+            new Types.ObjectId(request.session.profileId)
+        );
+
+        return response.status(204).send();
+    }
 }
