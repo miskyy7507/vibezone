@@ -45,6 +45,8 @@ export class AuthController implements Controller {
             return response.status(401).json({ error: "Unauthorized" });
         }
 
+        const profile = await this.profileService.getById(user.profileId);
+
         request.session.regenerate((err) => {
             if (err) next(err);
 
@@ -56,7 +58,7 @@ export class AuthController implements Controller {
                     next(err);
                     return;
                 }
-                response.status(200).send();
+                response.status(200).json(profile)
             });
         });
     };
