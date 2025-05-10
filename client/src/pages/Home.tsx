@@ -12,7 +12,10 @@ export function Home() {
         void (async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:6660/api/post/all"
+                    "http://localhost:6660/api/post/all", {
+                        method: "GET",
+                        credentials: "include"
+                    }
                 );
                 if (response.status !== 200) {
                     console.error(await response.text());
