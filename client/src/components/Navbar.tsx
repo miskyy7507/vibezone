@@ -7,7 +7,7 @@ export function Navbar() {
     const { user, logout } = useAuth();
 
     return (
-        <nav className="w-full bg-zinc-900/75 flex p-4 justify-between shadow-lg sticky top-0 backdrop-blur-sm">
+        <nav className="w-full bg-zinc-900/75 flex py-4 px-6 justify-between items-center shadow-lg sticky top-0 backdrop-blur-sm">
             <div className="flex justify-start flex-1 gap-x-4">Left</div>
             <div className="flex justify-center flex-1 gap-x-4">
                 <NavLink to="/" end>
@@ -18,12 +18,25 @@ export function Navbar() {
                 </NavLink>
             </div>
             <div className="flex justify-end flex-1 gap-x-4">
-                { user ? (
-                    <div onClick={logout}>
-                        <ProfilePicture uri={user.profilePictureUri} username={user.username} />
-                        <UserNamesDisplay username={user.username} displayName={user.displayName} />
+                {user ? (
+                    <div className="flex gap-x-4" onClick={logout}>
+                        <UserNamesDisplay
+                            username={user.username}
+                            displayName={user.displayName}
+                        />
+                        <div className="-m-[4px]">
+                            <ProfilePicture
+                                uri={user.profilePictureUri}
+                                username={user.username}
+                                size="small"
+                            />
+                        </div>
                     </div>
-                ) : <NavLink to="login" end>Sign in</NavLink>}
+                ) : (
+                    <NavLink to="login" end>
+                        Sign in
+                    </NavLink>
+                )}
             </div>
         </nav>
     );
