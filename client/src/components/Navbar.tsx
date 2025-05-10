@@ -21,13 +21,11 @@ export function Navbar() {
                 {user ? (
                     <div className="flex gap-x-4" onClick={logout}>
                         <UserNamesDisplay
-                            username={user.username}
-                            displayName={user.displayName}
+                            user={user}
                         />
                         <div className="-m-[4px]">
                             <ProfilePicture
-                                uri={user.profilePictureUri}
-                                username={user.username}
+                                user={user}
                                 size="small"
                             />
                         </div>
