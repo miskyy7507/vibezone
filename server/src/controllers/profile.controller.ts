@@ -18,6 +18,7 @@ export class ProfileController implements Controller {
     constructor() {
         this.router.get("/all", this.getAllProfiles);
         this.router.get("/:id", this.getProfile);
+        this.router.get("/", auth, this.getAuthenticatedProfile);
 
         this.router.patch("/update", auth, this.updateProfile);
 
@@ -62,6 +63,22 @@ export class ProfileController implements Controller {
             return;
         }
     };
+
+    private getAuthenticatedProfile: RequestHandler = async (request, response, next) => {
+        if (!request.session.profileId) {
+            return response.status(401).json({ error: "Unauthorized" });
+        }
+
+        try {
+            const profile = await this.profileService.getById(
+                new Types.ObjectId(request.session.profileId)
+            );
+            return response.status(200).json(profile);
+        } catch (error) {
+            next(error);
+            return;
+        }
+    }
 
     private updateProfile: RequestHandler = async (request, response, next) => {
         let validatedUpdate;

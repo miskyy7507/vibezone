@@ -9,7 +9,7 @@ body: JSON {
 response:
     400: Validation error
     401: Unauthorized - w przypadku kiedy niepoprawne dane zostaną wprowadzone (zły login/hasło)
-    200: OK - zwraca cookie
+    200: OK - zwraca cookie i dane profilu użytkownika
 
 ------------------------------------
 POST /api/auth/logout
@@ -115,6 +115,15 @@ repsonse:
     200: OK - zwraca publiczne dane użytkownika
     404: Not found - nie ma użytkownika o takim id
     400: Bad Request - zły format id
+
+------------------------------------
+
+GET /api/profile
+Zwraca dane zalogowanego użytkownika.
+session cookie required
+repsonse:
+    200: OK - zwraca publiczne dane użytkownika
+    401: Unauthorized
 
 ------------------------------------
 
