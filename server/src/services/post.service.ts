@@ -4,8 +4,9 @@ import type { Types } from "mongoose";
 import type { IPost } from "../interfaces/post.interface.js";
 import type { IProfile } from "../interfaces/profile.interface.js";
 
-type PopulatedPost = Omit<IPost, "authorId"> & {
-    authorId: Pick<
+type PopulatedPost = Omit<IPost, "author"> & {
+    _id: Types.ObjectId;
+    author: Pick<
         IProfile,
         "username" | "displayName" | "profilePictureUri"
     > & {
@@ -20,9 +21,9 @@ export class PostService {
     }
 
     public async getById(id: Types.ObjectId) {
-        const post = await PostModel.findById(id)
-            .populate<{ authorId: IProfile & { _id: Types.ObjectId } }>(
-                "authorId",
+        const post: PopulatedPost | null = await PostModel.findById(id)
+            .populate<{ author: IProfile & { _id: Types.ObjectId } }>(
+                "author",
                 "username displayName profilePictureUri"
             )
             .sort({ createdAt: -1 })
@@ -44,8 +45,8 @@ export class PostService {
 
     public async getAllPosts() {
         const posts: PopulatedPost[] = await PostModel.find()
-            .populate<{ authorId: IProfile & { _id: Types.ObjectId } }>(
-                "authorId",
+            .populate<{ author: IProfile & { _id: Types.ObjectId } }>(
+                "author",
                 "username displayName profilePictureUri"
             )
             .sort({ createdAt: -1 })

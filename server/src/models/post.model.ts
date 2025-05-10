@@ -6,7 +6,7 @@ export const PostModel = model<IPost>(
     "Post",
     new Schema<IPost>(
         {
-            authorId: {
+            author: {
                 type: Schema.Types.ObjectId,
                 ref: "Profile",
                 required: true,

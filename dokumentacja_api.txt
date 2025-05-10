@@ -60,7 +60,7 @@ response:
     200: OK - zwraca wszystkie posty
 {
     _id: ObjectId,
-    authorId: {
+    author: {
         _id: ObjectId,
         username: string,
         displayName?: string,
