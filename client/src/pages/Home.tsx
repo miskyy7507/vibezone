@@ -1,35 +1,45 @@
+import { useState, useEffect } from "react";
+
 import { PostCard } from "../components/PostCard";
+import { Spinner } from "../components/Spinner";
+
 import type { Post } from "../interfaces/post.interface";
 
 export function Home() {
-    const placeholderPosts: Array<Post> = [
-        {
-            id: "1",
-            authorDisplayName: "Arthur",
-            authorUsername: "arthuro",
-            content: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. At unde ea iste!",
-            isLikedByUser: false,
-            likes: 0,
-            timestamp: new Date(Date.now() - Math.floor(Math.random() * 10000)).toISOString(),
-        },
-        {
-            id: "2",
-            authorDisplayName: "/[Mm]iskyy?/g",
-            authorUsername: "miskyy_",
-            content: "Cool photo I took on the last day of vacation! 😎",
-            imageUri: "https://travel.usnews.com/images/Maldives_beach1_Getty_levente_bodo.jpg",
-            isLikedByUser: true,
-            likes: 4,
-            timestamp: new Date(Date.now() - Math.floor(Math.random() * 63072000000)).toISOString(),
-        }
-    ]
+    const [posts, setPosts] = useState<Post[] | null>(null);
+
+    useEffect(() => {
+        void (async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:6660/api/post/all"
+                );
+                if (response.status !== 200) {
+                    console.error(await response.text());
+                    alert(
+                        `An unexpected error occured when trying to fetch posts. The server responsed with code: ${response.status.toString()}`
+                    );
+                }
+                const data = (await response.json()) as Post[];
+                setPosts(data);
+            } catch (error) {
+                if (error instanceof TypeError) {
+                    console.error("Fetch failed.", error);
+                    alert(`Something went wrong: ${error.message}`);
+                } else {
+                    throw error;
+                }
+            }
+        })()
+      }, []);
 
     return (
-        <div className="flex flex-col items-center">
+        <div className={"flex flex-col items-center"}>
             {
-                placeholderPosts.map((post) => (
-                    <PostCard postData={post} key={post.id} />
-                ))
+                posts ?
+                posts.map((post) => (
+                    <PostCard postData={post} key={post._id} />
+                )) : <Spinner size="large" theme="dark"></Spinner>
             }
         </div>
     );

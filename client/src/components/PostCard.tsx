@@ -5,50 +5,48 @@ import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
 
 export function PostCard({ postData }: { postData: Post }) {
+    const { _id, author, content, imageUrl, createdAt, updatedAt } = postData;
+
     const [isLiked, setIsLiked] = useState(postData.isLikedByUser);
-    const [likes, setLikes] = useState(postData.likes);
+    const [likeCount, setLikeCount] = useState(postData.likeCount);
 
     const likeButtonClick = () => {
         const toLike = !isLiked;
 
         setIsLiked(toLike);
 
-        setLikes((count) => count + (toLike ? 1 : -1));
+        setLikeCount((count) => count + (toLike ? 1 : -1));
     };
 
     return (
         <div className="flex flex-col p-4 border-b border-gray-200 max-w-2xl w-full">
             <div className="flex flex-row">
                 <ProfilePicture
-                    uri={postData.authorPfpUri}
-                    username={
-                        postData.authorDisplayName ?? postData.authorUsername
-                    }
+                    user={author}
                 />
                 <div className="flex flex-col ml-2 ">
                     <div className="flex flex-row space-x-2 items-center">
                         <UserNamesDisplay
-                            username={postData.authorUsername}
-                            displayName={postData.authorDisplayName}
+                            user={author}
                         />
                     </div>
                     <span
                         className="text-gray-600"
-                        title={new Date(postData.timestamp).toLocaleString(
+                        title={new Date(createdAt).toLocaleString(
                             "en-GB",
                             { dateStyle: "long", timeStyle: "short" }
                         )}
                     >
-                        {getRelativeTime(new Date(postData.timestamp))}
+                        {getRelativeTime(new Date(createdAt))}
                     </span>
                 </div>
             </div>
 
             <div>
-                <p className="mt-2">{postData.content}</p>
-                {postData.imageUri && (
+                <p className="mt-2">{content}</p>
+                {imageUrl && (
                     <img
-                        src={postData.imageUri}
+                        src={imageUrl}
                         alt="Post image"
                         className="rounded-xl border border-gray-200 mt-3 size-160 object-cover"
                     />
@@ -72,7 +70,7 @@ export function PostCard({ postData }: { postData: Post }) {
                                 d="M5 15l7-7 7 7"
                             />
                         </svg>
-                        <span>{likes}</span>
+                        <span>{likeCount}</span>
                     </button>
                 </div>
             </div>
