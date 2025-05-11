@@ -62,10 +62,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (response.status === 200 || response.status === 401) {
                 setUser(null);
+                document.location.reload();
             } else {
                 const error = await response.text();
                 console.error(error);
-                alert(`Something went wrong when trying to log out user.`);
+                alert(`Something went wrong when trying to log out user. Try to reload the page.`);
             }
         } catch (error) {
             if (error instanceof TypeError) {

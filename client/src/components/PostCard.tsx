@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import { getRelativeTime } from "../utils/getRelativeDate";
@@ -6,13 +6,15 @@ import type { Post } from "../interfaces/post.interface";
 import { useAuth } from "../auth";
 
 export function PostCard({ postData }: { postData: Post }) {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
     const { _id, author, content, imageUrl, createdAt } = postData;
 
     const [isLiked, setIsLiked] = useState(user !== null && postData.isLikedByUser);
-    const [likeCount, setLikeCount] = useState(postData.likeCount);
+    const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
     const [likeButtonDisabled, setLikeButtonDisabled] = useState(user === null);
+
+    const postTextContent = useRef<HTMLParagraphElement | null>(null);
 
     useEffect(() => {
         if (user === null) {
@@ -21,16 +23,39 @@ export function PostCard({ postData }: { postData: Post }) {
         }
     }, [user]);
 
+    useEffect(() => {
+        // If post text content is short enough, we can show it with large font size. But only when post does not contain an image.
+
+        if (imageUrl || postTextContent.current === null) return;
+        const target = postTextContent.current;
+
+        // target.style.height = "36px"; // set to height of one line of large font size to force scroll overflow
+        target.style.fontSize = "30px";
+
+        if (target.scrollHeight > 72) {
+            // if large font size does not fit in two lines, switch to normal font size
+            target.style.fontSize = "16px";
+        } else {
+            target.style.fontSize = "30px";
+        }
+        // target.style.height = `${target.scrollHeight.toString()}px`;
+    }, [imageUrl, content]);
+
     const likeButtonClick = async () => {
         setLikeButtonDisabled(true);
 
         const toLike = !isLiked;
 
         try {
-            await fetch(`http://localhost:6660/api/post/${_id}/like`, {
+            const response = await fetch(`http://localhost:6660/api/post/${_id}/like`, {
                 method: toLike ? "PUT" : "DELETE",
                 credentials: "include"
             });
+            if (response.status === 401) {
+                alert("Your session has expired. Please log in back.");
+                logout();
+                return;
+            }
             setIsLiked(toLike);
 
             setLikeCount((count) => count + (toLike ? 1 : -1));
@@ -51,9 +76,7 @@ export function PostCard({ postData }: { postData: Post }) {
             <div className="flex flex-row gap-3">
                 <ProfilePicture user={author} />
                 <div className="flex flex-col">
-                    <div className="flex flex-row space-x-2 items-center">
-                        <UserNamesDisplay user={author} />
-                    </div>
+                    <UserNamesDisplay user={author} />
                     <span
                         className="text-gray-500"
                         title={new Date(createdAt).toLocaleString("en-GB", {
@@ -66,7 +89,7 @@ export function PostCard({ postData }: { postData: Post }) {
                 </div>
             </div>
 
-            <p className="px-0.5 pb-1">{content}</p>
+            <p ref={postTextContent} className="px-0.5 mb-1 text-base/[1.2] text-zinc-100 break-words whitespace-pre-line">{content}</p>
             {imageUrl && (
                 <div className="-mx-5 -mb-3.25 border-y border-zinc-700">
                     <img
