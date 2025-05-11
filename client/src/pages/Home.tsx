@@ -6,6 +6,7 @@ import { Spinner } from "../components/Spinner";
 import { PostCreate } from "../components/PostCreate";
 
 import type { Post } from "../interfaces/post.interface";
+import { handleFetchError } from "../utils/handleFetchError";
 
 export function Home() {
     const { user } = useAuth();
@@ -31,12 +32,7 @@ export function Home() {
                     );
                 }
             } catch (error) {
-                if (error instanceof TypeError) {
-                    console.error("Fetch failed.", error);
-                    alert(`Something went wrong: ${error.message}`);
-                } else {
-                    throw error;
-                }
+                handleFetchError(error);
             }
         })();
     }, []);

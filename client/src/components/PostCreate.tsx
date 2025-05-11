@@ -7,6 +7,7 @@ import { UserNamesDisplay } from "./UserNamesDisplay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { Post } from "../interfaces/post.interface";
+import { handleFetchError } from "../utils/handleFetchError";
 
 export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const MAX_POST_LENGTH = 150;
@@ -65,14 +66,12 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             } else if (response.status === 401) {
                 alert("Your session has expired. Please log in back.");
                 logout();
+            } else {
+                console.error(await response.text());
+                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
             }
         } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong: ${error.message}`);
-            } else {
-                throw error;
-            }
+            handleFetchError(error);
         }
     };
 

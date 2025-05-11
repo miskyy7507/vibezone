@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { UserListItem } from "../components/UserListItem";
 import { Spinner } from "../components/Spinner";
+import { handleFetchError } from "../utils/handleFetchError";
 
 import type { User } from "../interfaces/user.interface";
 
@@ -14,21 +15,16 @@ export function Users() {
                 method: "GET",
                 credentials: "include",
             });
-            if (response.status !== 200) {
-                console.error(await response.text());
-                alert(
-                    `An unexpected error occured when trying to get list of users. The server responsed with code: ${response.status.toString()}`
-                );
-            }
-            const data = (await response.json()) as User[];
+            if (response.status === 200) {
+                const data = (await response.json()) as User[];
             setUsers(data);
-        } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong: ${error.message}`);
             } else {
-                throw error;
+                const error = await response.text();
+                console.error(error);
+                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
             }
+        } catch (error) {
+            handleFetchError(error);
         }
     })();
     }, []);

@@ -4,6 +4,7 @@ import { TextForm } from "../components/TextForm";
 import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 import { ValidationErrorResponse } from "../interfaces/validationErrorResponse.interface";
 import { useForm } from "../useForm";
+import { handleFetchError } from "../utils/handleFetchError";
 
 export function Signup() {
     type RegisterFormNames =
@@ -123,15 +124,11 @@ export function Signup() {
                 setErrors((prev) => ({ ...prev, [data.item]: data.error }));
             } else {
                 const error = await response.text();
-                alert(`Something went wrong. Error message: ${error}`);
+                console.error(error);
+                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
             }
         } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong. Error message: ${error.message}`);
-            } else {
-                throw error;
-            }
+            handleFetchError(error);
         }
     });
 

@@ -4,6 +4,7 @@ import { UserNamesDisplay } from "./UserNamesDisplay";
 import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
 import { useAuth } from "../auth";
+import { handleFetchError } from "../utils/handleFetchError";
 
 export function PostCard({ postData }: { postData: Post }) {
     const { user, logout } = useAuth();
@@ -51,21 +52,20 @@ export function PostCard({ postData }: { postData: Post }) {
                 method: toLike ? "PUT" : "DELETE",
                 credentials: "include"
             });
-            if (response.status === 401) {
+            if (response.ok) {
+                setIsLiked(toLike);
+            }
+            else if (response.status === 401) {
                 alert("Your session has expired. Please log in back.");
                 logout();
-                return;
+            } else {
+                console.error(await response.text());
+                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
             }
-            setIsLiked(toLike);
 
             setLikeCount((count) => count + (toLike ? 1 : -1));
         } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong: ${error.message}`);
-            } else {
-                throw error;
-            }
+            handleFetchError(error);
         } finally {
             setLikeButtonDisabled(false);
         }

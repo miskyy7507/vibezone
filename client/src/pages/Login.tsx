@@ -6,6 +6,7 @@ import { useAuth } from "../auth";
 import { Spinner } from "../components/Spinner";
 
 import type { User } from "../interfaces/user.interface";
+import { handleFetchError } from "../utils/handleFetchError";
 
 export function Login() {
     // type LoginFormNames = "login" | "password";
@@ -51,12 +52,7 @@ export function Login() {
                 alert(`Something went wrong when trying to log in.`);
             }
         } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong. Error message: ${error.message}`);
-            } else {
-                throw error;
-            }
+            handleFetchError(error);
         } finally {
             setIsLoggingIn(false);
         }

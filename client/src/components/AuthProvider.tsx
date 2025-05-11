@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { AuthContext } from "../auth";
 
 import type { User } from "../interfaces/user.interface";
+import { handleFetchError } from "../utils/handleFetchError";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -20,17 +21,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } else if (response.status === 401) {
                 // not logged in, ignore
             } else {
-                const error = await response.text();
-                console.error(error);
+                console.error(await response.text());
                 alert(`Something went wrong when trying to retrieve logged in user information.`);
             }
         } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong: ${error.message}`);
-            } else {
-                throw error;
-            }
+            handleFetchError(error);
         }
     }, []);
 
@@ -64,17 +59,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(null);
                 document.location.reload();
             } else {
-                const error = await response.text();
-                console.error(error);
+                console.error(await response.text());
                 alert(`Something went wrong when trying to log out user. Try to reload the page.`);
             }
         } catch (error) {
-            if (error instanceof TypeError) {
-                console.error("Fetch failed.", error);
-                alert(`Something went wrong. Error message: ${error.message}`);
-            } else {
-                throw error;
-            }
+            handleFetchError(error);
         }
 
     };
