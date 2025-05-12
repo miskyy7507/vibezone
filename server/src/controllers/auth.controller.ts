@@ -29,7 +29,6 @@ export class AuthController implements Controller {
             }).parseAsync(request.body));
         } catch (error) {
             if (error instanceof z.ZodError) {
-                console.error("Validation error:", error);
                 return response.status(400).json({
                     error: error.errors[0]?.message,
                     item: error.errors[0]?.path.at(-1),
@@ -102,7 +101,6 @@ export class AuthController implements Controller {
             }).parseAsync(request.body);
         } catch (error) {
             if (error instanceof z.ZodError) {
-                // console.error("Validation error:", error);
                 return response.status(400).json({
                     error: error.errors[0]?.message,
                     item: error.errors[0]?.path.at(-1),
