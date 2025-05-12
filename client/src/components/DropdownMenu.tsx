@@ -30,7 +30,8 @@ const DropdownMenu = ({ anchorRef, onClose, children }: DropdownMenuProps) => {
     const rect = anchorRef.current?.getBoundingClientRect();
     const styles: React.CSSProperties | undefined = rect && {
         top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        left: rect.right + window.scrollX,
+        transform: "translateX(-100%)"
     };
 
     return (
@@ -38,7 +39,7 @@ const DropdownMenu = ({ anchorRef, onClose, children }: DropdownMenuProps) => {
             ref={menuRef}
             className={clsx(
                 rect ? "absolute" : "none",
-                "bg-zinc-800 border border-zinc-700 p-4 rounded-xl z-999"
+                "flex flex-col gap-4 bg-zinc-800 border border-zinc-700 p-4 rounded-xl z-999"
             )}
             style={styles}
         >

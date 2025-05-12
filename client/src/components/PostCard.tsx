@@ -8,14 +8,20 @@ import { handleFetchError } from "../utils/handleFetchError";
 import {
     faEllipsisVertical,
     faTrashCan,
-    faHeart
+    faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartHollow } from "@fortawesome/free-regular-svg-icons"
+import { faHeart as faHeartHollow } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DropdownMenu from "./DropdownMenu";
 import clsx from "clsx";
 
-export function PostCard({ postData, deletePostCb }: { postData: Post, deletePostCb: (id: string) => void }) {
+export function PostCard({
+    postData,
+    deletePostCb,
+}: {
+    postData: Post;
+    deletePostCb: (id: string) => void;
+}) {
     const { user, logout } = useAuth();
 
     const { _id, author, content, imageUrl, createdAt } = postData;
@@ -117,7 +123,7 @@ export function PostCard({ postData, deletePostCb }: { postData: Post, deletePos
         } catch (error) {
             handleFetchError(error);
         }
-    }
+    };
 
     return (
         <article className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 ring-zinc-700">
@@ -155,45 +161,52 @@ export function PostCard({ postData, deletePostCb }: { postData: Post, deletePos
             <div className="-mx-5 px-4.5 pt-4 flex items-center text-gray-500 text-sm border-t border-zinc-700 ">
                 <div className="flex flex-row flex-1 justify-start">
                     <button
-                        className={clsx(isLiked && "text-pink-500", "flex items-center space-x-1 hover:text-pink-500 transition")}
+                        className={clsx(
+                            isLiked && "text-pink-500",
+                            "flex items-center space-x-2 enabled:hover:text-pink-500 enabled:cursor-pointer transition"
+                        )}
                         onClick={() => void likeButtonClick()}
                         disabled={likeButtonDisabled}
                     >
-                        {isLiked ? <FontAwesomeIcon icon={faHeart} /> : <FontAwesomeIcon icon={faHeartHollow} /> }
+                        {isLiked ? (
+                            <FontAwesomeIcon icon={faHeart} />
+                        ) : (
+                            <FontAwesomeIcon icon={faHeartHollow} />
+                        )}
                         <span>{likeCount}</span>
                     </button>
                 </div>
                 <div className="flex flex-row flex-1 justify-end gap-3 items-center">
-                    {user && (<>
+                    {user && (
                         <button
                             className="w-[20px] cursor-pointer"
-                            onClick={() => {
+                            onMouseDown={() => {
                                 setMenuOpen((p) => !p);
                             }}
                             ref={dropdownBtnRef}
                         >
                             <FontAwesomeIcon icon={faEllipsisVertical} />
                         </button>
-                        {menuOpen && (
-                            <DropdownMenu
-                                anchorRef={dropdownBtnRef}
-                                onClose={() => {
+                    )}
+                    {menuOpen && (
+                        <DropdownMenu
+                            anchorRef={dropdownBtnRef}
+                            onClose={() => {
+                                setMenuOpen(false);
+                            }}
+                        >
+                            <button
+                                className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
+                                onMouseUp={() => {
+                                    void deletePost();
                                     setMenuOpen(false);
                                 }}
                             >
-                                <button
-                                    className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
-                                    onClick={() => {
-                                        void deletePost();
-                                        setMenuOpen(false);
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faTrashCan} />
-                                    <span>Delete</span>
-                                </button>
-                            </DropdownMenu>
-                        )}
-                    </>)}
+                                <FontAwesomeIcon icon={faTrashCan} />
+                                <span>Delete</span>
+                            </button>
+                        </DropdownMenu>
+                    )}
                 </div>
             </div>
         </article>
