@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import type { User } from "./interfaces/user.interface";
+import type { User } from "../interfaces/user.interface";
 
 
 interface AuthContextValue {

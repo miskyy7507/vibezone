@@ -3,7 +3,7 @@ import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
-import { useAuth } from "../auth";
+import { useAuth } from "../hooks/useAuth";
 import { handleFetchError } from "../utils/handleFetchError";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

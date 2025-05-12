@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { useAuth } from "../auth";
+import { useAuth } from "../hooks/useAuth";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 

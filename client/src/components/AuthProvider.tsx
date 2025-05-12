@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { AuthContext } from "../auth";
+import { AuthContext } from "../hooks/useAuth";
 
 import type { User } from "../interfaces/user.interface";
 import { handleFetchError } from "../utils/handleFetchError";

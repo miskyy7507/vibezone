@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { TextFormItemOptions } from "./interfaces/itemInfo.interface";
+import type { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 
 export function useForm<T extends Record<keyof T, TextFormItemOptions>>(
     formItems: T,

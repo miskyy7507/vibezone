@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { useAuth } from "../auth";
+import { useAuth } from "../hooks/useAuth";
 import { PostCard } from "../components/PostCard";
 import { Spinner } from "../components/Spinner";
 import { PostCreate } from "../components/PostCreate";

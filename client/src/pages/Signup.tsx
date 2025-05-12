@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { TextForm } from "../components/TextForm";
 import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 import { ValidationErrorResponse } from "../interfaces/validationErrorResponse.interface";
-import { useForm } from "../useForm";
+import { useForm } from "../hooks/useForm";
 import { handleFetchError } from "../utils/handleFetchError";
 
 export function Signup() {

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { clsx } from "clsx";
 
-import { useAuth } from "../auth";
+import { useAuth } from "../hooks/useAuth";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

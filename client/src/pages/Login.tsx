@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { clsx } from "clsx";
 
-import { useAuth } from "../auth";
+import { useAuth } from "../hooks/useAuth";
 import { Spinner } from "../components/Spinner";
 
 import type { User } from "../interfaces/user.interface";
