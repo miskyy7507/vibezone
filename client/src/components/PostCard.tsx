@@ -5,15 +5,23 @@ import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
 import { useAuth } from "../auth";
 import { handleFetchError } from "../utils/handleFetchError";
+import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DropdownMenu from "./DropdownMenu";
 
 export function PostCard({ postData }: { postData: Post }) {
     const { user, logout } = useAuth();
 
     const { _id, author, content, imageUrl, createdAt } = postData;
 
-    const [isLiked, setIsLiked] = useState(user !== null && postData.isLikedByUser);
+    const [isLiked, setIsLiked] = useState(
+        user !== null && postData.isLikedByUser
+    );
     const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
     const [likeButtonDisabled, setLikeButtonDisabled] = useState(user === null);
+
+    const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const postTextContent = useRef<HTMLParagraphElement | null>(null);
 
@@ -54,8 +62,7 @@ export function PostCard({ postData }: { postData: Post }) {
             });
             if (response.ok) {
                 setIsLiked(toLike);
-            }
-            else if (response.status === 401) {
+            } else if (response.status === 401) {
                 alert("Your session has expired. Please log in back.");
                 logout();
             } else {
@@ -89,7 +96,12 @@ export function PostCard({ postData }: { postData: Post }) {
                 </div>
             </div>
 
-            <p ref={postTextContent} className="px-0.5 mb-1 text-base/[1.2] text-zinc-100 break-words whitespace-pre-line">{content}</p>
+            <p
+                ref={postTextContent}
+                className="px-0.5 mb-1 text-base/[1.2] text-zinc-100 break-words whitespace-pre-line"
+            >
+                {content}
+            </p>
             {imageUrl && (
                 <div className="-mx-5 -mb-3.25 border-y border-zinc-700">
                     <img
@@ -100,27 +112,50 @@ export function PostCard({ postData }: { postData: Post }) {
                 </div>
             )}
             <div className="-mx-5 px-4.5 pt-4 flex items-center text-gray-500 text-sm border-t border-zinc-700 ">
-                <button
-                    className="flex items-center space-x-1 hover:text-pink-500 transition"
-                    onClick={() => void likeButtonClick()}
-                    disabled={likeButtonDisabled}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill={isLiked ? "currentColor" : "none"}
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        className="w-5 h-5"
+                <div className="flex flex-row flex-1 justify-start">
+                    <button
+                        className="flex items-center space-x-1 hover:text-pink-500 transition"
+                        onClick={() => void likeButtonClick()}
+                        disabled={likeButtonDisabled}
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 15l7-7 7 7"
-                        />
-                    </svg>
-                    <span>{likeCount}</span>
-                </button>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill={isLiked ? "currentColor" : "none"}
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-5 h-5"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 15l7-7 7 7"
+                            />
+                        </svg>
+                        <span>{likeCount}</span>
+                    </button>
+                </div>
+                <div className="flex flex-row flex-1 justify-end gap-3 items-center">
+                    <button
+                        className="w-[20px] cursor-pointer"
+                        onClick={() => {
+                            setMenuOpen(true);
+                        }}
+                        ref={dropdownBtnRef}
+                    >
+                        <FontAwesomeIcon icon={faEllipsisVertical} />
+                    </button>
+                    {menuOpen && (
+                        <DropdownMenu
+                            anchorRef={dropdownBtnRef}
+                            onClose={() => {
+                                setMenuOpen(false);
+                            }}
+                        >
+                            <div onClick={() => {}}>Delete</div>
+                        </DropdownMenu>
+                    )}
+                </div>
             </div>
         </div>
     );
