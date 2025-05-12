@@ -35,7 +35,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         target.style.height = "36px"; // set to height of one line of large font size to force scroll overflow
         target.style.fontSize = "30px";
 
-        if (target.scrollHeight > 72) {
+        if (target.scrollHeight > parseInt(getComputedStyle(target).lineHeight) * 2.5) {
             // if large font size does not fit in two lines, switch to normal font size
             target.style.fontSize = "16px";
         } else {
@@ -119,10 +119,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 </div>
 
                 <textarea
-                    className={clsx(
-                        "px-0.5 mb-1 text-3xl resize-none focus:outline-0",
-                        remainingChars / MAX_POST_LENGTH < 1 / 3 && "mb-4"
-                    )}
+                    className={"px-0.5 mb-2.5 text-3xl resize-none focus:outline-0"}
                     ref={textAreaRef}
                     placeholder="💭 What's vibin'?"
                     rows={1}
@@ -136,7 +133,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             remainingChars !== 0
                                 ? "text-zinc-400"
                                 : "text-red-400",
-                            "absolute bottom-0 right-0 text-sm"
+                            "absolute -bottom-2 right-0.5 text-sm"
                         )}
                     >
                         {remainingChars}

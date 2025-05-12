@@ -41,7 +41,7 @@ export function PostCard({ postData }: { postData: Post }) {
         // target.style.height = "36px"; // set to height of one line of large font size to force scroll overflow
         target.style.fontSize = "30px";
 
-        if (target.scrollHeight > 72) {
+        if (target.scrollHeight > parseInt(getComputedStyle(target).lineHeight) * 2.5) {
             // if large font size does not fit in two lines, switch to normal font size
             target.style.fontSize = "16px";
         } else {
