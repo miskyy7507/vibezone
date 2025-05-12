@@ -86,7 +86,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     return (
         <form
             className={clsx(
-                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 relative transition",
+                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 transition",
                 isFocused ? "ring-zinc-200" : "ring-zinc-700",
                 !isFocused && collapsed && "opacity-65"
             )}

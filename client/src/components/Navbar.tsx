@@ -7,7 +7,7 @@ export function Navbar() {
     const { user, logout } = useAuth();
 
     return (
-        <nav className="w-full bg-zinc-900/75 flex py-4 px-6 justify-between items-center shadow-lg sticky top-0 backdrop-blur-sm">
+        <nav className="w-full bg-zinc-900/75 flex py-4 px-6 justify-between items-center shadow-lg sticky top-0 backdrop-blur-sm z-1">
             <div className="flex justify-start flex-1 gap-x-4">Left</div>
             <div className="flex justify-center flex-1 gap-x-4">
                 <NavLink to="/" end>
