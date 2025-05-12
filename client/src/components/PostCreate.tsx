@@ -119,7 +119,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 </div>
 
                 <textarea
-                    className={"px-0.5 mb-2.5 text-3xl resize-none focus:outline-0"}
+                    className={clsx("px-0.5 text-3xl resize-none focus:outline-0", !collapsed && "mb-2.5")}
                     ref={textAreaRef}
                     placeholder="💭 What's vibin'?"
                     rows={1}
