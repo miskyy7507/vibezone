@@ -45,16 +45,18 @@ export function Home() {
                 return [post, ...prev];
             }
         });
-    }
+    };
 
     return (
-        <div className="flex flex-col items-center gap-6 m-6">
+        <main className="flex-1 flex flex-col items-center gap-6 m-6">
             {user && <PostCreate addPost={addNewPost} />}
             {posts ? (
                 posts.map((post) => <PostCard postData={post} key={post._id} />)
             ) : (
-                <Spinner size="large" theme="dark"></Spinner>
+                <div className="flex-1 flex items-center">
+                    <Spinner size="large" theme="dark"></Spinner>
+                </div>
             )}
-        </div>
+        </main>
     );
 }

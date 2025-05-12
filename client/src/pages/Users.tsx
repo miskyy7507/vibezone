@@ -30,12 +30,14 @@ export function Users() {
     }, []);
 
     return (
-        <div className="flex flex-col items-center">
+        <main className="flex-1 flex flex-col items-center">
             {users ? (
                 users.map((user) => <UserListItem user={user} key={user._id} />)
             ) : (
-                <Spinner size="large" theme="dark" />
+                <div className="flex-1 flex items-center">
+                    <Spinner size="large" theme="dark"></Spinner>
+                </div>
             )}
-        </div>
+        </main>
     );
 }

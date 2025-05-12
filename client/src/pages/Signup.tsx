@@ -133,7 +133,7 @@ export function Signup() {
     });
 
     return (
-        <div className="m-auto p-4 max-w-2xl w-full">
+        <main className="m-auto p-4 max-w-2xl w-full">
             <h1 className="text-5xl text-center my-6 font-bold">
                 Create a new account
             </h1>
@@ -151,6 +151,6 @@ export function Signup() {
             <p className="text-sm mt-5">
                 Already have an account? <Link to={"/login"}>Sign in here</Link>
             </p>
-        </div>
+        </main>
     );
 }
