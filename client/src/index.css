@@ -1,20 +1,8 @@
 @import "tailwindcss";
 
-/* :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-} */
-
-/* body {
-    display: flex;
-    place-items: center;
-} */
-
-/* #root {
-    margin: 0 auto;
-    text-align: center;
-} */
-
 @theme {
+    --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+
     @keyframes spinner-dash {
         0% {
             stroke-dasharray: 1, 84.823;
