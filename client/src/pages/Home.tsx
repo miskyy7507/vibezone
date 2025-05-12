@@ -47,11 +47,18 @@ export function Home() {
         });
     };
 
+    const deletePost = (id: string) => {
+        setPosts((prev) => {
+            if (!prev) return null;
+            return prev.filter((i) => i._id !== id);
+        })
+    }
+
     return (
         <main className="flex-1 flex flex-col items-center gap-6 m-6">
             {user && <PostCreate addPost={addNewPost} />}
             {posts ? (
-                posts.map((post) => <PostCard postData={post} key={post._id} />)
+                posts.map((post) => <PostCard postData={post} key={post._id} deletePostCb={deletePost} />)
             ) : (
                 <div className="flex-1 flex items-center">
                     <Spinner size="large" theme="dark"></Spinner>

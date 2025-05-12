@@ -5,11 +5,14 @@ import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
 import { useAuth } from "../hooks/useAuth";
 import { handleFetchError } from "../utils/handleFetchError";
-import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import {
+    faEllipsisVertical,
+    faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DropdownMenu from "./DropdownMenu";
 
-export function PostCard({ postData }: { postData: Post }) {
+export function PostCard({ postData, deletePostCb }: { postData: Post, deletePostCb: (id: string) => void }) {
     const { user, logout } = useAuth();
 
     const { _id, author, content, imageUrl, createdAt } = postData;
@@ -41,7 +44,10 @@ export function PostCard({ postData }: { postData: Post }) {
         // target.style.height = "36px"; // set to height of one line of large font size to force scroll overflow
         target.style.fontSize = "30px";
 
-        if (target.scrollHeight > parseInt(getComputedStyle(target).lineHeight) * 2.5) {
+        if (
+            target.scrollHeight >
+            parseInt(getComputedStyle(target).lineHeight) * 2.5
+        ) {
             // if large font size does not fit in two lines, switch to normal font size
             target.style.fontSize = "16px";
         } else {
@@ -56,21 +62,25 @@ export function PostCard({ postData }: { postData: Post }) {
         const toLike = !isLiked;
 
         try {
-            const response = await fetch(`http://localhost:6660/api/post/${_id}/like`, {
-                method: toLike ? "PUT" : "DELETE",
-                credentials: "include"
-            });
+            const response = await fetch(
+                `http://localhost:6660/api/post/${_id}/like`,
+                {
+                    method: toLike ? "PUT" : "DELETE",
+                    credentials: "include",
+                }
+            );
             if (response.ok) {
                 setIsLiked(toLike);
+                setLikeCount((count) => count + (toLike ? 1 : -1));
             } else if (response.status === 401) {
                 alert("Your session has expired. Please log in back.");
                 logout();
             } else {
                 console.error(await response.text());
-                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
+                alert(
+                    `Something went wrong when trying to do this action. Try to reload the page.`
+                );
             }
-
-            setLikeCount((count) => count + (toLike ? 1 : -1));
         } catch (error) {
             handleFetchError(error);
         } finally {
@@ -78,8 +88,36 @@ export function PostCard({ postData }: { postData: Post }) {
         }
     };
 
+    const deletePost = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:6660/api/post/${_id}`,
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                }
+            );
+            if (response.status === 204 || response.status === 404) {
+                deletePostCb(_id);
+            } else if (response.status === 401) {
+                alert("Your session has expired. Please log in back.");
+                logout();
+            } else if (response.status === 403) {
+                alert("You cannot delete this post.");
+                logout();
+            } else {
+                console.error(await response.text());
+                alert(
+                    `Something went wrong when trying to do this action. Try to reload the page.`
+                );
+            }
+        } catch (error) {
+            handleFetchError(error);
+        }
+    }
+
     return (
-        <div className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 ring-zinc-700">
+        <article className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 ring-zinc-700">
             <div className="flex flex-row gap-3">
                 <ProfilePicture user={author} />
                 <div className="flex flex-col">
@@ -136,27 +174,38 @@ export function PostCard({ postData }: { postData: Post }) {
                     </button>
                 </div>
                 <div className="flex flex-row flex-1 justify-end gap-3 items-center">
-                    <button
-                        className="w-[20px] cursor-pointer"
-                        onClick={() => {
-                            setMenuOpen(true);
-                        }}
-                        ref={dropdownBtnRef}
-                    >
-                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                    </button>
-                    {menuOpen && (
-                        <DropdownMenu
-                            anchorRef={dropdownBtnRef}
-                            onClose={() => {
-                                setMenuOpen(false);
+                    {user && (<>
+                        <button
+                            className="w-[20px] cursor-pointer"
+                            onClick={() => {
+                                setMenuOpen((p) => !p);
                             }}
+                            ref={dropdownBtnRef}
                         >
-                            <div onClick={() => {}}>Delete</div>
-                        </DropdownMenu>
-                    )}
+                            <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </button>
+                        {menuOpen && (
+                            <DropdownMenu
+                                anchorRef={dropdownBtnRef}
+                                onClose={() => {
+                                    setMenuOpen(false);
+                                }}
+                            >
+                                <button
+                                    className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
+                                    onClick={() => {
+                                        void deletePost();
+                                        setMenuOpen(false);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                    <span>Delete</span>
+                                </button>
+                            </DropdownMenu>
+                        )}
+                    </>)}
                 </div>
             </div>
-        </div>
+        </article>
     );
 }
