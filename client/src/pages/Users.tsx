@@ -30,7 +30,7 @@ export function Users() {
     }, []);
 
     return (
-        <main className="flex-1 flex flex-col items-center">
+        <main className="flex-1 flex flex-col items-center gap-6 m-6">
             {users ? (
                 users.map((user) => <UserListItem user={user} key={user._id} />)
             ) : (

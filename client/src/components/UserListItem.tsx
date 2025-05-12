@@ -4,8 +4,9 @@ import type { User } from "../interfaces/user.interface";
 import { useAuth } from "../hooks/useAuth";
 import DropdownMenu from "./DropdownMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisVertical, faUserSlash, faBan } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisVertical, faUserSlash, faHammer } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router";
 
 export function UserListItem({ user }: { user: User }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -13,8 +14,14 @@ export function UserListItem({ user }: { user: User }) {
 
     const { user: authedUser } = useAuth();
 
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        void navigate(`/user/${user._id}`)
+    }
+
     return (
-        <div className="flex flex-row gap-3 p-4 border-b border-gray-200 max-w-2xl w-full">
+        <article className="flex flex-row gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700 hover:shadow-2xl hover:cursor-pointer transition-shadow" onClick={handleClick}>
             <ProfilePicture user={user} />
             <div className="flex flex-1 flex-col justify-center">
                 <div className="flex flex-row space-x-2 items-center">
@@ -28,7 +35,8 @@ export function UserListItem({ user }: { user: User }) {
                 {authedUser && (
                     <button
                         className="w-[20px] cursor-pointer"
-                        onMouseDown={() => {
+                        onClick={(e) => {
+                            e.stopPropagation();
                             setMenuOpen((p) => !p);
                         }}
                         ref={dropdownBtnRef}
@@ -37,7 +45,8 @@ export function UserListItem({ user }: { user: User }) {
                     </button>
                 )}
                 {menuOpen && (
-                    <DropdownMenu
+                    <div onClick={(e) => {e.stopPropagation()}}>
+                        <DropdownMenu
                         anchorRef={dropdownBtnRef}
                         onClose={() => {
                             setMenuOpen(false);
@@ -45,16 +54,18 @@ export function UserListItem({ user }: { user: User }) {
                     >
                         <button
                             className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
-                            onMouseUp={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 setMenuOpen(false);
                             }}
                         >
-                            <FontAwesomeIcon icon={faBan} />
+                            <FontAwesomeIcon icon={faHammer} />
                             <span>Ban user</span>
                         </button>
                         <button
                             className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
-                            onMouseUp={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 setMenuOpen(false);
                             }}
                         >
@@ -62,8 +73,9 @@ export function UserListItem({ user }: { user: User }) {
                             <span>Purge user</span>
                         </button>
                     </DropdownMenu>
+                    </div>
                 )}
             </div>
-        </div>
+        </article>
     );
 }

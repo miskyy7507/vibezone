@@ -180,7 +180,8 @@ export function PostCard({
                     {user && (
                         <button
                             className="w-[20px] cursor-pointer"
-                            onMouseDown={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 setMenuOpen((p) => !p);
                             }}
                             ref={dropdownBtnRef}
@@ -197,7 +198,8 @@ export function PostCard({
                         >
                             <button
                                 className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
-                                onMouseUp={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                     void deletePost();
                                     setMenuOpen(false);
                                 }}
