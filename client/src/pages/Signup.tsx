@@ -133,7 +133,7 @@ export function Signup() {
     });
 
     return (
-        <main className="m-auto p-4 max-w-2xl w-full">
+        <main className="m-auto p-4 pb-16 max-w-2xl w-full">
             <h1 className="text-5xl text-center my-6 font-bold">
                 Create a new account
             </h1>
