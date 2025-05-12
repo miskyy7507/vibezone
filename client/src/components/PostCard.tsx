@@ -14,6 +14,7 @@ import { faHeart as faHeartHollow } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DropdownMenu from "./DropdownMenu";
 import clsx from "clsx";
+import { DropdownItem } from "./DropdownItem";
 
 export function PostCard({
     postData,
@@ -196,17 +197,15 @@ export function PostCard({
                                 setMenuOpen(false);
                             }}
                         >
-                            <button
-                                className="flex flex-row gap-2 items-center cursor-pointer text-red-400"
-                                onClick={(e) => {
-                                    e.stopPropagation();
+                            <DropdownItem
+                                text="Delete"
+                                icon={faTrashCan}
+                                onClick={() => {
                                     void deletePost();
                                     setMenuOpen(false);
                                 }}
-                            >
-                                <FontAwesomeIcon icon={faTrashCan} />
-                                <span>Delete</span>
-                            </button>
+                                danger
+                            />
                         </DropdownMenu>
                     )}
                 </div>

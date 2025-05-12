@@ -1,6 +1,4 @@
 import { useEffect, useRef } from "react";
-import { clsx } from "clsx";
-
 interface DropdownMenuProps {
     anchorRef: React.RefObject<HTMLElement | null>;
     onClose: () => void;
@@ -29,19 +27,20 @@ const DropdownMenu = ({ anchorRef, onClose, children }: DropdownMenuProps) => {
 
     const rect = anchorRef.current?.getBoundingClientRect();
     const styles: React.CSSProperties | undefined = rect && {
+        position: "absolute",
         top: rect.bottom + window.scrollY,
         left: rect.right + window.scrollX,
-        transform: "translateX(-100%)"
+        transform: "translateX(-100%)",
     };
 
     return (
         <div
             ref={menuRef}
-            className={clsx(
-                rect ? "absolute" : "none",
-                "flex flex-col gap-4 bg-zinc-800 border border-zinc-700 p-4 rounded-xl z-999"
-            )}
+            className={"flex flex-col gap-4 bg-zinc-800 border border-zinc-700 p-4 rounded-xl z-999"}
             style={styles}
+            onClick={(e) => {
+                e.stopPropagation();
+            }}
         >
             {children}
         </div>
