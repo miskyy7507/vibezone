@@ -8,9 +8,12 @@ import { handleFetchError } from "../utils/handleFetchError";
 import {
     faEllipsisVertical,
     faTrashCan,
+    faHeart
 } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartHollow } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DropdownMenu from "./DropdownMenu";
+import clsx from "clsx";
 
 export function PostCard({ postData, deletePostCb }: { postData: Post, deletePostCb: (id: string) => void }) {
     const { user, logout } = useAuth();
@@ -152,24 +155,11 @@ export function PostCard({ postData, deletePostCb }: { postData: Post, deletePos
             <div className="-mx-5 px-4.5 pt-4 flex items-center text-gray-500 text-sm border-t border-zinc-700 ">
                 <div className="flex flex-row flex-1 justify-start">
                     <button
-                        className="flex items-center space-x-1 hover:text-pink-500 transition"
+                        className={clsx(isLiked && "text-pink-500", "flex items-center space-x-1 hover:text-pink-500 transition")}
                         onClick={() => void likeButtonClick()}
                         disabled={likeButtonDisabled}
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill={isLiked ? "currentColor" : "none"}
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            className="w-5 h-5"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 15l7-7 7 7"
-                            />
-                        </svg>
+                        {isLiked ? <FontAwesomeIcon icon={faHeart} /> : <FontAwesomeIcon icon={faHeartHollow} /> }
                         <span>{likeCount}</span>
                     </button>
                 </div>
