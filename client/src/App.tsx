@@ -18,7 +18,7 @@ function App() {
                 <Route path="users" element={<Users />} />
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} />
-                <Route path="/user/:userId" element={<UserPage />} />
+                <Route path="user/:userId" element={<UserPage />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </AuthProvider>

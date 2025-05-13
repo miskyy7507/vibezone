@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DropdownMenu from "./DropdownMenu";
 import clsx from "clsx";
 import { DropdownItem } from "./DropdownItem";
+import { Link } from "react-router";
 
 export function PostCard({
     postData,
@@ -128,9 +129,13 @@ export function PostCard({
     return (
         <article className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 ring-zinc-700">
             <div className="flex flex-row gap-3">
-                <ProfilePicture user={author} />
+                <Link to={`user/${author._id}`}>
+                    <ProfilePicture user={author} />
+                </Link>
                 <div className="flex flex-col">
-                    <UserNamesDisplay user={author} />
+                    <Link to={`user/${author._id}`}>
+                        <UserNamesDisplay user={author} />
+                    </Link>
                     <span
                         className="text-gray-500"
                         title={new Date(createdAt).toLocaleString("en-GB", {
@@ -152,7 +157,7 @@ export function PostCard({
             {imageUrl && (
                 <div className="-mx-5 -mb-3.25 border-y border-zinc-700">
                     <img
-                        src={imageUrl}
+                        src={`http://localhost:6660/uploads/${imageUrl}`}
                         alt="Post image"
                         className="object-cover"
                     />

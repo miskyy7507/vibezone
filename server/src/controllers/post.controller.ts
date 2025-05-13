@@ -40,7 +40,7 @@ export class PostController implements Controller {
                             150,
                             "Post content cannot be more than 150 characters in length."
                         ),
-                    imageUrl: z.string().url("Invalid image URL").optional(),
+                    imageUrl: z.string().optional(),
                 })
                 .parseAsync(request.body);
 
@@ -120,7 +120,7 @@ export class PostController implements Controller {
             if (!postToDelete) {
                 return response.status(404).json({ error: "Not found" });
             }
-            if (postToDelete.author._id.toHexString() !== request.session.profileId || request.session.role !== "moderator") {
+            if (postToDelete.author._id.toHexString() !== request.session.profileId && request.session.role !== "moderator") {
                 return response.status(403).json({ error: "Forbidden" })
             }
 

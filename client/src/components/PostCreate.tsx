@@ -5,7 +5,12 @@ import { useAuth } from "../hooks/useAuth";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import {
+    faTrashCan,
+    faPaperPlane,
+    faImage,
+    faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { Post } from "../interfaces/post.interface";
 import { handleFetchError } from "../utils/handleFetchError";
 
@@ -16,7 +21,9 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const [content, setContent] = useState("");
     const [collapsed, setCollapsed] = useState(true);
     const [remainingChars, setRemainingChars] = useState(MAX_POST_LENGTH);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const { user, logout } = useAuth();
 
@@ -44,11 +51,61 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         target.style.height = `${target.scrollHeight.toString()}px`;
     };
 
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedImage(e.target.files[0]);
+            setCollapsed(false);
+        }
+    };
+
+    const removeSelectedImage = () => {
+        setSelectedImage(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Clear the file input
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        let imageUrl: string | null = null;
+
+        if (selectedImage) {
+            const formData = new FormData();
+            formData.append("image", selectedImage);
+
+            try {
+                const imageUploadResponse = await fetch(
+                    "http://localhost:6660/api/post/image",
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        body: formData,
+                    }
+                );
+
+                if (imageUploadResponse.status === 200) {
+                    const imageData = await imageUploadResponse.json() as {"imageUrl": string};
+                    imageUrl = imageData.imageUrl;
+                } else if (imageUploadResponse.status === 401) {
+                    alert("Your session has expired. Please log in back.");
+                    logout();
+                    return;
+                } else {
+                    console.error(await imageUploadResponse.text());
+                    alert(
+                        `Something went wrong when trying to upload the image. Try to reload the page.`
+                    );
+                    return;
+                }
+            } catch (error) {
+                handleFetchError(error);
+                return;
+            }
+        }
+
         try {
-            const response = await fetch("http://localhost:6660/api/post", {
+            const postResponse = await fetch("http://localhost:6660/api/post", {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -56,19 +113,23 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    content
+                    content,
+                    imageUrl,
                 }),
             });
-            if (response.status === 200) {
-                const newPost = (await response.json()) as Post;
+
+            if (postResponse.status === 200) {
+                const newPost = (await postResponse.json()) as Post;
                 addPost(newPost);
                 resetForm();
-            } else if (response.status === 401) {
+            } else if (postResponse.status === 401) {
                 alert("Your session has expired. Please log in back.");
                 logout();
             } else {
-                console.error(await response.text());
-                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
+                console.error(await postResponse.text());
+                alert(
+                    `Something went wrong when trying to do this action. Try to reload the page.`
+                );
             }
         } catch (error) {
             handleFetchError(error);
@@ -79,7 +140,11 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         setIsFocused(false);
         setCollapsed(true);
         setContent("");
-    }
+        setSelectedImage(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Clear the file input
+        }
+    };
 
     if (!user) return;
 
@@ -90,7 +155,9 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 isFocused ? "ring-zinc-200" : "ring-zinc-700",
                 !isFocused && collapsed && "opacity-65"
             )}
-            onSubmit={(e) => {void handleSubmit(e)}}
+            onSubmit={(e) => {
+                void handleSubmit(e);
+            }}
         >
             <div
                 className={clsx(
@@ -119,7 +186,10 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 </div>
 
                 <textarea
-                    className={clsx("px-0.5 text-3xl resize-none focus:outline-0", !collapsed && "mb-2.5")}
+                    className={clsx(
+                        "px-0.5 text-3xl resize-none focus:outline-0",
+                        !collapsed && "mb-2.5"
+                    )}
                     ref={textAreaRef}
                     placeholder="💭 What's vibin'?"
                     rows={1}
@@ -141,30 +211,65 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 )}
             </div>
             {!collapsed && (
-                <div className="-mx-5 px-4.5 pt-4 flex flex-row items-center border-t border-zinc-700 ">
-                    <div className="flex flex-row flex-1 justify-start"></div>
-                    <div className="flex flex-row flex-1 justify-end gap-3 items-center">
-                        <button
-                            type="reset"
-                            className="text-zinc-200 cursor-pointer px-1 my-2 hover:text-red-400 transition"
-                            title="Discard"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                resetForm();
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={!content}
-                            className="flex items-center space-x-2 bg-zinc-200 text-zinc-900 rounded-full px-4 py-2 disabled:opacity-60 enabled:cursor-pointer transition"
-                        >
-                            <FontAwesomeIcon icon={faPaperPlane} />
-                            <span>Send</span>
-                        </button>
+                <>
+                    {selectedImage && (
+                        <div className="relative w-full h-48 rounded-md overflow-hidden">
+                            <img
+                                src={URL.createObjectURL(selectedImage)}
+                                alt="Selected preview"
+                                className="object-cover w-full h-full"
+                            />
+                            <button
+                                type="button"
+                                onClick={removeSelectedImage}
+                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                                title="Remove image"
+                            >
+                                <FontAwesomeIcon icon={faXmark} />
+                            </button>
+                        </div>
+                    )}
+                    <div className="-mx-5 px-4.5 pt-4 flex flex-row items-center border-t border-zinc-700 ">
+                        <div className="flex flex-row flex-1 justify-start">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                ref={fileInputRef}
+                                className="hidden"
+                                onChange={handleImageSelect}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="text-zinc-200 cursor-pointer px-1 my-2 hover:text-zinc-400 transition"
+                                title="Upload image"
+                            >
+                                <FontAwesomeIcon icon={faImage} />
+                            </button>
+                        </div>
+                        <div className="flex flex-row flex-1 justify-end gap-3 items-center">
+                            <button
+                                type="reset"
+                                className="text-zinc-200 cursor-pointer px-1 my-2 hover:text-red-400 transition"
+                                title="Discard"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    resetForm();
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faTrashCan} />
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={!content && !selectedImage}
+                                className="flex items-center space-x-2 bg-zinc-200 text-zinc-900 rounded-full px-4 py-2 disabled:opacity-60 enabled:cursor-pointer transition"
+                            >
+                                <FontAwesomeIcon icon={faPaperPlane} />
+                                <span>Send</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </>
             )}
         </form>
     );
