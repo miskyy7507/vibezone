@@ -97,6 +97,8 @@ export function PostCard({
     };
 
     const deletePost = async () => {
+        const confirmation = confirm(`WARNING!\nAre you sure you want to delete this post? This cannot be undone!`);
+        if (!confirmation) return;
         try {
             const response = await fetch(
                 `http://localhost:6660/api/post/${_id}`,
@@ -112,7 +114,6 @@ export function PostCard({
                 logout();
             } else if (response.status === 403) {
                 alert("You cannot delete this post.");
-                logout();
             } else {
                 console.error(await response.text());
                 alert(
