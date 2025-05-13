@@ -6,23 +6,58 @@ import DropdownMenu from "./DropdownMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faEllipsisVertical,
-    faUserSlash,
+    // faUserSlash,
     faHammer,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { DropdownItem } from "./DropdownItem";
+import { handleFetchError } from "../utils/handleFetchError";
 
-export function UserListItem({ user }: { user: User }) {
+export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb: (id: string) => void; }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
 
-    const { user: authedUser } = useAuth();
+    const { user: authedUser, logout } = useAuth();
 
     const navigate = useNavigate();
 
     const handleClick = () => {
         void navigate(`/user/${user._id}`);
+    };
+
+    const banUser = async () => {
+        const confirmation = confirm(
+            `WARNING!\nAre you sure you want to ban user ${user.username}? This will delete their profile and posts. This cannot be undone!`
+        );
+        if (!confirmation) return;
+
+        const _id = user._id // user ID to ban;
+
+        try {
+            const response = await fetch(
+                `http://localhost:6660/api/profile/${_id}/ban`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                }
+            );
+            if (response.status === 204 || response.status === 404) {
+                deleteUserCb(_id);
+            } else if (response.status === 401) {
+                alert("Your session has expired. Please log in back.");
+                logout();
+            } else if (response.status === 403) {
+                alert("Permission denied - you cannot ban users.");
+            } else {
+                console.error(await response.text());
+                alert(
+                    `Something went wrong when trying to do this action. Try to reload the page.`
+                );
+            }
+        } catch (error) {
+            handleFetchError(error);
+        }
     };
 
     return (
@@ -52,21 +87,20 @@ export function UserListItem({ user }: { user: User }) {
                         <FontAwesomeIcon icon={faEllipsisVertical} />
                     </button>
                 )}
-                {menuOpen && <DropdownMenu
-                    anchorRef={dropdownBtnRef}
-                    onClose={() => {
-                        setMenuOpen(false);
-                    }}
-                >
-                    <DropdownItem
-                        text="Ban user"
-                        icon={faHammer}
-                        onClick={() => {
-                            console.log("test");
+                {menuOpen && (
+                    <DropdownMenu
+                        anchorRef={dropdownBtnRef}
+                        onClose={() => {
+                            setMenuOpen(false);
                         }}
-                        danger
-                    />
-                    <hr className="text-zinc-700" />
+                    >
+                        <DropdownItem
+                            text="Ban user"
+                            icon={faHammer}
+                            onClick={() => {setMenuOpen(false); void banUser()}}
+                            danger
+                        />
+                        {/* <hr className="text-zinc-700" />
                     <DropdownItem
                         text="Purge user"
                         icon={faUserSlash}
@@ -74,8 +108,9 @@ export function UserListItem({ user }: { user: User }) {
                             console.log("test");
                         }}
                         danger
-                    />
-                </DropdownMenu>}
+                    /> */}
+                    </DropdownMenu>
+                )}
             </div>
         </article>
     );

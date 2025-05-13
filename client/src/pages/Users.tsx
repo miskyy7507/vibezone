@@ -29,10 +29,23 @@ export function Users() {
     })();
     }, []);
 
+    const deleteUserFromList = (id: string) => {
+        setUsers((prev) => {
+            if (!prev) return null;
+            return prev.filter((i) => i._id !== id);
+        })
+    }
+
     return (
         <main className="flex-1 flex flex-col items-center gap-6 m-6">
             {users ? (
-                users.map((user) => <UserListItem user={user} key={user._id} />)
+                users.map((user) => (
+                    <UserListItem
+                        user={user}
+                        key={user._id}
+                        deleteUserCb={deleteUserFromList}
+                    />
+                ))
             ) : (
                 <div className="flex-1 flex items-center">
                     <Spinner size="large" theme="dark"></Spinner>
