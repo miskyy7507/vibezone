@@ -17,7 +17,11 @@ type PopulatedPost = Omit<IPost, "author"> & {
 export class PostService {
     public async createPost(post: IPost) {
         const postModel = new PostModel(post);
-        return await postModel.save();
+        const newPost = await postModel.save();
+        return await newPost.populate(
+                "author",
+                "username displayName profilePictureUri"
+            );
     }
 
     public async getById(id: Types.ObjectId, profileId?: Types.ObjectId) {

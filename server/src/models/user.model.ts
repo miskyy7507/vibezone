@@ -12,13 +12,6 @@ export const UserModel = model<IUser>(
                 required: true,
                 immutable: true,
             },
-            username: {
-                type: String,
-                required: true,
-                unique: true,
-                match: /^[a-zA-Z0-9._-]{3,32}$/,
-                immutable: true
-            },
             role: {
                 type: String,
                 enum: ["moderator", "user"],

@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { UserModel } from "../models/user.model.js";
+import { ProfileModel } from "../models/profile.model.js";
 
 import type { Types } from "mongoose";
 import type { IUser } from "../interfaces/user.interface.js";
@@ -7,7 +8,6 @@ import type { IUser } from "../interfaces/user.interface.js";
 export class UserService {
     public async createUser(
         profileId: Types.ObjectId,
-        username: string,
         role: IUser["role"],
         clearPassword: string
     ) {
@@ -15,7 +15,6 @@ export class UserService {
 
         const dataModel = new UserModel<Omit<IUser, "active">>({
             profileId,
-            username,
             role,
             passwordHash,
         });
@@ -37,7 +36,10 @@ export class UserService {
     }
 
     public async getByLogin(login: string) {
-        return await UserModel.findOne({ username: login });
+        const profile = await ProfileModel.findOne({ username: login });
+        if (!profile) return null;
+
+        return await UserModel.findOne({ profileId: profile._id });
     }
 
     private async getById(id: Types.ObjectId) {

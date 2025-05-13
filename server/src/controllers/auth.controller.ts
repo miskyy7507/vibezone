@@ -117,7 +117,6 @@ export class AuthController implements Controller {
             );
             await this.userService.createUser(
                 profile._id,
-                validatedForm.username,
                 "user",
                 validatedForm.password
             );
