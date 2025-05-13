@@ -109,25 +109,19 @@ export class AuthController implements Controller {
                 item: "username"
             });
         }
-        // if (await this.profileService.getByUsername(validatedForm.username)) {
-        //     return response.status(422).json({
-        //         error: "This username is not available. Use another one.",
-        //         item: "username"
-        //     });
-        // }
 
         try {
             const profile = await this.profileService.createProfile(
                 validatedForm.username,
                 validatedForm.displayName
             );
-            const user = await this.userService.createUser(
+            await this.userService.createUser(
                 profile._id,
+                validatedForm.username,
                 "user",
-                true,
                 validatedForm.password
             );
-            response.status(200).json(user);
+            response.status(200).json(profile);
         } catch (error) {
             next(error);
             return;

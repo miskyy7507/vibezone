@@ -7,16 +7,16 @@ import type { IUser } from "../interfaces/user.interface.js";
 export class UserService {
     public async createUser(
         profileId: Types.ObjectId,
+        username: string,
         role: IUser["role"],
-        active: boolean,
         clearPassword: string
     ) {
         const passwordHash = await this.hashPassword(clearPassword);
 
-        const dataModel = new UserModel<IUser>({
+        const dataModel = new UserModel<Omit<IUser, "active">>({
             profileId,
+            username,
             role,
-            active,
             passwordHash,
         });
         return await dataModel.save();

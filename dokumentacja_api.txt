@@ -29,7 +29,7 @@ body: {
     password: string
 }
 response:
-    200: OK - użytkownik zajerestrowany
+    200: OK - użytkownik zajerestrowany i zwraca dane użytkownika
     400: Validation error
     422: użytkownik już istnieje - username
     e.g.
