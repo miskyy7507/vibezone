@@ -24,7 +24,6 @@ response:
 POST /api/auth/register
 Rejestruje nowego użytkownika.
 body: {
-    email: string
     username: string
     displayName: string
     password: string
@@ -32,7 +31,7 @@ body: {
 response:
     200: OK - użytkownik zajerestrowany
     400: Validation error
-    422: użytkownik już istnieje - email lub username
+    422: użytkownik już istnieje - username
     e.g.
 {
     "error": "Username already in use",

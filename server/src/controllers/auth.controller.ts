@@ -77,13 +77,6 @@ export class AuthController implements Controller {
 
         try {
             validatedForm = await z.object({
-                email: z
-                    .string()
-                    .nonempty("Required")
-                    .regex(
-                        /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
-                        "Invalid email address."
-                    ),
                 username: z
                     .string()
                     .nonempty("Required")
@@ -110,18 +103,18 @@ export class AuthController implements Controller {
             return;
         }
 
-        if (await this.userService.getByLogin(validatedForm.email)) {
+        if (await this.userService.getByLogin(validatedForm.username)) {
             return response.status(422).json({
-                error: "This email is already in use.",
-                item: "email"
-            });
-        }
-        if (await this.profileService.getByUsername(validatedForm.username)) {
-            return response.status(422).json({
-                error: "This username is not available. Use another one.",
+                error: "This username is already in use. Please choose another one.",
                 item: "username"
             });
         }
+        // if (await this.profileService.getByUsername(validatedForm.username)) {
+        //     return response.status(422).json({
+        //         error: "This username is not available. Use another one.",
+        //         item: "username"
+        //     });
+        // }
 
         try {
             const profile = await this.profileService.createProfile(
@@ -130,7 +123,6 @@ export class AuthController implements Controller {
             );
             const user = await this.userService.createUser(
                 profile._id,
-                validatedForm.email,
                 "user",
                 true,
                 validatedForm.password

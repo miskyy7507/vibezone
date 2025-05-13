@@ -8,20 +8,12 @@ import { handleFetchError } from "../utils/handleFetchError";
 
 export function Signup() {
     type RegisterFormNames =
-        | "email"
         | "username"
         | "displayName"
         | "password"
         | "confirmPassword";
 
     const registerForm: Record<RegisterFormNames, TextFormItemOptions> = {
-        email: {
-            type: "text",
-            placeholder: "Email",
-            autoComplete: "email",
-            required: true,
-            trim: true,
-        },
         username: {
             type: "text",
             placeholder: "Username",
@@ -95,7 +87,6 @@ export function Signup() {
         if (Object.keys(newErrors).length !== 0) return;
 
         const reqBody: Record<string, string> = {
-            email: form.email,
             username: form.username,
             password: form.password,
         };

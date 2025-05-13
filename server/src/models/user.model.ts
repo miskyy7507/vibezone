@@ -12,12 +12,6 @@ export const UserModel = model<IUser>(
                 required: true,
                 immutable: true,
             },
-            email: {
-                type: String,
-                required: true,
-                unique: true,
-                match: /^(?!\.)(?!.*\.\.)[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}(?<!\.)@(?:(?!-)[a-z0-9-]{1,63}(?<!-)(?:\.|$))+(?<!\.)$/i,
-            },
             role: {
                 type: String,
                 enum: ["moderator", "user"],

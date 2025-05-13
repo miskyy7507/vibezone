@@ -7,7 +7,6 @@ import type { IUser } from "../interfaces/user.interface.js";
 export class UserService {
     public async createUser(
         profileId: Types.ObjectId,
-        email: string,
         role: IUser["role"],
         active: boolean,
         clearPassword: string
@@ -16,7 +15,6 @@ export class UserService {
 
         const dataModel = new UserModel<IUser>({
             profileId,
-            email,
             role,
             active,
             passwordHash,
@@ -26,7 +24,7 @@ export class UserService {
 
     public async authenticate(login: string, clearPassword: string) {
         const user = await this.getByLogin(login);
-        const truncatedPassword = clearPassword.substring(0, 2048);
+        const truncatedPassword = clearPassword.substring(0, 2049);
 
         if (
             !user ||
@@ -39,7 +37,7 @@ export class UserService {
     }
 
     public async getByLogin(login: string) {
-        return await UserModel.findOne({ email: login });
+        return await UserModel.findOne({ username: login });
     }
 
     private async getById(id: Types.ObjectId) {
