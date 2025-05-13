@@ -10,6 +10,7 @@ import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
 import { PostService } from "../services/post.service.js";
 import { UserService } from "../services/user.service.js";
+import { verifyImageRealType } from "../middleware/verifyImageRealType.js";
 
 export class ProfileController implements Controller {
     public path = "/api/profile";
@@ -30,6 +31,7 @@ export class ProfileController implements Controller {
             "/picture",
             auth,
             imageUpload.single("picture"),
+            verifyImageRealType,
             this.uploadPicture
         );
         this.router.delete("/picture", auth, this.removePicture);
@@ -130,7 +132,7 @@ export class ProfileController implements Controller {
         try {
             const file = request.file;
             if (!file) {
-                return response.status(400).json({ message: 'No file uploaded' });
+                return response.status(400).json({ error: "No proper file uploaded." });
             }
 
             const result = await this.profileService.updateProfile(

@@ -1,19 +1,17 @@
 import multer from "multer";
 import crypto from "crypto";
+import { config } from "../config.js";
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
-        callback(null, "/tmp/uploads");
+        callback(null, config.imageUploadPath);
     },
     filename: (request, file, callback) => {
         const uniqueSuffix = crypto.randomBytes(16).toString("hex");
-        const fileExtension = file.mimetype.split("/")[1];
-        // callback(null, file.fieldname + '-' + uniqueSuffix)
+
         callback(
             null,
-            `${file.fieldname}-${uniqueSuffix}${
-                fileExtension ? "." + fileExtension : ""
-            }`
+            `${file.fieldname}-${uniqueSuffix}`
         );
     },
 });
@@ -23,9 +21,9 @@ export const imageUpload = multer({
     fileFilter: (request, file, callback) => {
         if (!file.mimetype.match(/^image\/(jpeg|png|gif|webp)$/)) {
             callback(null, false);
-        } else {
-            callback(null, true);
+            return;
         }
+        callback(null, true);
     },
     limits: {
         fileSize: 10 * 1024 * 1024, // 10 MB

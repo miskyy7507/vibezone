@@ -14,7 +14,7 @@ export class App {
         this.initializeMiddleware(middleware);
         this.initializeControllers(controllers);
         if (config.nodeEnv === "development") {
-            this.app.use('/uploads', express.static('/tmp/uploads'));
+            this.app.use('/uploads', express.static(config.imageUploadPath));
         }
         for (const [name, value] of Object.entries(settings)) {
             this.app.set(name, value);

@@ -106,6 +106,17 @@ response:
     204: No content - pomyślnie. Jeżeli post nie był wcześniej polubiony, to zapytanie nic nie robi.
     401: Unauthorized - użytkownik nie jest zalogowany.
 
+------------------------------------
+POST /api/post/image
+Wysłanie zdjęcia do wykorzystania w poście.
+session cookie required
+body: multipart/form-data - image: <zdjęcie>
+response:
+response:
+    200: OK {imageUrl: string}
+    400: Bad request (kiedy żadne zdjęcie nie znajdzie się w requestcie)
+    401: Unauthorized
+
 ====================================
 
 GET /api/profile/all

@@ -6,6 +6,8 @@ import { z } from "zod";
 
 import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
+import { imageUpload } from "../middleware/imageUpload.js";
+import { verifyImageRealType } from "../middleware/verifyImageRealType.js";
 
 export class PostController implements Controller {
     public path = "/api/post";
@@ -23,6 +25,8 @@ export class PostController implements Controller {
 
         this.router.put("/:id/like", auth, this.likePost);
         this.router.delete("/:id/like", auth, this.unlikePost);
+
+        this.router.post("/image", auth, imageUpload.single("image"), verifyImageRealType, this.uploadImage);
     }
 
     private addPost: RequestHandler = async (request, response, next) => {
@@ -161,5 +165,11 @@ export class PostController implements Controller {
         );
 
         return response.status(204).send();
+    }
+
+    private uploadImage: RequestHandler = (request, response, next) => {
+        return response.status(200).json({
+            "imageUrl": request.file?.filename
+        });
     }
 }
