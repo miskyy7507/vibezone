@@ -51,7 +51,6 @@ export function PostCard({
         if (imageUrl || postTextContent.current === null) return;
         const target = postTextContent.current;
 
-        // target.style.height = "36px"; // set to height of one line of large font size to force scroll overflow
         target.style.fontSize = "30px";
 
         if (
@@ -63,7 +62,6 @@ export function PostCard({
         } else {
             target.style.fontSize = "30px";
         }
-        // target.style.height = `${target.scrollHeight.toString()}px`;
     }, [imageUrl, content]);
 
     const likeButtonClick = async () => {
