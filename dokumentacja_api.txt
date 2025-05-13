@@ -181,3 +181,15 @@ session cookie required
 response:
     204: ok
     401: Unauthorized
+
+------------------------------------
+
+POST /api/profile/:id/ban
+Zbanuj użytkownika.
+session cookie and moderator role required
+
+response:
+    204: ok
+    404: użytkownik nie znaleziony
+    403: Forbidden - użytkownik nie ma moda
+    401: Unauthorized - niezalogowany

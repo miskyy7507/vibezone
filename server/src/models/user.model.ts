@@ -20,7 +20,7 @@ export const UserModel = model<IUser>(
             },
             role: {
                 type: String,
-                enum: ["admin", "moderator", "user"],
+                enum: ["moderator", "user"],
                 default: "user",
                 required: true,
             },

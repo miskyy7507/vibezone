@@ -8,12 +8,16 @@ import { auth } from "../middleware/auth.js";
 
 import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
+import { PostService } from "../services/post.service.js";
+import { UserService } from "../services/user.service.js";
 
 export class ProfileController implements Controller {
     public path = "/api/profile";
     public router = Router();
 
     private profileService = new ProfileService();
+    private postService = new PostService();
+    private userService = new UserService();
 
     constructor() {
         this.router.get("/all", this.getAllProfiles);
@@ -29,6 +33,8 @@ export class ProfileController implements Controller {
             this.uploadPicture
         );
         this.router.delete("/picture", auth, this.removePicture);
+
+        this.router.post("/:id/ban", auth, this.banUser);
     }
 
     private getAllProfiles: RequestHandler = async (request, response, next) => {
@@ -44,7 +50,7 @@ export class ProfileController implements Controller {
     private getProfile: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        if (typeof id === "string" && !Types.ObjectId.isValid(id)) {
+        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
             return response
                 .status(400)
                 .json({ success: false, message: "Malformed id" });
@@ -146,6 +152,34 @@ export class ProfileController implements Controller {
             return response.status(204).send();
         } catch (error) {
             next(error);
+        }
+    }
+
+    private banUser: RequestHandler = async (request, response, next) => {
+        const { id } = request.params;
+
+        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
+            return response
+                .status(400)
+                .json({ success: false, message: "Malformed id" });
+        }
+
+        if (request.session.role !== "moderator") {
+            return response.status(403).json({ error: "Forbidden" })
+        }
+
+        try {
+            const _id = new Types.ObjectId(id);
+            const result = await this.profileService.removeProfile(_id);
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
+            await this.postService.removeUserPosts(_id);
+            await this.userService.deactivateAccount(_id);
+            return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
         }
     }
 }

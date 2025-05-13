@@ -37,7 +37,9 @@ export class PostService {
             ...post,
             likeCount: post.usersWhoLiked.length,
             usersWhoLiked: undefined,
-            isLikedByUser: (profileId !== undefined && post.usersWhoLiked.some(id => id === profileId)),
+            isLikedByUser:
+                profileId !== undefined &&
+                post.usersWhoLiked.some((id) => id === profileId),
         };
         delete result.usersWhoLiked;
 
@@ -58,7 +60,9 @@ export class PostService {
                 ...post,
                 likeCount: post.usersWhoLiked.length,
                 usersWhoLiked: undefined,
-                isLikedByUser: (profileId !== undefined && post.usersWhoLiked.some(id => id.equals(profileId))),
+                isLikedByUser:
+                    profileId !== undefined &&
+                    post.usersWhoLiked.some((id) => id.equals(profileId)),
             };
 
             delete p.usersWhoLiked;
@@ -73,17 +77,25 @@ export class PostService {
         return await PostModel.findByIdAndDelete(id);
     }
 
+    public async removeUserPosts(id: Types.ObjectId) {
+        return await PostModel.deleteMany({ author: id });
+    }
+
     public async likePost(id: Types.ObjectId, userId?: Types.ObjectId) {
         if (!userId) {
             return;
         }
-        await PostModel.findByIdAndUpdate(id, { $addToSet: { usersWhoLiked: userId } });
+        await PostModel.findByIdAndUpdate(id, {
+            $addToSet: { usersWhoLiked: userId },
+        });
     }
 
     public async unlikePost(id: Types.ObjectId, userId?: Types.ObjectId) {
         if (!userId) {
             return;
         }
-        await PostModel.findByIdAndUpdate(id, { $pull: { usersWhoLiked: userId } });
+        await PostModel.findByIdAndUpdate(id, {
+            $pull: { usersWhoLiked: userId },
+        });
     }
 }

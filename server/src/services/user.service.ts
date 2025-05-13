@@ -42,7 +42,7 @@ export class UserService {
         return await UserModel.findOne({ email: login });
     }
 
-    private async getById(id: string | Types.ObjectId) {
+    private async getById(id: Types.ObjectId) {
         const result = await UserModel.findById(id);
         return result;
     }
@@ -54,6 +54,13 @@ export class UserService {
     // ) {
     //     // TODO:
     // }
+
+    public async deactivateAccount(profileId: Types.ObjectId) {
+        return await UserModel.updateOne(
+            { profileId: profileId },
+            { active: false }
+        );
+    }
 
     private async hashPassword(clearPassword: string) {
         const truncatedPassword = clearPassword.substring(0, 2048);

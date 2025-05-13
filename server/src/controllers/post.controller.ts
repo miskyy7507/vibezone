@@ -116,7 +116,7 @@ export class PostController implements Controller {
             if (!postToDelete) {
                 return response.status(404).json({ error: "Not found" });
             }
-            if (postToDelete.author._id.toHexString() !== request.session.profileId) {
+            if (postToDelete.author._id.toHexString() !== request.session.profileId || request.session.role !== "moderator") {
                 return response.status(403).json({ error: "Forbidden" })
             }
 

@@ -37,4 +37,8 @@ export class ProfileService {
             new: true,
         });
     }
+
+    public async removeProfile(id: Types.ObjectId) {
+        return await ProfileModel.findByIdAndDelete(id);
+    }
 }
