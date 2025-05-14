@@ -2,6 +2,18 @@ import { CommentModel } from "../models/comment.model.js";
 
 import type { IComment } from "../interfaces/comment.interface.js";
 import type { Types } from "mongoose";
+import type { IProfile } from "../interfaces/profile.interface.js";
+
+type PopulatedComment = Omit<IComment, "user"> & {
+    _id: Types.ObjectId;
+    createdAt: string,
+    author: Pick<
+        IProfile,
+        "username" | "displayName" | "profilePictureUri"
+    > & {
+        _id: Types.ObjectId;
+    };
+};
 
 export class CommentService {
     public async createComment(comment: Omit<IComment, "usersWhoLiked">) {
@@ -13,12 +25,65 @@ export class CommentService {
         );
     }
 
-    public async getAllPostsComments(postId: Types.ObjectId) {
-        const comments1 = await CommentModel.find({ "post": postId }).populate(
-            "user",
-            "username displayName profilePictureUri"
-        ).lean();
+    public async getAllPostsComments(
+        postId: Types.ObjectId,
+        profileId?: Types.ObjectId
+    ) {
+        return await CommentModel.aggregate<PopulatedComment>([
+            { $match: { post: postId } },
+            {
+                $lookup: {
+                    from: "profiles",
+                    localField: "user",
+                    foreignField: "_id",
+                    pipeline: [
+                        {
+                            $project: {
+                                username: true,
+                                displayName: true,
+                                profilePictureUri: true,
+                            },
+                        },
+                    ],
+                    as: "user",
+                },
+            },
+            { $unwind: "$user" },
+            {
+                $set: {
+                    likesCount: { $size: "$usersWhoLiked" },
+                    likedByUser: { $in: [profileId, "$usersWhoLiked"] },
+                },
+            },
+            {
+                $unset: ["usersWhoLiked"],
+            },
+        ]);
+    }
 
-        return comments1;
+    public async removeCommentById(id: Types.ObjectId) {
+        return await CommentModel.findByIdAndDelete(id);
+    }
+
+    public async removeUserPosts(userId: Types.ObjectId) {
+        return await CommentModel.deleteMany({ user: userId });
+    }
+
+    public async likeComment(id: Types.ObjectId, userId?: Types.ObjectId) {
+        if (!userId) {
+            return;
+        }
+        await CommentModel.findByIdAndUpdate(id, {
+            $addToSet: { usersWhoLiked: userId },
+        });
+    }
+
+    public async unlikeComment(id: Types.ObjectId, userId?: Types.ObjectId) {
+        if (!userId) {
+            return;
+        }
+        await CommentModel.findByIdAndUpdate(id, {
+            $pull: { usersWhoLiked: userId },
+        });
     }
 }
