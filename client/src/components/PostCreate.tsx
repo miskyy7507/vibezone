@@ -75,7 +75,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             formData.append("image", selectedImage);
 
             try {
-                const imageUploadResponse = await fetch(
+                const response = await fetch(
                     "http://localhost:6660/api/post/image",
                     {
                         method: "POST",
@@ -84,19 +84,19 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     }
                 );
 
-                if (imageUploadResponse.status === 200) {
-                    const imageData = await imageUploadResponse.json() as {"imageUrl": string};
+                if (response.status === 200) {
+                    const imageData = await response.json() as {"imageUrl": string};
                     imageUrl = imageData.imageUrl;
-                } else if (imageUploadResponse.status === 401) {
+                } else if (response.status === 400) {
+                    alert("An error occured uploading this picture. It may not be uploaded. Supported formats: png, jpg, gif, webp. Max size: 10MB.");
+                } else if (response.status === 401) {
                     alert("Your session has expired. Please log in back.");
                     logout();
-                    return;
                 } else {
-                    console.error(await imageUploadResponse.text());
+                    console.error(await response.text());
                     alert(
                         `Something went wrong when trying to upload the image. Try to reload the page.`
                     );
-                    return;
                 }
             } catch (error) {
                 handleFetchError(error);
@@ -213,7 +213,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             {!collapsed && (
                 <>
                     {selectedImage && (
-                        <div className="relative w-full h-48 rounded-md overflow-hidden">
+                        <div className="relative overflow-hidden -mx-5 -mb-3 border-t border-zinc-700">
                             <img
                                 src={URL.createObjectURL(selectedImage)}
                                 alt="Selected preview"
@@ -222,7 +222,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             <button
                                 type="button"
                                 onClick={removeSelectedImage}
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                                className="absolute top-2 right-2 size-[32px] bg-red-500 text-white rounded-full"
                                 title="Remove image"
                             >
                                 <FontAwesomeIcon icon={faXmark} />
@@ -233,7 +233,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                         <div className="flex flex-row flex-1 justify-start">
                             <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/png, image/jpeg, image/gif, image/webp"
                                 ref={fileInputRef}
                                 className="hidden"
                                 onChange={handleImageSelect}
@@ -261,7 +261,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             </button>
                             <button
                                 type="submit"
-                                disabled={!content && !selectedImage}
+                                disabled={!content}
                                 className="flex items-center space-x-2 bg-zinc-200 text-zinc-900 rounded-full px-4 py-2 disabled:opacity-60 enabled:cursor-pointer transition"
                             >
                                 <FontAwesomeIcon icon={faPaperPlane} />

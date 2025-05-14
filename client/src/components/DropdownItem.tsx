@@ -20,7 +20,7 @@ export function DropdownItem({
     return (
         <button
             className={clsx(
-                "flex flex-row gap-2 items-center cursor-pointer",
+                "flex flex-row gap-2 items-center px-4 py-2 cursor-pointer hover:bg-zinc-50/5 transition",
                 danger && "text-red-400"
             )}
             onClick={(e) => {

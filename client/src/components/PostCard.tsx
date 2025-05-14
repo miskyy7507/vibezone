@@ -15,14 +15,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DropdownMenu from "./DropdownMenu";
 import clsx from "clsx";
 import { DropdownItem } from "./DropdownItem";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export function PostCard({
     postData,
     deletePostCb,
+    link
 }: {
     postData: Post;
     deletePostCb: (id: string) => void;
+    link?: boolean
 }) {
     const { user, logout } = useAuth();
 
@@ -38,6 +40,8 @@ export function PostCard({
     const [menuOpen, setMenuOpen] = useState(false);
 
     const postTextContent = useRef<HTMLParagraphElement | null>(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user === null) {
@@ -126,14 +130,21 @@ export function PostCard({
         }
     };
 
+    const goToPostPage = (e: React.MouseEvent<HTMLElement>) => {
+        if (!link) return;
+        e.stopPropagation();
+        void navigate(`/post/${_id}`);
+    }
+
     return (
-        <article className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 ring-zinc-700">
+        <article className={clsx("flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700", link && "hover:shadow-2xl cursor-pointer transition-shadow")}
+        onClick={(e) => {goToPostPage(e)}}>
             <div className="flex flex-row gap-3">
-                <Link to={`user/${author._id}`}>
+                <Link to={`/user/${author._id}`} onClick={(e) => {e.stopPropagation()}}>
                     <ProfilePicture user={author} />
                 </Link>
                 <div className="flex flex-col">
-                    <Link to={`user/${author._id}`}>
+                    <Link to={`/user/${author._id}`} onClick={(e) => {e.stopPropagation()}}>
                         <UserNamesDisplay user={author} />
                     </Link>
                     <span
@@ -155,7 +166,7 @@ export function PostCard({
                 {content}
             </p>
             {imageUrl && (
-                <div className="-mx-5 -mb-3.25 border-y border-zinc-700">
+                <div className="-mx-5 -mb-3 border-t border-zinc-700">
                     <img
                         src={`http://localhost:6660/uploads/${imageUrl}`}
                         alt="Post image"
@@ -184,7 +195,7 @@ export function PostCard({
                 <div className="flex flex-row flex-1 justify-end gap-3 items-center">
                     {user && (
                         <button
-                            className="w-[20px] cursor-pointer"
+                            className="w-[20px] rounded-full cursor-pointer hover:bg-zinc-50/5 transition"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setMenuOpen((p) => !p);

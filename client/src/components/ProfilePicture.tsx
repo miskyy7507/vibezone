@@ -24,7 +24,7 @@ export function ProfilePicture({
         <img
             style={{ width: sizePx, height: sizePx }}
             className="size-12 rounded-full object-cover"
-            src={profilePictureUri ?? "pfp_placeholder.svg"}
+            src={profilePictureUri ?? "/pfp_placeholder.svg"}
             alt={altText}
         />
     );

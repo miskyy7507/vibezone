@@ -36,7 +36,7 @@ const DropdownMenu = ({ anchorRef, onClose, children }: DropdownMenuProps) => {
     return (
         <div
             ref={menuRef}
-            className={"flex flex-col gap-4 bg-zinc-800 border border-zinc-700 p-4 rounded-xl z-999"}
+            className={"flex flex-col gap-2 bg-zinc-800 border border-zinc-700 py-2 rounded-xl z-999 cursor-default"}
             style={styles}
             onClick={(e) => {
                 e.stopPropagation();
