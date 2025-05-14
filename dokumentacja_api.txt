@@ -83,7 +83,7 @@ repsonse:
 
 ------------------------------------
 DELETE /api/post/:id
-Usuwa post o danym id. Tylko autor posta lub moderator może usunąć posta.
+Usuwa post o danym id. Tylko autor posta lub moderator może usunąć post.
 session cookie required
 repsonse:
     204: No content - pomyślnie usunięto post.
@@ -116,6 +116,61 @@ response:
     200: OK {imageUrl: string}
     400: Bad request (kiedy żadne zdjęcie nie znajdzie się w requestcie)
     401: Unauthorized
+------------------------------------
+POST /api/comment/:postId
+Dodanie komentarza do postu.
+session cookie required
+body: {
+    content: string
+}
+response:
+    200: OK - utworzono post
+    400: Validation error
+    401: Unauthorized - użytkownik nie jest zalogowany, nie może postować.
+------------------------------------
+GET /api/comment/post/:postId
+Otrzymanie listy wszystkich komentarzy do posta.
+response:
+    200: OK - otrzymano komentarze
+    400: Validation error - złe id
+{
+    _id: ObjectId,
+    user: {
+        _id: ObjectId,
+        username: string,
+        displayName?: string,
+        profilePictureUri?: string
+    },
+    content: string
+    createdAt: timestamp,
+    likeCount: number
+    isLikedByUser: boolean
+}[]
+
+====================================
+DELETE /api/comment/:id
+Usunięcie komentarza o danym id. Tylko autor komentarza lub moderator może usunąć komentarz.
+session cookie required
+response:
+    204: No content - pomyślnie usunięto komentarz.
+    401: Unauthorized - użytkownik nie jest zalogowany.
+    404: Not found - nie ma komentarza o takim id
+    403: Forbidden - brak uprawnień do usunięcia komentarza (moderator lub autor posta)
+------------------------------------
+PUT /api/comment/:id/like
+Polubienie komentarza.
+session cookie required
+response:
+    204: No content - pomyślnie. Jeżeli komentarz został już polubiony, to zapytanie nic nie robi.
+    401: Unauthorized - użytkownik nie jest zalogowany.
+
+------------------------------------
+DELETE /api/comment/:id/like
+Usunięcie polubienia komentarza.
+session cookie required
+response:
+    204: No content - pomyślnie. Jeżeli komentarz nie był wcześniej polubiony, to zapytanie nic nie robi.
+    401: Unauthorized - użytkownik nie jest zalogowany.
 
 ====================================
 
