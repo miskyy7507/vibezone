@@ -1,12 +1,11 @@
 import "dotenv/config";
 import crypto from "crypto";
-import fs from "node:fs"
 
 export const config = {
     nodeEnv: process.env.NODE_ENV === "production" ? "production" : "development",
     serverPort: (process.env.PORT && parseInt(process.env.PORT)) || 5000, // default 5000 if PORT not set or NaN
     databaseUri: process.env.MONGO_URI ?? "",
-    imageUploadPath: process.env.IMAGE_UPLOAD_PATH ?? fs.mkdtempSync("uploads"),
+    imageUploadPath: process.env.IMAGE_UPLOAD_PATH ?? "./uploads",
     sessionSecret: process.env.SESSION_SECRET ?? (() => {
         console.warn("SESSION_SECRET variable has not been set in .env file. Generating a random one for this run.");
         console.warn("Please set this variable to avoid invalidating session tokens every time a server is reset.")
