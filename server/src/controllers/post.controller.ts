@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { Types } from "mongoose";
-import { PostService } from "../services/post.service.js";
-import { auth } from "../middleware/auth.js";
 import { z } from "zod";
+
+import { PostService } from "../services/post.service.js";
+import { imageUpload } from "../middleware/imageUpload.js";
+import { verifyImageRealType } from "../middleware/verifyImageRealType.js";
+import { auth } from "../middleware/auth.js";
+import { validateObjectId } from "../middleware/validateObjectId.js";
 
 import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
-import { imageUpload } from "../middleware/imageUpload.js";
-import { verifyImageRealType } from "../middleware/verifyImageRealType.js";
 
 export class PostController implements Controller {
     public path = "/api/post";
@@ -17,16 +19,37 @@ export class PostController implements Controller {
 
     constructor() {
         this.router.get("/all", this.getAllPosts);
-        this.router.get("/:id", this.getPostById);
+        this.router.get("/:id", validateObjectId("id"), this.getPostById);
 
         this.router.post("/", auth, this.addPost);
 
-        this.router.delete("/:id", auth, this.removePostById);
+        this.router.delete(
+            "/:id",
+            validateObjectId("id"),
+            auth,
+            this.removePostById
+        );
 
-        this.router.put("/:id/like", auth, this.likePost);
-        this.router.delete("/:id/like", auth, this.unlikePost);
+        this.router.put(
+            "/:id/like",
+            validateObjectId("id"),
+            auth,
+            this.likePost
+        );
+        this.router.delete(
+            "/:id/like",
+            validateObjectId("id"),
+            auth,
+            this.unlikePost
+        );
 
-        this.router.post("/image", auth, imageUpload.single("image"), verifyImageRealType, this.uploadImage);
+        this.router.post(
+            "/image",
+            auth,
+            imageUpload.single("image"),
+            verifyImageRealType,
+            this.uploadImage
+        );
     }
 
     private addPost: RequestHandler = async (request, response, next) => {
@@ -46,7 +69,6 @@ export class PostController implements Controller {
 
             const result = await this.postService.createPost({
                 author: new Types.ObjectId(request.session.profileId),
-                usersWhoLiked: [],
                 ...newPost,
             });
             return response.status(200).json(result);
@@ -84,15 +106,10 @@ export class PostController implements Controller {
             ? new Types.ObjectId(request.session.profileId)
             : undefined;
 
-        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
-            return response
-                .status(400)
-                .json({ success: false, message: "Malformed id" });
-        }
-
         try {
             const result = await this.postService.getById(
-                new Types.ObjectId(id), profileId
+                new Types.ObjectId(id),
+                profileId
             );
             if (!result) {
                 return response.status(404).json({ error: "Not found" });
@@ -104,14 +121,12 @@ export class PostController implements Controller {
         }
     };
 
-    private removePostById: RequestHandler = async (request, response, next) => {
+    private removePostById: RequestHandler = async (
+        request,
+        response,
+        next
+    ) => {
         const { id } = request.params;
-
-        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
-            return response
-                .status(400)
-                .json({ success: false, message: "Malformed id" });
-        }
 
         try {
             const postToDelete = await this.postService.getById(
@@ -120,8 +135,12 @@ export class PostController implements Controller {
             if (!postToDelete) {
                 return response.status(404).json({ error: "Not found" });
             }
-            if (postToDelete.author._id.toHexString() !== request.session.profileId && request.session.role !== "moderator") {
-                return response.status(403).json({ error: "Forbidden" })
+            if (
+                postToDelete.author._id.toHexString() !==
+                    request.session.profileId &&
+                request.session.role !== "moderator"
+            ) {
+                return response.status(403).json({ error: "Forbidden" });
             }
 
             await this.postService.removePostId(postToDelete._id);
@@ -136,28 +155,16 @@ export class PostController implements Controller {
     private likePost: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
-            return response
-                .status(400)
-                .json({ success: false, message: "Malformed id" });
-        }
-
         await this.postService.likePost(
             new Types.ObjectId(id),
             new Types.ObjectId(request.session.profileId)
         );
 
         return response.status(204).send();
-    }
+    };
 
     private unlikePost: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
-
-        if (typeof id !== "string" || !Types.ObjectId.isValid(id)) {
-            return response
-                .status(400)
-                .json({ success: false, message: "Malformed id" });
-        }
 
         await this.postService.unlikePost(
             new Types.ObjectId(id),
@@ -165,11 +172,11 @@ export class PostController implements Controller {
         );
 
         return response.status(204).send();
-    }
+    };
 
     private uploadImage: RequestHandler = (request, response, next) => {
         return response.status(200).json({
-            "imageUrl": request.file?.filename
+            imageUrl: request.file?.filename,
         });
-    }
+    };
 }
