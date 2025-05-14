@@ -7,7 +7,7 @@ import type { IProfile } from "../interfaces/profile.interface.js";
 type PopulatedComment = Omit<IComment, "user"> & {
     _id: Types.ObjectId;
     createdAt: string,
-    author: Pick<
+    user: Pick<
         IProfile,
         "username" | "displayName" | "profilePictureUri"
     > & {
@@ -16,21 +16,8 @@ type PopulatedComment = Omit<IComment, "user"> & {
 };
 
 export class CommentService {
-    public async createComment(comment: Omit<IComment, "usersWhoLiked">) {
-        const model = new CommentModel(comment);
-        const newComment = await model.save();
-        return await newComment.populate(
-            "user",
-            "username displayName profilePictureUri"
-        );
-    }
-
-    public async getAllPostsComments(
-        postId: Types.ObjectId,
-        profileId?: Types.ObjectId
-    ) {
-        return await CommentModel.aggregate<PopulatedComment>([
-            { $match: { post: postId } },
+    private populatedCommentPipeline(profileId?: Types.ObjectId) {
+        return [
             {
                 $lookup: {
                     from: "profiles",
@@ -58,7 +45,35 @@ export class CommentService {
             {
                 $unset: ["usersWhoLiked"],
             },
+        ]
+    }
+
+    public async createComment(comment: Omit<IComment, "usersWhoLiked">) {
+        const model = new CommentModel(comment);
+        const newComment = await model.save();
+        return await newComment.populate(
+            "user",
+            "username displayName profilePictureUri"
+        );
+    }
+
+    public async getAllPostsComments(
+        postId: Types.ObjectId,
+        profileId?: Types.ObjectId
+    ) {
+        return await CommentModel.aggregate<PopulatedComment>([
+            { $match: { post: postId } },
+            ...this.populatedCommentPipeline(profileId)
         ]);
+    }
+
+    public async getById(id: Types.ObjectId, profileId?: Types.ObjectId) {
+        const comment = await CommentModel.aggregate<PopulatedComment>([
+            { $match: { _id: id } },
+            ...this.populatedCommentPipeline(profileId),
+        ]);
+
+        return comment[0] || null;
     }
 
     public async removeCommentById(id: Types.ObjectId) {
@@ -69,19 +84,13 @@ export class CommentService {
         return await CommentModel.deleteMany({ user: userId });
     }
 
-    public async likeComment(id: Types.ObjectId, userId?: Types.ObjectId) {
-        if (!userId) {
-            return;
-        }
+    public async likeComment(id: Types.ObjectId, userId: Types.ObjectId) {
         await CommentModel.findByIdAndUpdate(id, {
             $addToSet: { usersWhoLiked: userId },
         });
     }
 
-    public async unlikeComment(id: Types.ObjectId, userId?: Types.ObjectId) {
-        if (!userId) {
-            return;
-        }
+    public async unlikeComment(id: Types.ObjectId, userId: Types.ObjectId) {
         await CommentModel.findByIdAndUpdate(id, {
             $pull: { usersWhoLiked: userId },
         });
