@@ -140,10 +140,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         setIsFocused(false);
         setCollapsed(true);
         setContent("");
-        setSelectedImage(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = ""; // Clear the file input
-        }
+        removeSelectedImage();
     };
 
     if (!user) return;
@@ -233,19 +230,19 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                         <div className="flex flex-row flex-1 justify-start">
                             <input
                                 type="file"
+                                id="filePicker"
                                 accept="image/png, image/jpeg, image/gif, image/webp"
                                 ref={fileInputRef}
                                 className="hidden"
                                 onChange={handleImageSelect}
                             />
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
+                            <label
+                                htmlFor="filePicker"
                                 className="text-zinc-200 cursor-pointer px-1 my-2 hover:text-zinc-400 transition"
                                 title="Upload image"
                             >
                                 <FontAwesomeIcon icon={faImage} />
-                            </button>
+                            </label>
                         </div>
                         <div className="flex flex-row flex-1 justify-end gap-3 items-center">
                             <button
