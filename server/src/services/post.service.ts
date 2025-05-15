@@ -44,18 +44,16 @@ export class PostService {
             },
             {
                 $unset: ["usersWhoLiked"],
-            },
-            { $sort: { createdAt: -1 as const } }
+            }
         ]
     }
 
     public async createPost(post: Omit<IPost, "usersWhoLiked">) {
         const postModel = new PostModel(post);
         const newPost = await postModel.save();
-        return await newPost.populate(
-            "author",
-            "username displayName profilePictureUri"
-        );
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return (await this.getById(newPost._id))!;
     }
 
     public async getById(id: Types.ObjectId, profileId?: Types.ObjectId) {
@@ -70,6 +68,7 @@ export class PostService {
     public async getAllPosts(profileId?: Types.ObjectId) {
         return await PostModel.aggregate<PopulatedPost>([
             ...this.populatedPostPipeline(profileId),
+            { $sort: { createdAt: -1 } }
         ]);
     }
 

@@ -51,20 +51,9 @@ export class CommentService {
     public async createComment(comment: Omit<IComment, "usersWhoLiked">) {
         const model = new CommentModel(comment);
         const newComment = await model.save();
-        return await newComment.populate(
-            "user",
-            "username displayName profilePictureUri"
-        );
-    }
 
-    public async getAllPostsComments(
-        postId: Types.ObjectId,
-        profileId?: Types.ObjectId
-    ) {
-        return await CommentModel.aggregate<PopulatedComment>([
-            { $match: { post: postId } },
-            ...this.populatedCommentPipeline(profileId)
-        ]);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return (await this.getById(newComment._id))!;
     }
 
     public async getById(id: Types.ObjectId, profileId?: Types.ObjectId) {
@@ -74,6 +63,17 @@ export class CommentService {
         ]);
 
         return comment[0] || null;
+    }
+
+    public async getAllPostsComments(
+        postId: Types.ObjectId,
+        profileId?: Types.ObjectId
+    ) {
+        return await CommentModel.aggregate<PopulatedComment>([
+            { $match: { post: postId } },
+            ...this.populatedCommentPipeline(profileId),
+            { $sort: { createdAt: -1 } }
+        ]);
     }
 
     public async removeCommentById(id: Types.ObjectId) {
