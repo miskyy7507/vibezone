@@ -7,6 +7,7 @@ import type { Post } from "../interfaces/post.interface";
 import { NotFound } from "./NotFound";
 import { Spinner } from "../components/Spinner";
 import { PostCard } from "../components/PostCard";
+import { toast } from "react-toastify";
 
 export function Post() {
     const [post, setPost] = useState<Post | null>(null);
@@ -39,7 +40,7 @@ export function Post() {
                     setNotFound(true);
                 } else {
                     console.error(await response.text());
-                    alert(
+                    toast.error(
                         `Something went wrong when trying to fetch this post. Try reloading the page.`
                     );
                 }

@@ -12,6 +12,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { DropdownItem } from "./DropdownItem";
 import { handleFetchError } from "../utils/handleFetchError";
+import { toast } from "react-toastify";
 
 export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb: (id: string) => void; }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -44,15 +45,13 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
             if (response.status === 204 || response.status === 404) {
                 deleteUserCb(_id);
             } else if (response.status === 401) {
-                alert("Your session has expired. Please log in back.");
+                toast.error("Your session has expired. Please log in back.");
                 logout();
             } else if (response.status === 403) {
-                alert("Permission denied - you cannot ban users.");
+                toast.warn("Permission denied - you cannot ban users.");
             } else {
                 console.error(await response.text());
-                alert(
-                    `Something went wrong when trying to do this action. Try to reload the page.`
-                );
+                toast.error("Something went wrong when trying to do this action. Try to reload the page.");
             }
         } catch (error) {
             handleFetchError(error);

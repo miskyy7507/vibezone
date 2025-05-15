@@ -16,6 +16,7 @@ import { DropdownMenu } from "./DropdownMenu";
 import { clsx } from "clsx";
 import { DropdownItem } from "./DropdownItem";
 import { Link, useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 export function PostCard({
     postData,
@@ -86,13 +87,11 @@ export function PostCard({
                 setIsLiked(toLike);
                 setLikeCount((count) => count + (toLike ? 1 : -1));
             } else if (response.status === 401) {
-                alert("Your session has expired. Please log in back.");
+                toast.warn("Your session has expired. Please log in back.", {});
                 logout();
             } else {
                 console.error(await response.text());
-                alert(
-                    `Something went wrong when trying to do this action. Try to reload the page.`
-                );
+                toast.error("Something went wrong when trying to do this action. Try to reload the page.");
             }
         } catch (error) {
             handleFetchError(error);
@@ -115,15 +114,13 @@ export function PostCard({
             if (response.status === 204 || response.status === 404) {
                 deletePostCb(_id);
             } else if (response.status === 401) {
-                alert("Your session has expired. Please log in back.");
+                toast.warn("Your session has expired. Please log in back.")
                 logout();
             } else if (response.status === 403) {
-                alert("You cannot delete this post.");
+                toast.error("You cannot delete this post.");
             } else {
                 console.error(await response.text());
-                alert(
-                    `Something went wrong when trying to do this action. Try to reload the page.`
-                );
+                toast.error("Something went wrong when trying to do this action. Try to reload the page.");
             }
         } catch (error) {
             handleFetchError(error);

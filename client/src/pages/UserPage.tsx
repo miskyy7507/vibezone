@@ -4,6 +4,7 @@ import { User } from "../interfaces/user.interface";
 import { NotFound } from "./NotFound";
 import { Spinner } from "../components/Spinner";
 import { handleFetchError } from "../utils/handleFetchError";
+import { toast } from "react-toastify";
 
 export function UserPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -33,7 +34,7 @@ export function UserPage() {
                     setNotFound(true);
                 } else {
                     console.error(await response.text());
-                    alert(`Something went wrong when trying to fetch user info. Try to reload the page.`);
+                    toast.error("Something went wrong when trying to fetch user info. Try to reload the page.");
                 }
             } catch (error) {
                 handleFetchError(error);

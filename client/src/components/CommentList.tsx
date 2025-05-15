@@ -4,6 +4,7 @@ import { CommentItem } from "./CommentItem";
 
 import type { Comment } from "../interfaces/comment.interface";
 import { Spinner } from "./Spinner";
+import { toast } from "react-toastify";
 
 
 export function CommentList({postId}: {postId: string}) {
@@ -20,7 +21,7 @@ export function CommentList({postId}: {postId: string}) {
                     const comments = await response.json() as Comment[];
                     setComments(comments);
                 } else if (response.status === 404 || response.status === 400) {
-                    alert("Could not fetch comments for this post.");
+                    toast.error("Could not fetch comments for this post.");
                 }
             } catch (error) {
                 handleFetchError(error);

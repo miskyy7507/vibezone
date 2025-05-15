@@ -7,6 +7,7 @@ import { PostCreate } from "../components/PostCreate";
 
 import type { Post } from "../interfaces/post.interface";
 import { handleFetchError } from "../utils/handleFetchError";
+import { toast } from "react-toastify";
 
 export function Home() {
     const { user } = useAuth();
@@ -27,9 +28,7 @@ export function Home() {
                     setPosts(data);
                 } else {
                     console.error(await response.text());
-                    alert(
-                        `An unexpected error occured when trying to fetch posts. The server responsed with code: ${response.status.toString()}`
-                    );
+                    toast.error("An unexpected error occured when trying to fetch posts.");
                 }
             } catch (error) {
                 handleFetchError(error);

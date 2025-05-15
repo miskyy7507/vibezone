@@ -7,6 +7,7 @@ import { useForm } from "../hooks/useForm";
 import { handleFetchError } from "../utils/handleFetchError";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export function Signup() {
     type RegisterFormNames =
@@ -112,7 +113,7 @@ export function Signup() {
             );
 
             if (response.status === 200) {
-                alert("Registered successfully! Now you can sign in.");
+                toast.success("Registered successfully! Now you can sign in.");
                 void navigate("/login");
             } else if (response.status === 400 || response.status === 422) {
                 const data = (await response.json()) as ValidationErrorResponse;
@@ -120,7 +121,7 @@ export function Signup() {
             } else {
                 const error = await response.text();
                 console.error(error);
-                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
+                toast.error(`Something went wrong when trying to do this action. Try to reload the page.`);
             }
         } catch (error) {
             handleFetchError(error);

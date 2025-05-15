@@ -5,6 +5,7 @@ import { Spinner } from "../components/Spinner";
 import { handleFetchError } from "../utils/handleFetchError";
 
 import type { User } from "../interfaces/user.interface";
+import { toast } from "react-toastify";
 
 export function Users() {
     const [users, setUsers] = useState<User[] | null>(null);
@@ -21,7 +22,7 @@ export function Users() {
             } else {
                 const error = await response.text();
                 console.error(error);
-                alert(`Something went wrong when trying to do this action. Try to reload the page.`);
+                toast.error("Something went wrong when trying to do this action. Try to reload the page.");
             }
         } catch (error) {
             handleFetchError(error);

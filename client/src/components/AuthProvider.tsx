@@ -3,6 +3,7 @@ import { AuthContext } from "../hooks/useAuth";
 
 import type { User } from "../interfaces/user.interface";
 import { handleFetchError } from "../utils/handleFetchError";
+import { toast } from "react-toastify";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -22,8 +23,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // not logged in, ignore
             } else {
                 console.error(await response.text());
-                alert(
-                    `Something went wrong when trying to retrieve logged in user information.`
+                toast.error(
+                    "Something went wrong when trying to retrieve logged in user information."
                 );
             }
         } catch (error) {
@@ -64,8 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 window.location.href = "/";
             } else {
                 console.error(await response.text());
-                alert(
-                    `Something went wrong when trying to log out user. Try to reload the page.`
+                toast.error(
+                    "Something went wrong when trying to log out user. Try to reload the page."
                 );
             }
         } catch (error) {

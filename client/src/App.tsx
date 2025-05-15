@@ -9,6 +9,7 @@ import { Signup } from "./pages/Signup";
 import { UserPage } from "./pages/UserPage";
 import { Post } from "./pages/Post";
 import { NotFound } from "./pages/NotFound";
+import { Slide, ToastContainer } from "react-toastify";
 
 function App() {
     return (
@@ -23,6 +24,19 @@ function App() {
                 <Route path="post/:postId" element={<Post />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
+            <ToastContainer
+                position="bottom-center"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover={false}
+                theme="colored"
+                closeButton={false}
+                transition={Slide}
+            />
         </AuthProvider>
     );
 }

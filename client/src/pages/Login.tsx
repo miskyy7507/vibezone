@@ -7,6 +7,7 @@ import { Spinner } from "../components/Spinner";
 
 import type { User } from "../interfaces/user.interface";
 import { handleFetchError } from "../utils/handleFetchError";
+import { toast } from "react-toastify";
 
 export function Login() {
     // type LoginFormNames = "login" | "password";
@@ -46,10 +47,10 @@ export function Login() {
                 login(user);
                 await navigate("/");
             } else if (response.status === 401) {
-                alert("Incorrect username or password.");
+                toast.error("Incorrect username or password.");
             } else {
                 console.error(await response.text());
-                alert(`Something went wrong when trying to log in.`);
+                toast.error(`Something went wrong when trying to log in.`);
             }
         } catch (error) {
             handleFetchError(error);

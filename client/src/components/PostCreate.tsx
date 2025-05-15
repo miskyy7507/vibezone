@@ -13,6 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Post } from "../interfaces/post.interface";
 import { handleFetchError } from "../utils/handleFetchError";
+import { toast } from "react-toastify";
 
 export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const MAX_POST_LENGTH = 150;
@@ -88,15 +89,13 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     const imageData = await response.json() as {"imageUrl": string};
                     imageUrl = imageData.imageUrl;
                 } else if (response.status === 400) {
-                    alert("An error occured uploading this picture. It may not be uploaded. Supported formats: png, jpg, gif, webp. Max size: 10MB.");
+                    toast.error("An error occured uploading this picture. It may not be uploaded. Supported formats: png, jpg, gif, webp. Max size: 10MB.");
                 } else if (response.status === 401) {
-                    alert("Your session has expired. Please log in back.");
+                    toast.warn("Your session has expired. Please log in back.");
                     logout();
                 } else {
                     console.error(await response.text());
-                    alert(
-                        `Something went wrong when trying to upload the image. Try to reload the page.`
-                    );
+                    toast.error("Something went wrong when trying to upload the image. Try to reload the page.");
                 }
             } catch (error) {
                 handleFetchError(error);
@@ -123,13 +122,11 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 addPost(newPost);
                 resetForm();
             } else if (postResponse.status === 401) {
-                alert("Your session has expired. Please log in back.");
+                toast.warn("Your session has expired. Please log in back.");
                 logout();
             } else {
                 console.error(await postResponse.text());
-                alert(
-                    `Something went wrong when trying to do this action. Try to reload the page.`
-                );
+                toast.error("Something went wrong when trying to do this action. Try to reload the page.");
             }
         } catch (error) {
             handleFetchError(error);
