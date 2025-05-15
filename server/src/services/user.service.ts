@@ -23,11 +23,10 @@ export class UserService {
 
     public async authenticate(login: string, clearPassword: string) {
         const user = await this.getByLogin(login);
-        const truncatedPassword = clearPassword.substring(0, 2049);
 
         if (
             !user ||
-            !(await argon2.verify(user.passwordHash, truncatedPassword))
+            !(await argon2.verify(user.passwordHash, clearPassword))
         ) {
             return null;
         }
@@ -63,9 +62,7 @@ export class UserService {
     }
 
     private async hashPassword(clearPassword: string) {
-        const truncatedPassword = clearPassword.substring(0, 2048);
-
-        const hashedPassword = await argon2.hash(truncatedPassword, {
+        const hashedPassword = await argon2.hash(clearPassword, {
             type: argon2.argon2id,
             memoryCost: 32768, // 32 MB
             timeCost: 3,

@@ -25,7 +25,7 @@ export class AuthController implements Controller {
         try {
             ({ login, password } = await z.object({
                 login: z.string(),
-                password: z.string()
+                password: z.string().max(2048, "Password is too long (>2048 characters)")
             }).parseAsync(request.body));
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -91,6 +91,7 @@ export class AuthController implements Controller {
                 password: z
                     .string()
                     .nonempty("Required")
+                    .max(2048, "Password is too long (>2048 characters)")
             }).parseAsync(request.body);
         } catch (error) {
             if (error instanceof z.ZodError) {
