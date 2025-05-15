@@ -58,9 +58,9 @@ export function Navbar() {
                     <>
                         <button
                             ref={dropdownBtnRef}
-                            className="flex gap-x-4 p-3 -m-3 rounded-xl hover:bg-zinc-50/5 transition"
+                            className="flex gap-x-4 p-3 -m-3 rounded-xl cursor-pointer hover:bg-zinc-50/5 transition"
                             onClick={() => {
-                                setMenuOpen(true);
+                                setMenuOpen(p => !p);
                             }}
                         >
                             <div className="-m-[4px]">
@@ -71,6 +71,7 @@ export function Navbar() {
                         {menuOpen && (
                             <DropdownMenu
                                 anchorRef={dropdownBtnRef}
+                                absolutelyPositionedAnchor
                                 onClose={() => {
                                     setMenuOpen(false);
                                 }}
@@ -97,7 +98,7 @@ export function Navbar() {
                         )}
                     </>
                 ) : (
-                    <button className="flex gap-x-4 p-3 -m-3 rounded-xl hover:bg-zinc-50/5 transition">
+                    <button className="flex gap-x-4 p-3 -m-3 rounded-xl cursor-pointer hover:bg-zinc-50/5 transition">
                         <NavLink to="login" end>
                             Sign in
                         </NavLink>

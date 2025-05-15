@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 interface DropdownMenuProps {
     anchorRef: React.RefObject<HTMLElement | null>;
+    absolutelyPositionedAnchor?: boolean;
     onClose: () => void;
     children: React.ReactNode;
 }
 
-export function DropdownMenu({ anchorRef, onClose, children }: DropdownMenuProps) {
+export function DropdownMenu({ anchorRef, absolutelyPositionedAnchor, onClose, children }: DropdownMenuProps) {
     const menuRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -28,8 +29,8 @@ export function DropdownMenu({ anchorRef, onClose, children }: DropdownMenuProps
     const rect = anchorRef.current?.getBoundingClientRect();
     const styles: React.CSSProperties | undefined = rect && {
         position: "absolute",
-        top: rect.bottom + window.scrollY,
-        left: rect.right + window.scrollX,
+        top: rect.bottom + (absolutelyPositionedAnchor ? 0 : window.scrollY),
+        left: rect.right + (absolutelyPositionedAnchor ? 0 : window.scrollX),
         transform: "translateX(-100%)",
     };
 
