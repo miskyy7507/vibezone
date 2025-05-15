@@ -1,22 +1,21 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
-import { getRelativeTime } from "../utils/getRelativeDate";
 import type { Post } from "../interfaces/post.interface";
 import { useAuth } from "../hooks/useAuth";
 import { handleFetchError } from "../utils/handleFetchError";
 import {
     faEllipsisVertical,
     faTrashCan,
-    faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartHollow } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DropdownMenu } from "./DropdownMenu";
 import { clsx } from "clsx";
 import { DropdownItem } from "./DropdownItem";
 import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { CreationDate } from "./CreationDate";
+import { LikeButton } from "./LikeButton";
 
 export function PostCard({
     postData,
@@ -29,57 +28,12 @@ export function PostCard({
 }) {
     const { user, logout } = useAuth();
 
-    const { _id, author, content, imageUrl, createdAt } = postData;
-
-    const [isLiked, setIsLiked] = useState(
-        user !== null && postData.isLikedByUser
-    );
-    const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
-    const [likeButtonDisabled, setLikeButtonDisabled] = useState(user === null);
+    const { _id, author, content, imageUrl, createdAt, likeCount, isLikedByUser } = postData;
 
     const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const postTextContent = useRef<HTMLParagraphElement | null>(null);
-
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (user === null) {
-            setIsLiked(false);
-            setLikeButtonDisabled(true);
-        }
-    }, [user]);
-
-    const likeButtonClick = async () => {
-        setLikeButtonDisabled(true);
-
-        const toLike = !isLiked;
-
-        try {
-            const response = await fetch(
-                `http://localhost:6660/api/post/${_id}/like`,
-                {
-                    method: toLike ? "PUT" : "DELETE",
-                    credentials: "include",
-                }
-            );
-            if (response.ok) {
-                setIsLiked(toLike);
-                setLikeCount((count) => count + (toLike ? 1 : -1));
-            } else if (response.status === 401) {
-                toast.warn("Your session has expired. Please log in back.", {});
-                logout();
-            } else {
-                console.error(await response.text());
-                toast.error("Something went wrong when trying to do this action. Try to reload the page.");
-            }
-        } catch (error) {
-            handleFetchError(error);
-        } finally {
-            setLikeButtonDisabled(false);
-        }
-    };
 
     const deletePost = async () => {
         const confirmation = confirm(`WARNING!\nAre you sure you want to delete this post? This cannot be undone!`);
@@ -139,26 +93,18 @@ export function PostCard({
                         onClick={(e) => {
                             e.stopPropagation();
                         }}
+                        className="hover:underline"
                     >
                         <UserNamesDisplay user={author} />
                     </Link>
-                    <span
-                        className="text-gray-500"
-                        title={new Date(createdAt).toLocaleString("en-GB", {
-                            dateStyle: "long",
-                            timeStyle: "short",
-                        })}
-                    >
-                        {getRelativeTime(new Date(createdAt))}
-                    </span>
+                    <CreationDate dateString={createdAt} />
                 </div>
             </div>
 
             <p
-                ref={postTextContent}
                 className={clsx(
                     "px-0.5 mb-1 text-zinc-100 break-words whitespace-pre-line",
-                    (!imageUrl && content.length <= 60 && ((content.match(/\n/g))||[]).length <= 2) ? "text-3xl/[1.2]" : "text-base/[1.2]" // If post content is short enough, we can show it with large font size.
+                    (!imageUrl && content.length <= 60 && ((content.match(/\n/g))||[]).length <= 2) ? "text-3xl" : "text-base" // If post content is short enough, we can show it with large font size.
                 )}
             >
                 {content}
@@ -172,31 +118,19 @@ export function PostCard({
                     />
                 </div>
             )}
-            <div className="-mx-5 px-4.5 pt-4 flex items-center text-gray-500 text-sm border-t border-zinc-700 ">
+            <div className="-mx-5 px-4.5 pt-4 flex items-center text-sm border-t border-zinc-700 ">
                 <div className="flex flex-row flex-1 justify-start">
-                    <button
-                        className={clsx(
-                            isLiked && "text-pink-500",
-                            "flex items-center space-x-2 enabled:hover:text-pink-500 enabled:cursor-pointer transition"
-                        )}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            void likeButtonClick();
-                        }}
-                        disabled={likeButtonDisabled}
-                    >
-                        {isLiked ? (
-                            <FontAwesomeIcon icon={faHeart} />
-                        ) : (
-                            <FontAwesomeIcon icon={faHeartHollow} />
-                        )}
-                        <span>{likeCount}</span>
-                    </button>
+                    <LikeButton
+                        what="post"
+                        id={_id}
+                        isLiked={isLikedByUser}
+                        likeCount={likeCount}
+                    />
                 </div>
                 <div className="flex flex-row flex-1 justify-end gap-3 items-center">
                     {user && (
                         <button
-                            className="w-[20px] rounded-full cursor-pointer hover:bg-zinc-50/5 transition"
+                            className="w-[20px] rounded-full cursor-pointer text-zinc-500 hover:bg-zinc-50/5 transition"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setMenuOpen((p) => !p);
