@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
+import { toast } from "react-toastify";
 
 import { handleFetchError } from "../utils/handleFetchError";
-
-import type { Post } from "../interfaces/post.interface";
 import { NotFound } from "./NotFound";
 import { Spinner } from "../components/Spinner";
 import { PostCard } from "../components/PostCard";
-import { toast } from "react-toastify";
+import { CommentList } from "../components/CommentSection";
+
+import type { Post } from "../interfaces/post.interface";
 
 export function Post() {
     const [post, setPost] = useState<Post | null>(null);
@@ -54,12 +55,12 @@ export function Post() {
         void navigate(-1);
     }
 
-
     return notFound ? (
         <NotFound />
     ) : post ? (
-        <main className="flex-1 flex flex-col items-center gap-6 m-6">
+        <main className="flex flex-col items-center gap-6 m-6">
             <PostCard postData={post} deletePostCb={deletePost}/>
+            <CommentList postId={post._id} />
         </main>
     ) : (
         <Spinner size="large" theme="dark" />
