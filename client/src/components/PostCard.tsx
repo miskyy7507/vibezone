@@ -12,8 +12,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartHollow } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DropdownMenu from "./DropdownMenu";
-import clsx from "clsx";
+import { DropdownMenu } from "./DropdownMenu";
+import { clsx } from "clsx";
 import { DropdownItem } from "./DropdownItem";
 import { Link, useNavigate } from "react-router";
 

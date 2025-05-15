@@ -29,7 +29,7 @@ export function DropdownItem({
             }}
         >
             {icon && <FontAwesomeIcon icon={icon} />}
-            <span>{text}</span>
+            <span className="whitespace-nowrap">{text}</span>
         </button>
     );
 }

@@ -5,7 +5,7 @@ interface DropdownMenuProps {
     children: React.ReactNode;
 }
 
-const DropdownMenu = ({ anchorRef, onClose, children }: DropdownMenuProps) => {
+export function DropdownMenu({ anchorRef, onClose, children }: DropdownMenuProps) {
     const menuRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -46,5 +46,3 @@ const DropdownMenu = ({ anchorRef, onClose, children }: DropdownMenuProps) => {
         </div>
     );
 };
-
-export default DropdownMenu;

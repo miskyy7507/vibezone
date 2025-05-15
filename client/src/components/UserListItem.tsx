@@ -2,11 +2,10 @@ import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import type { User } from "../interfaces/user.interface";
 import { useAuth } from "../hooks/useAuth";
-import DropdownMenu from "./DropdownMenu";
+import { DropdownMenu } from "./DropdownMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faEllipsisVertical,
-    // faUserSlash,
     faHammer,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
@@ -100,15 +99,6 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
                             onClick={() => {setMenuOpen(false); void banUser()}}
                             danger
                         />
-                        {/* <hr className="text-zinc-700" />
-                    <DropdownItem
-                        text="Purge user"
-                        icon={faUserSlash}
-                        onClick={() => {
-                            console.log("test");
-                        }}
-                        danger
-                    /> */}
                     </DropdownMenu>
                 )}
             </div>
