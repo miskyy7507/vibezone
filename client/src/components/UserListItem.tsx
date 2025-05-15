@@ -69,13 +69,13 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
                     <UserNamesDisplay user={user} />
                 </div>
                 {user.aboutDesc && (
-                    <span className="text-gray-400">{user.aboutDesc}</span>
+                    <span className="text-zinc-400">{user.aboutDesc}</span>
                 )}
             </div>
             <div className="flex items-center">
                 {authedUser && (
                     <button
-                        className="w-[20px] cursor-pointer"
+                        className="w-[20px] cursor-pointer text-zinc-500"
                         onClick={(e) => {
                             e.stopPropagation();
                             setMenuOpen((p) => !p);

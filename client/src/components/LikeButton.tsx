@@ -69,7 +69,7 @@ export function LikeButton({
             <button
                 className={clsx(
                     isLiked && "text-pink-500",
-                    "flex items-center gap-x-2 text-zinc-500 enabled:hover:text-pink-500 enabled:cursor-pointer transition"
+                    "flex items-center gap-x-2 text-sm text-zinc-500 enabled:hover:text-pink-500 enabled:cursor-pointer transition"
                 )}
                 onClick={(e) => void handleClick(e)}
                 disabled={disabled}

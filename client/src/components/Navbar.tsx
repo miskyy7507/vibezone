@@ -33,7 +33,7 @@ export function Navbar() {
                 {/* middle section of the navbar */}
                 <NavLink
                     className={({ isActive }) =>
-                        clsx(isActive && "text-pink-500")
+                        clsx("hover:underline", isActive && "text-pink-500")
                     }
                     to="/"
                     end
@@ -43,7 +43,7 @@ export function Navbar() {
                 </NavLink>
                 <NavLink
                     className={({ isActive }) =>
-                        clsx(isActive && "text-pink-500")
+                        clsx("hover:underline", isActive && "text-pink-500")
                     }
                     to="users"
                     end

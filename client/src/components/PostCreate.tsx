@@ -157,7 +157,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     {!collapsed && (
                         <div className="flex flex-col">
                             <UserNamesDisplay user={user} />
-                            <span className="text-gray-500">just now</span>
+                            <span className="text-zinc-500">just now</span>
                         </div>
                     )}
                 </div>
@@ -170,7 +170,6 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     )}
                     ref={textAreaRef}
                     placeholder="💭 What's vibin'?"
-                    rows={1}
                     minRows={1}
                     maxLength={MAX_POST_LENGTH}
                     value={content}

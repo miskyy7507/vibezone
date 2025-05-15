@@ -9,7 +9,7 @@ export function UserNamesDisplay({ user }: { user: User }) {
                 {displayName || `@${username}`}
             </span>
             {displayName && (
-                <span className="text-gray-500 text-sm">@{username}</span>
+                <span className="text-zinc-500 text-sm">@{username}</span>
             )}
         </div>
     );
