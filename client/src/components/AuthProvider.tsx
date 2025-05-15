@@ -12,17 +12,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const response = await fetch("http://localhost:6660/api/profile", {
                 method: "GET",
-                credentials: 'include', // crucial for cookies
+                credentials: "include",
             });
 
             if (response.status === 200) {
-                const user = await response.json() as User;
+                const user = (await response.json()) as User;
                 return user;
             } else if (response.status === 401) {
                 // not logged in, ignore
             } else {
                 console.error(await response.text());
-                alert(`Something went wrong when trying to retrieve logged in user information.`);
+                alert(
+                    `Something went wrong when trying to retrieve logged in user information.`
+                );
             }
         } catch (error) {
             handleFetchError(error);
@@ -42,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [getUser]);
 
     const login = (user: User) => {
-        console.log(user);
         setUser(user);
     };
 
@@ -50,22 +51,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (user === null) return;
 
         try {
-            const response = await fetch("http://localhost:6660/api/auth/logout", {
-                method: "POST",
-                credentials: 'include', // crucial for cookies
-            });
+            const response = await fetch(
+                "http://localhost:6660/api/auth/logout",
+                {
+                    method: "POST",
+                    credentials: "include",
+                }
+            );
 
             if (response.status === 200 || response.status === 401) {
                 setUser(null);
-                document.location.reload();
+                window.location.href = "/";
             } else {
                 console.error(await response.text());
-                alert(`Something went wrong when trying to log out user. Try to reload the page.`);
+                alert(
+                    `Something went wrong when trying to log out user. Try to reload the page.`
+                );
             }
         } catch (error) {
             handleFetchError(error);
         }
-
     };
 
     const value = { user, login, logout };
