@@ -12,7 +12,7 @@ export function CommentList({postId}: {postId: string}) {
     useEffect(() => {
         void (async () => {
             try {
-                const response = await fetch(`http://localhost:6660/api/post/${postId}/comments`, {
+                const response = await fetch(`http://localhost:6660/api/comment/post/${postId}`, {
                     method: "GET",
                     credentials: "include",
                 });
