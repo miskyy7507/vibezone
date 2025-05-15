@@ -4,7 +4,7 @@ import type { Types } from "mongoose";
 import type { IPost } from "../interfaces/post.interface.js";
 import type { IProfile } from "../interfaces/profile.interface.js";
 
-type PopulatedPost = Omit<IPost, "author"> & {
+type PopulatedPost = Omit<IPost, "author" | "usersWhoLiked"> & {
     _id: Types.ObjectId;
     createdAt: string,
     author: Pick<
@@ -38,14 +38,15 @@ export class PostService {
             { $unwind: "$author" },
             {
                 $set: {
-                    likesCount: { $size: "$usersWhoLiked" },
-                    likedByUser: { $in: [profileId, "$usersWhoLiked"] },
+                    likeCount: { $size: "$usersWhoLiked" },
+                    isLikedByUser: { $in: [profileId, "$usersWhoLiked"] },
                 },
             },
             {
                 $unset: ["usersWhoLiked"],
             },
-        ];
+            { $sort: { createdAt: -1 as const } }
+        ]
     }
 
     public async createPost(post: Omit<IPost, "usersWhoLiked">) {

@@ -38,8 +38,8 @@ export class CommentService {
             { $unwind: "$user" },
             {
                 $set: {
-                    likesCount: { $size: "$usersWhoLiked" },
-                    likedByUser: { $in: [profileId, "$usersWhoLiked"] },
+                    likeCount: { $size: "$usersWhoLiked" },
+                    isLikedByUser: { $in: [profileId, "$usersWhoLiked"] },
                 },
             },
             {

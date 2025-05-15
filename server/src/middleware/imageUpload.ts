@@ -27,6 +27,6 @@ export const imageUpload = multer({
     },
     limits: {
         fileSize: 10 * 1024 * 1024, // 10 MB
-        // files: 1
+        files: 1
     },
 });

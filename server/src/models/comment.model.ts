@@ -11,6 +11,7 @@ export const CommentModel = model<IComment>(
                 ref: "Post",
                 required: true,
                 immutable: true,
+                index: 1
             },
             user: {
                 type: Schema.Types.ObjectId,

@@ -60,7 +60,6 @@ const sessionOptions: session.SessionOptions = {
 };
 
 const middleware = [
-    logger,
     session(sessionOptions),
     express.json(),
     errorHandler,
@@ -71,7 +70,8 @@ if (config.nodeEnv === "development") {
         cors({
             origin: "http://localhost:5173",
             credentials: true,
-        })
+        }),
+        logger
     );
 }
 
@@ -88,7 +88,7 @@ process.on("SIGINT", () => {
     console.log("SIGINT received, winding up!");
     app.closeServer(() => {
         console.log("API server closed.");
-        mongoose.connection.destroy(true).catch(() => {
+        mongoose.connection.destroy().catch(() => {
             console.error("Failed to destroy database connection.");
             process.exit(1);
         });

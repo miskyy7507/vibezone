@@ -7,10 +7,12 @@ export const logger: RequestHandler = (request, response, next) => {
     if (request.method === "GET") {
         methodText = chalk.bgGreenBright(request.method);
     } else if (request.method === "POST") {
-        methodText = chalk.bgBlueBright(request.method);
+        methodText = chalk.bgYellowBright(request.method);
     } else if (request.method === "DELETE") {
         methodText = chalk.bgRedBright(request.method);
     } else if (request.method === "PUT") {
+        methodText = chalk.bgBlueBright(request.method);
+    } else if (request.method === "PATCH") {
         methodText = chalk.bgMagentaBright(request.method);
     } else {
         methodText = chalk.bgWhiteBright(request.method);

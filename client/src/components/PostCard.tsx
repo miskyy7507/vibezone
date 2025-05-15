@@ -181,7 +181,10 @@ export function PostCard({
                             isLiked && "text-pink-500",
                             "flex items-center space-x-2 enabled:hover:text-pink-500 enabled:cursor-pointer transition"
                         )}
-                        onClick={() => void likeButtonClick()}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            void likeButtonClick();
+                        }}
                         disabled={likeButtonDisabled}
                     >
                         {isLiked ? (
