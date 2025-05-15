@@ -51,25 +51,6 @@ export function PostCard({
         }
     }, [user]);
 
-    useEffect(() => {
-        // If post text content is short enough, we can show it with large font size. But only when post does not contain an image.
-
-        if (imageUrl || postTextContent.current === null) return;
-        const target = postTextContent.current;
-
-        target.style.fontSize = "30px";
-
-        if (
-            target.scrollHeight >
-            parseInt(getComputedStyle(target).lineHeight) * 2.5
-        ) {
-            // if large font size does not fit in two lines, switch to normal font size
-            target.style.fontSize = "16px";
-        } else {
-            target.style.fontSize = "30px";
-        }
-    }, [imageUrl, content]);
-
     const likeButtonClick = async () => {
         setLikeButtonDisabled(true);
 
@@ -134,14 +115,31 @@ export function PostCard({
     }
 
     return (
-        <article className={clsx("flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700", link && "hover:shadow-2xl cursor-pointer transition-shadow")}
-        onClick={(e) => {goToPostPage(e)}}>
+        <article
+            className={clsx(
+                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700",
+                link && "hover:shadow-2xl cursor-pointer transition-shadow"
+            )}
+            onClick={(e) => {
+                goToPostPage(e);
+            }}
+        >
             <div className="flex flex-row gap-3">
-                <Link to={`/user/${author._id}`} onClick={(e) => {e.stopPropagation()}}>
+                <Link
+                    to={`/user/${author._id}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                >
                     <ProfilePicture user={author} />
                 </Link>
                 <div className="flex flex-col">
-                    <Link to={`/user/${author._id}`} onClick={(e) => {e.stopPropagation()}}>
+                    <Link
+                        to={`/user/${author._id}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
                         <UserNamesDisplay user={author} />
                     </Link>
                     <span
@@ -158,7 +156,10 @@ export function PostCard({
 
             <p
                 ref={postTextContent}
-                className="px-0.5 mb-1 text-base/[1.2] text-zinc-100 break-words whitespace-pre-line"
+                className={clsx(
+                    "px-0.5 mb-1 text-zinc-100 break-words whitespace-pre-line",
+                    (!imageUrl && content.length <= 60 && ((content.match(/\n/g))||[]).length <= 2) ? "text-3xl/[1.2]" : "text-base/[1.2]" // If post content is short enough, we can show it with large font size.
+                )}
             >
                 {content}
             </p>

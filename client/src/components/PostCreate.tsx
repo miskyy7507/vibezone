@@ -14,6 +14,7 @@ import {
 import { Post } from "../interfaces/post.interface";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import TextareaAutosize from 'react-textarea-autosize';
 
 export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const MAX_POST_LENGTH = 150;
@@ -21,35 +22,17 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const [isFocused, setIsFocused] = useState(false);
     const [content, setContent] = useState("");
     const [collapsed, setCollapsed] = useState(true);
-    const [remainingChars, setRemainingChars] = useState(MAX_POST_LENGTH);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+    const remainingChars = MAX_POST_LENGTH - content.length;
+
     const { user, logout } = useAuth();
 
     const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-        const target = e.currentTarget;
-
         setCollapsed(false);
-
-        const newContent = e.currentTarget.value;
-
-        setContent(newContent);
-        setRemainingChars(MAX_POST_LENGTH - newContent.length);
-
-        // If post content is short enough, we can show it with large font size.
-
-        target.style.height = "36px"; // set to height of one line of large font size to force scroll overflow
-        target.style.fontSize = "30px";
-
-        if (target.scrollHeight > parseInt(getComputedStyle(target).lineHeight) * 2.5) {
-            // if large font size does not fit in two lines, switch to normal font size
-            target.style.fontSize = "16px";
-        } else {
-            target.style.fontSize = "30px";
-        }
-        target.style.height = `${target.scrollHeight.toString()}px`;
+        setContent(e.currentTarget.value);
     };
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +138,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         >
             <div
                 className={clsx(
-                    "flex gap-4 text-zinc-100 relative",
+                    "flex gap-4 text-zinc-100 relative cursor-text",
                     collapsed ? "flex-row items-center" : "flex-col"
                 )}
                 onFocus={() => {
@@ -179,18 +162,20 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     )}
                 </div>
 
-                <textarea
+                <TextareaAutosize
                     className={clsx(
-                        "px-0.5 text-3xl resize-none focus:outline-0",
-                        !collapsed && "mb-2.5"
+                        "px-0.5 resize-none focus:outline-0",
+                        !collapsed && "mb-2.5",
+                        (!selectedImage && content.length <= 60 && ((content.match(/\n/g))||[]).length <= 2) ? "text-3xl" : "text-base" // If post content is short enough, we can show it with large font size.
                     )}
                     ref={textAreaRef}
                     placeholder="💭 What's vibin'?"
                     rows={1}
+                    minRows={1}
                     maxLength={MAX_POST_LENGTH}
                     value={content}
                     onInput={handleInput}
-                ></textarea>
+                ></TextareaAutosize>
                 {remainingChars / MAX_POST_LENGTH < 1 / 3 && (
                     <span
                         className={clsx(
