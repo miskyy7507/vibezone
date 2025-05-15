@@ -52,7 +52,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        let imageUrl: string | null = null;
+        let imageUrl: string | undefined;
 
         if (selectedImage) {
             const formData = new FormData();
