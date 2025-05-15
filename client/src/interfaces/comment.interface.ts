@@ -5,5 +5,6 @@ export interface Comment {
     user: User;
     content: string;
     likeCount: number;
+    isLikedByUser: boolean;
     createdAt: string;
 }
