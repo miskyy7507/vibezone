@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { clsx } from "clsx";
 
@@ -11,7 +11,7 @@ import { handleFetchError } from "../utils/handleFetchError";
 export function Login() {
     // type LoginFormNames = "login" | "password";
 
-    const { login } = useAuth();
+    const { user, login } = useAuth();
 
     const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -57,6 +57,13 @@ export function Login() {
             setIsLoggingIn(false);
         }
     };
+
+    // if user is already logged in, move it to the home page
+    useEffect(() => {
+        if (user) {
+            void navigate("/");
+        }
+    });
 
     return (
         <main className="m-auto p-4 pb-16 max-w-2xl w-full">

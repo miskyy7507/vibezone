@@ -5,6 +5,8 @@ import { TextFormItemOptions } from "../interfaces/itemInfo.interface";
 import { ValidationErrorResponse } from "../interfaces/validationErrorResponse.interface";
 import { useForm } from "../hooks/useForm";
 import { handleFetchError } from "../utils/handleFetchError";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
 
 export function Signup() {
     type RegisterFormNames =
@@ -41,6 +43,8 @@ export function Signup() {
             required: true,
         },
     } as const;
+
+    const { user } = useAuth();
 
     const navigate = useNavigate();
 
@@ -120,6 +124,13 @@ export function Signup() {
             }
         } catch (error) {
             handleFetchError(error);
+        }
+    });
+
+    // if user is already logged in, move it to the home page
+    useEffect(() => {
+        if (user) {
+            void navigate("/");
         }
     });
 
