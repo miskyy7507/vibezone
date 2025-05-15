@@ -1,39 +1,107 @@
-import { NavLink } from "react-router";
+import { useState, useRef } from "react";
+import { NavLink, useNavigate } from "react-router";
+import { clsx } from "clsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faHouse,
+    faRightFromBracket,
+    faUser,
+    faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+
 import { useAuth } from "../hooks/useAuth";
 import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
+import { DropdownMenu } from "./DropdownMenu";
+import { DropdownItem } from "./DropdownItem";
 
 export function Navbar() {
     const { user, logout } = useAuth();
 
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
+
+    const navigate = useNavigate();
+
     return (
         <nav className="w-full bg-zinc-900/75 flex py-4 px-6 justify-between items-center shadow-lg sticky top-0 backdrop-blur-sm z-1">
-            <div className="flex justify-start flex-1 gap-x-4">Left</div>
+            <div className="flex justify-start flex-1 gap-x-4">
+                {/* left section of the navbar */}
+            </div>
             <div className="flex justify-center flex-1 gap-x-4">
-                <NavLink to="/" end>
-                    Home
+                {/* middle section of the navbar */}
+                <NavLink
+                    className={({ isActive }) =>
+                        clsx(isActive && "text-pink-500")
+                    }
+                    to="/"
+                    end
+                >
+                    <FontAwesomeIcon icon={faHouse} />
+                    <span className="pl-2">Home</span>
                 </NavLink>
-                <NavLink to="users" end>
-                    Users
+                <NavLink
+                    className={({ isActive }) =>
+                        clsx(isActive && "text-pink-500")
+                    }
+                    to="users"
+                    end
+                >
+                    <FontAwesomeIcon icon={faUsers} />
+                    <span className="pl-2">Users</span>
                 </NavLink>
             </div>
             <div className="flex justify-end flex-1 gap-x-4">
+                {/* right section of the navbar */}
                 {user ? (
-                    <div className="flex gap-x-4" onClick={logout}>
-                        <UserNamesDisplay
-                            user={user}
-                        />
-                        <div className="-m-[4px]">
-                            <ProfilePicture
-                                user={user}
-                                size="small"
-                            />
-                        </div>
-                    </div>
+                    <>
+                        <button
+                            ref={dropdownBtnRef}
+                            className="flex gap-x-4 p-3 -m-3 rounded-xl hover:bg-zinc-50/5 transition"
+                            onClick={() => {
+                                setMenuOpen(true);
+                            }}
+                        >
+                            <div className="-m-[4px]">
+                                <ProfilePicture user={user} size="small" />
+                            </div>
+                            <UserNamesDisplay user={user} />
+                        </button>
+                        {menuOpen && (
+                            <DropdownMenu
+                                anchorRef={dropdownBtnRef}
+                                onClose={() => {
+                                    setMenuOpen(false);
+                                }}
+                            >
+                                <DropdownItem
+                                    text="View profile"
+                                    icon={faUser}
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        void navigate(`/user/${user._id}`);
+                                    }}
+                                />
+                                <hr className="text-zinc-700" />
+                                <DropdownItem
+                                    text="Sign out"
+                                    icon={faRightFromBracket}
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        logout();
+                                    }}
+                                    danger
+                                />
+                            </DropdownMenu>
+                        )}
+                    </>
                 ) : (
-                    <NavLink to="login" end>
-                        Sign in
-                    </NavLink>
+                    <button className="flex gap-x-4 p-3 -m-3 rounded-xl hover:bg-zinc-50/5 transition">
+                        <NavLink to="login" end>
+                            Sign in
+                        </NavLink>
+                    </button>
                 )}
             </div>
         </nav>
