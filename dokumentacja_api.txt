@@ -116,7 +116,9 @@ response:
     200: OK {imageUrl: string}
     400: Bad request (kiedy żadne zdjęcie nie znajdzie się w requestcie)
     401: Unauthorized
-------------------------------------
+
+====================================
+
 POST /api/comment/:postId
 Dodanie komentarza do postu.
 session cookie required
@@ -127,6 +129,7 @@ response:
     200: OK - utworzono post
     400: Validation error
     401: Unauthorized - użytkownik nie jest zalogowany, nie może postować.
+
 ------------------------------------
 GET /api/comment/post/:postId
 Otrzymanie listy wszystkich komentarzy do posta.
@@ -135,6 +138,7 @@ response:
     400: Validation error - złe id
 {
     _id: ObjectId,
+    post: ObjectId,
     user: {
         _id: ObjectId,
         username: string,
@@ -147,7 +151,7 @@ response:
     isLikedByUser: boolean
 }[]
 
-====================================
+------------------------------------
 DELETE /api/comment/:id
 Usunięcie komentarza o danym id. Tylko autor komentarza lub moderator może usunąć komentarz.
 session cookie required
@@ -156,6 +160,7 @@ response:
     401: Unauthorized - użytkownik nie jest zalogowany.
     404: Not found - nie ma komentarza o takim id
     403: Forbidden - brak uprawnień do usunięcia komentarza (moderator lub autor posta)
+
 ------------------------------------
 PUT /api/comment/:id/like
 Polubienie komentarza.
