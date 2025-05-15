@@ -11,6 +11,7 @@ import { PostController } from "./controllers/post.controller.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { ProfileController } from "./controllers/profile.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { CommentController } from "./controllers/comment.controller.js";
 
 // Database connection
 try {
@@ -78,7 +79,12 @@ if (config.nodeEnv === "development") {
 // API server creation
 const app = new App(
     middleware,
-    [new PostController(), new AuthController(), new ProfileController()],
+    [
+        new PostController(),
+        new AuthController(),
+        new ProfileController(),
+        new CommentController(),
+    ],
     { "trust proxy": 1 }
 );
 
