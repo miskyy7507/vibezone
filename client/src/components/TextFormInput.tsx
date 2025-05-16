@@ -30,7 +30,7 @@ export function TextFormInput({
             <input
                 className={clsx(
                     "peer border border-zinc-200 rounded-xl p-5 focus:outline-3 focus:outline-zinc-200 focus:outline-offset-1",
-                    (errorMsg !== undefined) && "outline-3 outline-red-500 outline-offset-1"
+                    (errorMsg !== undefined) && "outline-3 outline-red-400 outline-offset-1"
                 )}
                 name={name}
                 value={value}
@@ -42,7 +42,7 @@ export function TextFormInput({
                 onBlur={onBlur}
             />
             {errorMsg ? (
-                <p className="text-red-500 text-sm whitespace-pre-line">{errorMsg}</p>
+                <p className="text-red-400 text-sm whitespace-pre-line">{errorMsg}</p>
             ) : (
                 tip && <p className="hidden peer-focus:block text-sm">{tip}</p>
             )}

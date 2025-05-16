@@ -9,7 +9,7 @@ import {
     faHammer,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { DropdownItem } from "./DropdownItem";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
@@ -19,12 +19,6 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
     const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
 
     const { user: authedUser, logout } = useAuth();
-
-    const navigate = useNavigate();
-
-    const handleClick = () => {
-        void navigate(`/user/${user._id}`);
-    };
 
     const banUser = async () => {
         const confirmation = confirm(
@@ -60,47 +54,44 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
 
     return (
         <article
-            className="flex flex-row gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700 hover:shadow-2xl hover:cursor-pointer transition-shadow"
-            onClick={handleClick}
+            className="flex flex-row max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700 hover:shadow-2xl hover:cursor-pointer transition-shadow"
         >
-            <ProfilePicture user={user} />
-            <div className="flex flex-1 flex-col justify-center">
-                <div className="flex flex-row space-x-2 items-center">
+            <Link to={`/user/${user._id}`} className="flex-1 flex flex-row px-5 py-4 gap-3 items-center">
+                <ProfilePicture user={user} />
+                <div className="flex flex-col justify-center">
                     <UserNamesDisplay user={user} />
+                    {user.aboutDesc && (
+                        <span className="text-zinc-400">{user.aboutDesc}</span>
+                    )}
                 </div>
-                {user.aboutDesc && (
-                    <span className="text-zinc-400">{user.aboutDesc}</span>
-                )}
-            </div>
-            <div className="flex items-center">
-                {authedUser && (
-                    <button
-                        className="w-[20px] cursor-pointer text-zinc-500"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setMenuOpen((p) => !p);
-                        }}
-                        ref={dropdownBtnRef}
-                    >
-                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                    </button>
-                )}
-                {menuOpen && (
-                    <DropdownMenu
-                        anchorRef={dropdownBtnRef}
-                        onClose={() => {
-                            setMenuOpen(false);
-                        }}
-                    >
-                        <DropdownItem
-                            text="Ban user"
-                            icon={faHammer}
-                            onClick={() => {setMenuOpen(false); void banUser()}}
-                            danger
-                        />
-                    </DropdownMenu>
-                )}
-            </div>
+            </Link>
+            {authedUser && (
+                <button
+                    className="my-8 px-3.5 border-l border-zinc-700 cursor-pointer text-zinc-500"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen((p) => !p);
+                    }}
+                    ref={dropdownBtnRef}
+                >
+                    <FontAwesomeIcon icon={faEllipsisVertical} />
+                </button>
+            )}
+            {menuOpen && (
+                <DropdownMenu
+                    anchorRef={dropdownBtnRef}
+                    onClose={() => {
+                        setMenuOpen(false);
+                    }}
+                >
+                    <DropdownItem
+                        text="Ban user"
+                        icon={faHammer}
+                        onClick={() => {setMenuOpen(false); void banUser()}}
+                        danger
+                    />
+                </DropdownMenu>
+            )}
         </article>
     );
 }

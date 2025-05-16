@@ -5,6 +5,7 @@ import type { Post } from "../interfaces/post.interface";
 import { useAuth } from "../hooks/useAuth";
 import { handleFetchError } from "../utils/handleFetchError";
 import {
+    faArrowUpRightFromSquare,
     faEllipsisVertical,
     faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
@@ -12,10 +13,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DropdownMenu } from "./DropdownMenu";
 import { clsx } from "clsx";
 import { DropdownItem } from "./DropdownItem";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { toast } from "react-toastify";
 import { CreationDate } from "./CreationDate";
 import { LikeButton } from "./LikeButton";
+import { DropdownLink } from "./DropdownLink";
 
 export function PostCard({
     postData,
@@ -32,8 +34,6 @@ export function PostCard({
 
     const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
-
-    const navigate = useNavigate();
 
     const deletePost = async () => {
         const confirmation = confirm(`WARNING!\nAre you sure you want to delete this post? This cannot be undone!`);
@@ -62,21 +62,11 @@ export function PostCard({
         }
     };
 
-    const goToPostPage = (e: React.MouseEvent<HTMLElement>) => {
-        if (!link) return;
-        e.stopPropagation();
-        void navigate(`/post/${_id}`);
-    }
-
     return (
         <article
             className={clsx(
                 "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700",
-                link && "hover:shadow-2xl cursor-pointer transition-shadow"
             )}
-            onClick={(e) => {
-                goToPostPage(e);
-            }}
         >
             <div className="flex flex-row gap-3">
                 <Link
@@ -128,18 +118,16 @@ export function PostCard({
                     />
                 </div>
                 <div className="flex flex-row flex-1 justify-end gap-3 items-center">
-                    {user && (
-                        <button
-                            className="w-[20px] rounded-full cursor-pointer text-zinc-500 hover:bg-zinc-50/5 transition"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setMenuOpen((p) => !p);
-                            }}
-                            ref={dropdownBtnRef}
-                        >
-                            <FontAwesomeIcon icon={faEllipsisVertical} />
-                        </button>
-                    )}
+                    <button
+                        className="w-[20px] rounded-full cursor-pointer text-zinc-500 hover:bg-zinc-50/5 transition"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpen((p) => !p);
+                        }}
+                        ref={dropdownBtnRef}
+                    >
+                        <FontAwesomeIcon icon={faEllipsisVertical} />
+                    </button>
                     {menuOpen && (
                         <DropdownMenu
                             anchorRef={dropdownBtnRef}
@@ -147,6 +135,13 @@ export function PostCard({
                                 setMenuOpen(false);
                             }}
                         >
+                            {link && (
+                            <DropdownLink
+                                text="Go to post"
+                                icon={faArrowUpRightFromSquare}
+                                link={`/post/${_id}`}
+                            />)}
+                            {user && (
                             <DropdownItem
                                 text="Delete"
                                 icon={faTrashCan}
@@ -155,7 +150,7 @@ export function PostCard({
                                     setMenuOpen(false);
                                 }}
                                 danger
-                            />
+                            />)}
                         </DropdownMenu>
                     )}
                 </div>

@@ -128,9 +128,9 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     return (
         <form
             className={clsx(
-                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-2xl ring-1 transition",
-                isFocused ? "ring-zinc-200" : "ring-zinc-700",
-                !isFocused && collapsed && "opacity-65"
+                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl ring-zinc-700 shadow-sm ring-1 transition",
+                isFocused && "!ring-zinc-200 !shadow-2xl",
+                (!isFocused && collapsed) && "opacity-65"
             )}
             onSubmit={(e) => {
                 void handleSubmit(e);
@@ -200,7 +200,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             <button
                                 type="button"
                                 onClick={removeSelectedImage}
-                                className="absolute top-2 right-2 size-[32px] bg-red-500 text-white rounded-full"
+                                className="absolute top-2 right-2 size-[32px] bg-red-400 text-white rounded-full"
                                 title="Remove image"
                             >
                                 <FontAwesomeIcon icon={faXmark} />

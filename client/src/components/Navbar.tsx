@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink } from "react-router";
 import { clsx } from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +14,7 @@ import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import { DropdownMenu } from "./DropdownMenu";
 import { DropdownItem } from "./DropdownItem";
+import { DropdownLink } from "./DropdownLink";
 
 export function Navbar() {
     const { user, logout } = useAuth();
@@ -22,10 +23,8 @@ export function Navbar() {
 
     const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
 
-    const navigate = useNavigate();
-
     return (
-        <nav className="w-full bg-zinc-900/75 flex py-4 px-6 justify-between items-center shadow-lg sticky top-0 backdrop-blur-sm z-1">
+        <nav className="w-full bg-zinc-900/75 flex py-4 px-6 justify-between items-center shadow-xl sticky top-0 backdrop-blur-sm z-1">
             <div className="flex justify-start flex-1 gap-x-4">
                 {/* left section of the navbar */}
             </div>
@@ -76,15 +75,11 @@ export function Navbar() {
                                     setMenuOpen(false);
                                 }}
                             >
-                                <DropdownItem
+                                <DropdownLink
                                     text="View profile"
                                     icon={faUser}
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        void navigate(`/user/${user._id}`);
-                                    }}
+                                    link={`/user/${user._id}`}
                                 />
-                                <hr className="text-zinc-700" />
                                 <DropdownItem
                                     text="Sign out"
                                     icon={faRightFromBracket}
