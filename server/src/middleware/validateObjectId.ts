@@ -16,7 +16,7 @@ export function validateObjectId(...idParams: string[]) {
         ) {
             return response
                 .status(400)
-                .json({ success: false, message: "Malformed id" });
+                .json({ error: "Malformed id" });
         }
 
         next();

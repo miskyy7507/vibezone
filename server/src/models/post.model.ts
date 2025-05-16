@@ -15,6 +15,7 @@ export const PostModel = model<IPost>(
             content: { type: String, required: true },
             imageUrl: { type: String },
             usersWhoLiked: [{ type: Schema.Types.ObjectId, ref: "Profile", required: true }],
+            commentCount: { type: Number, required: true, default: 0 }
         },
         {
             timestamps: true,

@@ -5,4 +5,5 @@ export interface IPost {
     content: string;
     imageUrl?: string;
     usersWhoLiked: Types.ObjectId[];
+    commentCount: number;
 }

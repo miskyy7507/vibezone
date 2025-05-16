@@ -48,7 +48,7 @@ export class PostService {
         ]
     }
 
-    public async createPost(post: Omit<IPost, "usersWhoLiked">) {
+    public async createPost(post: Omit<IPost, "usersWhoLiked" | "commentCount">) {
         const postModel = new PostModel(post);
         const newPost = await postModel.save();
 

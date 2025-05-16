@@ -1,4 +1,5 @@
 import { CommentModel } from "../models/comment.model.js";
+import { PostModel } from "../models/post.model.js";
 
 import type { IComment } from "../interfaces/comment.interface.js";
 import type { Types } from "mongoose";
@@ -52,6 +53,8 @@ export class CommentService {
         const model = new CommentModel(comment);
         const newComment = await model.save();
 
+        await PostModel.findByIdAndUpdate(newComment.post, { $inc: { commentCount: 1 } });
+
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return (await this.getById(newComment._id))!;
     }
@@ -76,13 +79,22 @@ export class CommentService {
         ]);
     }
 
+    // public async getPostCommentsCount(postId: Types.ObjectId) {
+    //     return await CommentModel.countDocuments({ post: postId });
+    // }
+
     public async removeCommentById(id: Types.ObjectId) {
-        return await CommentModel.findByIdAndDelete(id);
+        const removedComment = await CommentModel.findByIdAndDelete(id);
+        if (!removedComment) return null;
+
+        await PostModel.findByIdAndUpdate(removedComment.post, { $inc: { commentCount: -1 } });
+
+        return removedComment;
     }
 
-    public async removeUserPosts(userId: Types.ObjectId) {
-        return await CommentModel.deleteMany({ user: userId });
-    }
+    // public async removeUserComments(userId: Types.ObjectId) {
+    //     return await CommentModel.deleteMany({ user: userId });
+    // }
 
     public async likeComment(id: Types.ObjectId, userId: Types.ObjectId) {
         await CommentModel.findByIdAndUpdate(id, {
