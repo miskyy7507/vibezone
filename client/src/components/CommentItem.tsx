@@ -22,7 +22,7 @@ export function CommentItem({comment}: {comment: Comment}) {
                     <span className="text-zinc-500">·</span>
                     <CreationDate dateString={createdAt} />
                 </div>
-                <p className="text-base text-zinc-100 break-words whitespace-pre-line">{content}</p>
+                <p className="text-base text-zinc-100 wrap-anywhere whitespace-pre-line">{content}</p>
                 <LikeButton 
                     what="comment"
                     id={_id}
@@ -31,7 +31,7 @@ export function CommentItem({comment}: {comment: Comment}) {
                 />
             </div>
             <button
-                className="size-[32px] my-auto rounded-full enabled:hover:bg-zinc-50/5 transition disabled:opacity-60 enabled:cursor-poigraynter"
+                className="size-[32px] my-auto rounded-full enabled:hover:bg-zinc-50/5 transition disabled:opacity-60 enabled:cursor-pointer"
             >
                 <FontAwesomeIcon icon={faEllipsisVertical} />
             </button>
