@@ -1,23 +1,28 @@
 import { useState, useRef } from "react";
-import { ProfilePicture } from "./ProfilePicture";
-import { UserNamesDisplay } from "./UserNamesDisplay";
-import type { Post } from "../interfaces/post.interface";
-import { useAuth } from "../hooks/useAuth";
-import { handleFetchError } from "../utils/handleFetchError";
+import { clsx } from "clsx";
+import { Link } from "react-router";
+import { toast } from "react-toastify";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faArrowUpRightFromSquare,
     faEllipsisVertical,
     faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMessage } from "@fortawesome/free-regular-svg-icons";
+
+import { useAuth } from "../hooks/useAuth";
+import { handleFetchError } from "../utils/handleFetchError";
+
+import { UserNamesDisplay } from "./UserNamesDisplay";
+import { ProfilePicture } from "./ProfilePicture";
 import { DropdownMenu } from "./DropdownMenu";
-import { clsx } from "clsx";
 import { DropdownItem } from "./DropdownItem";
-import { Link } from "react-router";
-import { toast } from "react-toastify";
 import { CreationDate } from "./CreationDate";
 import { LikeButton } from "./LikeButton";
 import { DropdownLink } from "./DropdownLink";
+
+import type { Post } from "../interfaces/post.interface";
 
 export function PostCard({
     postData,
@@ -30,7 +35,7 @@ export function PostCard({
 }) {
     const { user, logout } = useAuth();
 
-    const { _id, author, content, imageUrl, createdAt, likeCount, isLikedByUser } = postData;
+    const { _id, author, content, imageUrl, createdAt, likeCount, commentCount, isLikedByUser } = postData;
 
     const dropdownBtnRef = useRef<HTMLButtonElement | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -87,7 +92,9 @@ export function PostCard({
                     >
                         <UserNamesDisplay user={author} />
                     </Link>
-                    <CreationDate dateString={createdAt} />
+                    <Link className="hover:underline" to={`/post/${_id}`}>
+                        <CreationDate dateString={createdAt} />
+                    </Link>
                 </div>
             </div>
 
@@ -109,13 +116,21 @@ export function PostCard({
                 </div>
             )}
             <div className="-mx-5 px-4.5 pt-4 flex items-center text-sm border-t border-zinc-700 ">
-                <div className="flex flex-row flex-1 justify-start">
+                <div className="flex flex-row justify-start gap-8">
                     <LikeButton
                         what="post"
                         id={_id}
                         isLiked={isLikedByUser}
                         likeCount={likeCount}
                     />
+                    <Link
+                        className="flex items-center gap-x-2 text-sm text-zinc-500 hover:text-zinc-100 cursor-pointer transition"
+                        to={`/post/${_id}#comments`}
+                        // onClick={(e) => void handleClick(e)}
+                    >
+                        <FontAwesomeIcon icon={faMessage} />
+                        <span>{commentCount}</span>
+                    </Link>
                 </div>
                 <div className="flex flex-row flex-1 justify-end gap-3 items-center">
                     <button

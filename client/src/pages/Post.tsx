@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 
 import { handleFetchError } from "../utils/handleFetchError";
 import { NotFound } from "./NotFound";
 import { Spinner } from "../components/Spinner";
 import { PostCard } from "../components/PostCard";
-import { CommentList } from "../components/CommentSection";
+import { CommentSection } from "../components/CommentSection";
 
 import type { Post } from "../interfaces/post.interface";
 
@@ -17,6 +17,7 @@ export function Post() {
     const { postId } = useParams();
 
     const navigate = useNavigate();
+    const { hash } = useLocation();
 
     useEffect(() => {
         if (!postId || !/^[a-f0-9]{24}$/.test(postId)) {
@@ -60,7 +61,7 @@ export function Post() {
     ) : post ? (
         <main className="flex flex-col items-center gap-6 m-6">
             <PostCard postData={post} deletePostCb={deletePost}/>
-            <CommentList postId={post._id} />
+            <CommentSection postId={post._id} commentCount={post.commentCount} focus={hash === "#comments"} />
         </main>
     ) : (
         <Spinner size="large" theme="dark" />

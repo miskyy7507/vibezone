@@ -4,7 +4,7 @@ import { UserNamesDisplay } from "./UserNamesDisplay";
 import TextareaAutosize from "react-textarea-autosize";
 
 import type { Comment } from "../interfaces/comment.interface";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
@@ -13,16 +13,25 @@ import { toast } from "react-toastify";
 
 export function CommentCreate({
     addComment,
-    postId
+    postId,
+    focus
 }: {
     addComment: (comment: Comment) => void;
     postId: string;
+    focus: boolean;
 }) {
     const MAX_COMMENT_LENGTH = 150;
 
     const [content, setContent] = useState("");
 
+    const textArea = useRef<HTMLTextAreaElement | null>(null);
+
     const { user, logout } = useAuth();
+
+    useEffect(() => {
+        if (!focus) return;
+        textArea.current?.focus();
+    }, [focus])
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -73,6 +82,7 @@ export function CommentCreate({
             <div className="flex flex-col flex-1 relative">
                 <UserNamesDisplay user={user} />
                 <TextareaAutosize
+                    ref={textArea}
                     className="text-base mb-3.5 resize-none border-b border-zinc-400 focus:outline-0"
                     placeholder="💬 Write a comment..."
                     value={content}

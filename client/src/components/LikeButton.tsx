@@ -68,8 +68,8 @@ export function LikeButton({
         <div className="flex flex-row flex-1 justify-start">
             <button
                 className={clsx(
-                    isLiked && "text-pink-500",
-                    "flex items-center gap-x-2 text-sm text-zinc-500 enabled:hover:text-pink-500 enabled:cursor-pointer transition"
+                    "flex items-center gap-x-2 text-sm text-zinc-500 enabled:hover:text-pink-500 enabled:cursor-pointer transition",
+                    isLiked && "!text-pink-500",
                 )}
                 onClick={(e) => void handleClick(e)}
                 disabled={disabled}
