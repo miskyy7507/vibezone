@@ -6,7 +6,7 @@ export function ProfilePicture({
     size = "normal",
 }: {
     user: User;
-    size?: "small" | "normal";
+    size?: "small" | "normal" | "large";
 }) {
     const { profilePictureUri, displayName, username } = user;
 
@@ -17,6 +17,7 @@ export function ProfilePicture({
     const sizeMap = {
         small: 32,
         normal: 48,
+        large: 128,
     };
 
     const sizePx = `${sizeMap[size].toString()}px`;
