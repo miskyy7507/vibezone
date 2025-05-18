@@ -38,6 +38,8 @@ export class ProfileController implements Controller {
         this.router.delete("/picture", auth, this.removePicture);
 
         this.router.post("/:id/ban", validateObjectId("id"), auth, this.banUser);
+
+        this.router.get("/:id/posts", validateObjectId("id"), this.getUserPosts);
     }
 
     private getAllProfiles: RequestHandler = async (request, response, next) => {
@@ -168,6 +170,28 @@ export class ProfileController implements Controller {
             await this.postService.removeUserPosts(_id);
             await this.userService.deactivateAccount(_id);
             return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
+        }
+    }
+
+    private getUserPosts: RequestHandler = async (request, response, next) => {
+        const { id } = request.params;
+
+        const profileId = request.session.profileId
+            ? new Types.ObjectId(request.session.profileId)
+            : undefined;
+
+        try {
+            const author = await this.profileService.getById(
+                new Types.ObjectId(id)
+            );
+            if (!author) {
+                return response.status(404).json({ error: "Not found" });
+            }
+            const posts = await this.postService.getUserPosts(author._id, profileId);
+            return response.status(200).json(posts);
         } catch (error) {
             next(error);
             return;

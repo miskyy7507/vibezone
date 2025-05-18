@@ -72,6 +72,14 @@ export class PostService {
         ]);
     }
 
+    public async getUserPosts(author: Types.ObjectId, profileId?: Types.ObjectId) {
+        return await PostModel.aggregate<PopulatedPost>([
+            { $match: { author } },
+            ...this.populatedPostPipeline(profileId),
+            { $sort: { createdAt: -1 } }
+        ]);
+    }
+
     public async removePostId(id: Types.ObjectId) {
         return await PostModel.findByIdAndDelete(id);
     }

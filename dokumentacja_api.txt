@@ -264,3 +264,8 @@ response:
     404: użytkownik nie znaleziony
     403: Forbidden - użytkownik nie ma moda
     401: Unauthorized - niezalogowany
+
+GET /profile/:id/posts
+Pobierz wszystkie posty autorstwa użytkownika z ID :id.
+response:
+    200: OK - lista postów
