@@ -13,6 +13,7 @@ import { Link } from "react-router";
 import { DropdownItem } from "./DropdownItem";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb: (id: string) => void; }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -30,7 +31,7 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
 
         try {
             const response = await fetch(
-                `http://localhost:6660/api/profile/${_id}/ban`,
+                `${apiUrl}/profile/${_id}/ban`,
                 {
                     method: "POST",
                     credentials: "include",

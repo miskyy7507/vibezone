@@ -1,4 +1,5 @@
-import { User } from "../interfaces/user.interface";
+import { uploadsUrl } from "../config";
+import type { User } from "../interfaces/user.interface";
 
 export function ProfilePicture({
     user,
@@ -24,7 +25,7 @@ export function ProfilePicture({
         <img
             style={{ width: sizePx, height: sizePx }}
             className="size-12 rounded-full object-cover"
-            src={profilePictureUri ?? "/pfp_placeholder.svg"}
+            src={profilePictureUri ? `${uploadsUrl}/${profilePictureUri}` : "/pfp_placeholder.svg"}
             alt={altText}
         />
     );

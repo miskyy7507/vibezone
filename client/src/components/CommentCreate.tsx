@@ -3,13 +3,15 @@ import { ProfilePicture } from "./ProfilePicture";
 import { UserNamesDisplay } from "./UserNamesDisplay";
 import TextareaAutosize from "react-textarea-autosize";
 
-import type { Comment } from "../interfaces/comment.interface";
 import { useState, useRef, useEffect } from "react";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
+
+import type { Comment } from "../interfaces/comment.interface";
 
 export function CommentCreate({
     addComment,
@@ -37,7 +39,7 @@ export function CommentCreate({
         e.preventDefault();
 
         try {
-            const response = await fetch(`http://localhost:6660/api/comment/${postId}`, {
+            const response = await fetch(`${apiUrl}/comment/${postId}`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

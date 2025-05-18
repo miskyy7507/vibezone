@@ -1,0 +1,37 @@
+services:
+  mongo:
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+
+  server:
+    build:
+      context: ./server
+    depends_on:
+      - mongo
+    expose:
+      - "5000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/dbname
+      - IMAGE_UPLOAD_PATH=/uploads
+    volumes:
+      - uploads:/uploads
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - server
+    environment:
+      VITE_API_URL: "/api"
+    volumes:
+      - uploads:/uploads
+
+volumes:
+  mongo-data:
+  uploads:

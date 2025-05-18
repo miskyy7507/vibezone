@@ -15,6 +15,7 @@ import { Post } from "../interfaces/post.interface";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
 import TextareaAutosize from 'react-textarea-autosize';
+import { apiUrl } from "../config";
 
 export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const MAX_POST_LENGTH = 150;
@@ -60,7 +61,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
 
             try {
                 const response = await fetch(
-                    "http://localhost:6660/api/post/image",
+                    `${apiUrl}/post/image`,
                     {
                         method: "POST",
                         credentials: "include",
@@ -87,7 +88,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         }
 
         try {
-            const postResponse = await fetch("http://localhost:6660/api/post", {
+            const postResponse = await fetch(`${apiUrl}/post`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

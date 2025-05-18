@@ -10,7 +10,7 @@ import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
 
 export class CommentController implements Controller {
-    public path = "/api/comment";
+    public path = "/comment";
     public router = Router();
 
     private commentService = new CommentService();

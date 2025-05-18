@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 interface LikeButtonProps {
     what: "post" | "comment"
@@ -41,7 +42,7 @@ export function LikeButton({
 
         try {
             const response = await fetch(
-                `http://localhost:6660/api/${what}/${id}/like`,
+                `${apiUrl}/${what}/${id}/like`,
                 {
                     method: toLike ? "PUT" : "DELETE",
                     credentials: "include",

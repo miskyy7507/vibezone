@@ -8,6 +8,7 @@ import { Spinner } from "../components/Spinner";
 import type { User } from "../interfaces/user.interface";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 export function Login() {
     // type LoginFormNames = "login" | "password";
@@ -30,7 +31,7 @@ export function Login() {
 
         try {
             const response = await fetch(
-                "http://localhost:6660/api/auth/login",
+                `${apiUrl}/auth/login`,
                 {
                     method: "POST",
                     body: JSON.stringify({ login: loginInput, password }),
@@ -45,7 +46,7 @@ export function Login() {
             if (response.status === 200) {
                 const user = (await response.json()) as User;
                 login(user);
-                await navigate("/");
+                await navigate(-1);
             } else if (response.status === 401) {
                 toast.error("Incorrect username or password.");
             } else {
@@ -59,12 +60,12 @@ export function Login() {
         }
     };
 
-    // if user is already logged in, move it to the home page
+    // if user is already logged in, move to the home page
     useEffect(() => {
         if (user) {
             void navigate("/");
         }
-    });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <main className="m-auto p-4 pb-16 max-w-2xl w-full">

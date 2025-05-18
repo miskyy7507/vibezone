@@ -21,6 +21,7 @@ import { DropdownItem } from "./DropdownItem";
 import { CreationDate } from "./CreationDate";
 import { LikeButton } from "./LikeButton";
 import { DropdownLink } from "./DropdownLink";
+import { apiUrl, uploadsUrl } from "../config";
 
 import type { Post } from "../interfaces/post.interface";
 
@@ -45,7 +46,7 @@ export function PostCard({
         if (!confirmation) return;
         try {
             const response = await fetch(
-                `http://localhost:6660/api/post/${_id}`,
+                `${apiUrl}/post/${_id}`,
                 {
                     method: "DELETE",
                     credentials: "include",
@@ -109,7 +110,7 @@ export function PostCard({
             {imageUrl && (
                 <div className="-mx-5 -mb-3 border-t border-zinc-700">
                     <img
-                        src={`http://localhost:6660/uploads/${imageUrl}`}
+                        src={`${uploadsUrl}/${imageUrl}`}
                         alt="Post image"
                         className="object-cover"
                     />

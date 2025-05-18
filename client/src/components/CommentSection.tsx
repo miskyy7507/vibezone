@@ -4,6 +4,7 @@ import { handleFetchError } from "../utils/handleFetchError";
 import { CommentItem } from "./CommentItem";
 import { Spinner } from "./Spinner";
 import { CommentCreate } from "./CommentCreate";
+import { apiUrl } from "../config";
 
 import type { Comment } from "../interfaces/comment.interface";
 
@@ -14,7 +15,7 @@ export function CommentSection({postId, commentCount, focus}: {postId: string, c
     useEffect(() => {
         void (async () => {
             try {
-                const response = await fetch(`http://localhost:6660/api/comment/post/${postId}`, {
+                const response = await fetch(`${apiUrl}/comment/post/${postId}`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -32,6 +33,7 @@ export function CommentSection({postId, commentCount, focus}: {postId: string, c
             }
         })();
     }, [postId, focus]);
+
 
     const addComment = (newComment: Comment) => {
         setComments((prev) => {

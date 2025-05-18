@@ -8,6 +8,7 @@ import { PostCreate } from "../components/PostCreate";
 import type { Post } from "../interfaces/post.interface";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 export function Home() {
     const { user } = useAuth();
@@ -17,7 +18,7 @@ export function Home() {
         void (async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:6660/api/post/all",
+                    `${apiUrl}/post/all`,
                     {
                         method: "GET",
                         credentials: "include",

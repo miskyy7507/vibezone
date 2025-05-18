@@ -12,7 +12,7 @@ import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
 
 export class PostController implements Controller {
-    public path = "/api/post";
+    public path = "/post";
     public router = Router();
 
     private postService = new PostService();

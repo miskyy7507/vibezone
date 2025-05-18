@@ -6,13 +6,14 @@ import { handleFetchError } from "../utils/handleFetchError";
 
 import type { User } from "../interfaces/user.interface";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 export function Users() {
     const [users, setUsers] = useState<User[] | null>(null);
 
     useEffect(() => { void (async () => {
         try {
-            const response = await fetch("http://localhost:6660/api/profile/all", {
+            const response = await fetch(`${apiUrl}/profile/all`, {
                 method: "GET",
                 credentials: "include",
             });

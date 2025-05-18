@@ -1,6 +1,6 @@
 API dokumentacja:
 
-POST /api/auth/login
+POST /auth/login
 Logowanie użytkownika
 body: JSON {
     login: string
@@ -12,7 +12,7 @@ response:
     200: OK - zwraca cookie i dane profilu użytkownika
 
 ------------------------------------
-POST /api/auth/logout
+POST /auth/logout
 Wylogowywuje użytkownika. Wymagana autentyfikacja użytkownika ciasteczkiem.
 body: none
 session cookie required
@@ -21,7 +21,7 @@ response:
     401: Unauthorized - kiedy użytkownik nie jest zalogowany (brak/zły session cookie)
 
 ------------------------------------
-POST /api/auth/register
+POST /auth/register
 Rejestruje nowego użytkownika.
 body: {
     username: string
@@ -40,7 +40,7 @@ response:
 
 
 ====================================
-POST /api/post
+POST /post
 Tworzy nowy post w imieniu użytkownika zautoryzowanego. Wymagana autentyfikacja użytkownika ciasteczkiem.
 session cookie required
 body: {
@@ -53,7 +53,7 @@ response:
     401: Unauthorized - użytkownik nie jest zalogowany, nie może postować.
 
 ------------------------------------
-GET /api/post/all
+GET /post/all
 Pobiera wszyskie posty z serwera.
 response:
     200: OK - zwraca wszystkie posty
@@ -75,7 +75,7 @@ response:
 }[]
 
 ------------------------------------
-GET /api/post/:id
+GET /post/:id
 Pobiera pots o danym id.
 repsonse:
     200: OK - zwraca post
@@ -83,7 +83,7 @@ repsonse:
     400: Bad Request - zły format id
 
 ------------------------------------
-DELETE /api/post/:id
+DELETE /post/:id
 Usuwa post o danym id. Tylko autor posta lub moderator może usunąć post.
 session cookie required
 repsonse:
@@ -92,7 +92,7 @@ repsonse:
     403: Forbidden - brak uprawnień do usunięcia posta (moderator lub autor posta)
 
 ------------------------------------
-PUT /api/post/:id/like
+PUT /post/:id/like
 Polubienie posta.
 session cookie required
 response:
@@ -100,7 +100,7 @@ response:
     401: Unauthorized - użytkownik nie jest zalogowany.
 
 ------------------------------------
-DELETE /api/post/:id/like
+DELETE /post/:id/like
 Usunięcie polubienia posta.
 session cookie required
 response:
@@ -108,7 +108,7 @@ response:
     401: Unauthorized - użytkownik nie jest zalogowany.
 
 ------------------------------------
-POST /api/post/image
+POST /post/image
 Wysłanie zdjęcia do wykorzystania w poście.
 session cookie required
 body: multipart/form-data - image: <zdjęcie>
@@ -120,7 +120,7 @@ response:
 
 ====================================
 
-POST /api/comment/:postId
+POST /comment/:postId
 Dodanie komentarza do postu.
 session cookie required
 body: {
@@ -132,7 +132,7 @@ response:
     401: Unauthorized - użytkownik nie jest zalogowany, nie może postować.
 
 ------------------------------------
-GET /api/comment/post/:postId
+GET /comment/post/:postId
 Otrzymanie listy wszystkich komentarzy do posta.
 response:
     200: OK - otrzymano komentarze
@@ -153,7 +153,7 @@ response:
 }[]
 
 ------------------------------------
-DELETE /api/comment/:id
+DELETE /comment/:id
 Usunięcie komentarza o danym id. Tylko autor komentarza lub moderator może usunąć komentarz.
 session cookie required
 response:
@@ -163,7 +163,7 @@ response:
     403: Forbidden - brak uprawnień do usunięcia komentarza (moderator lub autor posta)
 
 ------------------------------------
-PUT /api/comment/:id/like
+PUT /comment/:id/like
 Polubienie komentarza.
 session cookie required
 response:
@@ -171,7 +171,7 @@ response:
     401: Unauthorized - użytkownik nie jest zalogowany.
 
 ------------------------------------
-DELETE /api/comment/:id/like
+DELETE /comment/:id/like
 Usunięcie polubienia komentarza.
 session cookie required
 response:
@@ -180,7 +180,7 @@ response:
 
 ====================================
 
-GET /api/profile/all
+GET /profile/all
 Zwraca publiczne dane wszystkich użytkowników.
 response:
     200: OK
@@ -196,7 +196,7 @@ response:
 
 ------------------------------------
 
-GET /api/profile/:id
+GET /profile/:id
 Zwraca publiczne dane użytkownika o danym id.
 repsonse:
     200: OK - zwraca publiczne dane użytkownika
@@ -205,7 +205,7 @@ repsonse:
 
 ------------------------------------
 
-GET /api/profile
+GET /profile
 Zwraca dane zalogowanego użytkownika.
 session cookie required
 repsonse:
@@ -214,7 +214,7 @@ repsonse:
 
 ------------------------------------
 
-PATCH /api/profile/update
+PATCH /profile/update
 Aktualizacja danych użytkownika.
 session cookie required
 body:
@@ -233,7 +233,7 @@ response:
 
 ------------------------------------
 
-POST /api/profile/picture
+POST /profile/picture
 Aktualizacja zdjęcia profilowego.
 session cookie required
 body: multipart/form-data - picture: <zdjęcie>
@@ -245,7 +245,7 @@ response:
 
 ------------------------------------
 
-DELETE /api/profile/picture
+DELETE /profile/picture
 Usunięcie zdjęcia profilowego i powrót do domyślnego.
 session cookie required
 
@@ -255,7 +255,7 @@ response:
 
 ------------------------------------
 
-POST /api/profile/:id/ban
+POST /profile/:id/ban
 Zbanuj użytkownika.
 session cookie and moderator role required
 

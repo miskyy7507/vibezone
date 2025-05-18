@@ -7,6 +7,7 @@ import { NotFound } from "./NotFound";
 import { Spinner } from "../components/Spinner";
 import { PostCard } from "../components/PostCard";
 import { CommentSection } from "../components/CommentSection";
+import { apiUrl } from "../config";
 
 import type { Post } from "../interfaces/post.interface";
 
@@ -28,7 +29,7 @@ export function Post() {
         void (async () => {
             try {
                 const response = await fetch(
-                    `http://localhost:6660/api/post/${postId}`,
+                    `${apiUrl}/post/${postId}`,
                     {
                         method: "GET",
                         credentials: "include",

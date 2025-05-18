@@ -1,5 +1,7 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import crypto from "crypto";
+
+dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development" });
 
 export const config = {
     nodeEnv: process.env.NODE_ENV === "production" ? "production" : "development",

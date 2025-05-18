@@ -8,7 +8,7 @@ import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
 
 export class AuthController implements Controller {
-    public path = "/api/auth";
+    public path = "/auth";
     public router = Router();
 
     private userService = new UserService();

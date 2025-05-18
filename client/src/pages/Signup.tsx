@@ -8,6 +8,7 @@ import { handleFetchError } from "../utils/handleFetchError";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 export function Signup() {
     type RegisterFormNames =
@@ -101,7 +102,7 @@ export function Signup() {
 
         try {
             const response = await fetch(
-                "http://localhost:6660/api/auth/register",
+                `${apiUrl}/auth/register`,
                 {
                     method: "POST",
                     body: JSON.stringify(reqBody),
@@ -128,12 +129,12 @@ export function Signup() {
         }
     });
 
-    // if user is already logged in, move it to the home page
+    // if user is already logged in, move to the home page
     useEffect(() => {
         if (user) {
             void navigate("/");
         }
-    });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <main className="m-auto p-4 pb-16 max-w-2xl w-full">

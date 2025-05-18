@@ -5,6 +5,7 @@ import { NotFound } from "./NotFound";
 import { Spinner } from "../components/Spinner";
 import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
+import { apiUrl } from "../config";
 
 export function UserPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -21,7 +22,7 @@ export function UserPage() {
         void (async () => {
             try {
                 const response = await fetch(
-                    `http://localhost:6660/api/profile/${userId}`, {
+                    `${apiUrl}/profile/${userId}`, {
                         method: "GET",
                         credentials: "include",
                     }

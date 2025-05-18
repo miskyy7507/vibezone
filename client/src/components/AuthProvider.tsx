@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "react-toastify";
+
+import { apiUrl } from "../config";
 import { AuthContext } from "../hooks/useAuth";
+import { handleFetchError } from "../utils/handleFetchError";
 
 import type { User } from "../interfaces/user.interface";
-import { handleFetchError } from "../utils/handleFetchError";
-import { toast } from "react-toastify";
+
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -11,7 +14,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const getUser = useCallback(async () => {
         try {
-            const response = await fetch("http://localhost:6660/api/profile", {
+            const response = await fetch(`${apiUrl}/profile`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -53,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         try {
             const response = await fetch(
-                "http://localhost:6660/api/auth/logout",
+                `${apiUrl}/auth/logout`,
                 {
                     method: "POST",
                     credentials: "include",

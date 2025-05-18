@@ -2,16 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import cors from "cors";
 
 import { App } from "./app.js";
 import { config } from "./config.js";
-import { logger } from "./middleware/logger.js";
 import { PostController } from "./controllers/post.controller.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { ProfileController } from "./controllers/profile.controller.js";
-import { errorHandler } from "./middleware/errorHandler.js";
 import { CommentController } from "./controllers/comment.controller.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Database connection
 try {
@@ -37,9 +35,8 @@ try {
 
 const sessionOptions: session.SessionOptions = {
     cookie: {
-        path: "/",
         httpOnly: true,
-        secure: config.nodeEnv === "production" ? true : false,
+        // secure: config.nodeEnv === "production" ? true : false,
         maxAge:
             config.nodeEnv === "production"
                 ? 7 * 24 * 60 * 60 * 1000
@@ -67,6 +64,9 @@ const middleware = [
 ];
 
 if (config.nodeEnv === "development") {
+    const { logger } = await import("./middleware/logger.js");
+    const { default: cors } = await import("cors");
+
     middleware.unshift(
         cors({
             origin: "http://localhost:5173",
@@ -90,8 +90,7 @@ const app = new App(
 
 app.listen(config.serverPort);
 
-process.on("SIGINT", () => {
-    console.log("SIGINT received, winding up!");
+function stopApp() {
     app.closeServer(() => {
         console.log("API server closed.");
         mongoose.connection.destroy().catch(() => {
@@ -99,4 +98,14 @@ process.on("SIGINT", () => {
             process.exit(1);
         });
     });
+}
+
+process.on("SIGINT", () => {
+    console.log("SIGINT received, winding up!");
+    stopApp();
+});
+
+process.on("SIGTERM", () => {
+    console.log("SIGTERM received, winding up!");
+    stopApp();
 });

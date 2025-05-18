@@ -14,7 +14,7 @@ import type { Controller } from "../interfaces/controller.interface.js";
 import type { RequestHandler } from "express";
 
 export class ProfileController implements Controller {
-    public path = "/api/profile";
+    public path = "/profile";
     public router = Router();
 
     private profileService = new ProfileService();
