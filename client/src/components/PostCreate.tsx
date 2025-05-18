@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
 
 import { useAuth } from "../hooks/useAuth";
@@ -24,6 +24,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const [content, setContent] = useState("");
     const [collapsed, setCollapsed] = useState(true);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -124,6 +125,18 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         removeSelectedImage();
     };
 
+    useEffect(() => {
+        if (!selectedImage) {
+            setSelectedImagePreview(null);
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(selectedImage);
+        setSelectedImagePreview(objectUrl);
+
+        return () => { URL.revokeObjectURL(objectUrl) };
+    }, [selectedImage])
+
     if (!user) return;
 
     return (
@@ -191,10 +204,10 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             </div>
             {!collapsed && (
                 <>
-                    {selectedImage && (
+                    {selectedImagePreview && (
                         <div className="relative overflow-hidden -mx-5 -mb-3 border-t border-zinc-700">
                             <img
-                                src={URL.createObjectURL(selectedImage)}
+                                src={selectedImagePreview}
                                 alt="Selected preview"
                                 className="object-cover w-full h-full"
                             />
