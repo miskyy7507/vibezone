@@ -44,6 +44,10 @@ export class AuthController implements Controller {
             return response.status(401).json({ error: "Unauthorized" });
         }
 
+        if (user.active) {
+            return response.status(403).json({ error: "Forbidden" })
+        }
+
         const profile = await this.profileService.getById(user.profileId);
 
         request.session.regenerate((err) => {
@@ -68,7 +72,7 @@ export class AuthController implements Controller {
         request.session.destroy((err) => {
             if (err) next(err);
 
-            response.status(200).send();
+            response.status(204).send();
         });
     };
 
@@ -105,7 +109,7 @@ export class AuthController implements Controller {
         }
 
         if (await this.userService.getByLogin(validatedForm.username)) {
-            return response.status(422).json({
+            return response.status(400).json({
                 error: "This username is already in use. Please choose another one.",
                 item: "username"
             });
