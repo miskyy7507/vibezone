@@ -35,7 +35,7 @@ export default tseslint.config(
                 { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
             ],
             "max-depth": ["error", { max: 4 }],
-            eqeqeq: "error",
+            eqeqeq: ["error", "always", {"null": "ignore"}],
         },
     }
 );

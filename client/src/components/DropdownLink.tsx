@@ -9,6 +9,7 @@ interface DropdownLinkProps {
     icon?: IconDefinition;
     danger?: boolean;
     link: string;
+    onClick?: () => void;
 }
 
 export function DropdownLink({
@@ -16,6 +17,7 @@ export function DropdownLink({
     icon,
     danger,
     link,
+    onClick
 }: DropdownLinkProps) {
     return (
         <Link
@@ -24,6 +26,7 @@ export function DropdownLink({
                 danger && "text-red-400"
             )}
             to={link}
+            onClick={() => onClick?.()}
         >
             {icon && <FontAwesomeIcon icon={icon} />}
             <span className="whitespace-nowrap">{text}</span>

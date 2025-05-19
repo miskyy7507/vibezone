@@ -92,11 +92,11 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 }
             } catch (error) {
                 handleFetchError(error);
-                return;
             }
         }
 
         if (selectedImage && !imageUrl) {
+            // at this point the image upload failed so return
             setIsSending(false);
             return;
         }

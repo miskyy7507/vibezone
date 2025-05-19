@@ -31,7 +31,7 @@ export class ProfileController implements Controller {
         this.router.post(
             "/picture",
             auth,
-            imageUpload.single("picture"),
+            imageUpload.single("avatar"),
             verifyImageRealType,
             this.uploadPicture
         );
@@ -94,7 +94,8 @@ export class ProfileController implements Controller {
                         .string()
                         .nonempty("Display name must not be empty.")
                         .max(32, "Display name must not exceed 32 characters.")
-                        .optional(),
+                        .optional()
+                        .nullable(),
                     aboutDesc: z
                         .string()
                         .max(150, "Description cannot exceed 150 characters.")

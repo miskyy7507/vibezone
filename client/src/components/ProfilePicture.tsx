@@ -17,7 +17,7 @@ export function ProfilePicture({
     const sizeMap = {
         small: 32,
         normal: 48,
-        large: 128,
+        large: 192,
     };
 
     const sizePx = `${sizeMap[size].toString()}px`;

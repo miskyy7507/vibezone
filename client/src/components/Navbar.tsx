@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faHouse,
+    faPencil,
     faRightFromBracket,
     faUser,
     faUsers,
@@ -79,6 +80,17 @@ export function Navbar() {
                                     text="View profile"
                                     icon={faUser}
                                     link={`/user/${user._id}`}
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                    }}
+                                />
+                                <DropdownLink
+                                    text="Edit your profile"
+                                    icon={faPencil}
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                    }}
+                                    link={`/update-profile`}
                                 />
                                 <DropdownItem
                                     text="Sign out"
