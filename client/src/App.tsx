@@ -10,6 +10,7 @@ import { UserPage } from "./pages/UserPage";
 import { Post } from "./pages/Post";
 import { NotFound } from "./pages/NotFound";
 import { Slide, ToastContainer } from "react-toastify";
+import { UpdateProfile } from "./pages/UpdateProfile";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path="signup" element={<Signup />} />
                 <Route path="user/:userId" element={<UserPage />} />
                 <Route path="post/:postId" element={<Post />} />
+                <Route path="update-profile" element={<UpdateProfile />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
             <ToastContainer
