@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useMemo } from "react";
 import { clsx } from "clsx";
 
 import { useAuth } from "../hooks/useAuth";
@@ -16,6 +16,7 @@ import { handleFetchError } from "../utils/handleFetchError";
 import { toast } from "react-toastify";
 import TextareaAutosize from 'react-textarea-autosize';
 import { apiUrl } from "../config";
+import { Spinner } from "./Spinner";
 
 export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const MAX_POST_LENGTH = 150;
@@ -24,7 +25,8 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
     const [content, setContent] = useState("");
     const [collapsed, setCollapsed] = useState(true);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
+    const [isSending, setIsSending] = useState(false);
+
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -44,6 +46,10 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         }
     };
 
+    const selectedImagePreview = useMemo(() => {
+        return selectedImage !== null ? URL.createObjectURL(selectedImage) : null;
+    }, [selectedImage]);
+
     const removeSelectedImage = () => {
         setSelectedImage(null);
         if (fileInputRef.current) {
@@ -53,6 +59,8 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        setIsSending(true);
 
         let imageUrl: string | undefined;
 
@@ -88,6 +96,11 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             }
         }
 
+        if (selectedImage && !imageUrl) {
+            setIsSending(false);
+            return;
+        }
+
         try {
             const postResponse = await fetch(`${apiUrl}/post`, {
                 method: "POST",
@@ -115,6 +128,8 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             }
         } catch (error) {
             handleFetchError(error);
+        } finally {
+            setIsSending(false);
         }
     };
 
@@ -125,18 +140,6 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
         removeSelectedImage();
     };
 
-    useEffect(() => {
-        if (!selectedImage) {
-            setSelectedImagePreview(null);
-            return;
-        }
-
-        const objectUrl = URL.createObjectURL(selectedImage);
-        setSelectedImagePreview(objectUrl);
-
-        return () => { URL.revokeObjectURL(objectUrl) };
-    }, [selectedImage])
-
     if (!user) return;
 
     return (
@@ -144,7 +147,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
             className={clsx(
                 "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl ring-zinc-700 shadow-sm ring-1 transition",
                 isFocused && "!ring-zinc-200 !shadow-2xl",
-                (!isFocused && collapsed) && "opacity-65"
+                !isFocused && collapsed && "opacity-65"
             )}
             onSubmit={(e) => {
                 void handleSubmit(e);
@@ -180,7 +183,11 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                     className={clsx(
                         "px-0.5 resize-none focus:outline-0",
                         !collapsed && "mb-2.5",
-                        (!selectedImage && content.length <= 60 && ((content.match(/\n/g))||[]).length <= 2) ? "text-3xl" : "text-base" // If post content is short enough, we can show it with large font size.
+                        !selectedImage &&
+                            content.length <= 60 &&
+                            (content.match(/\n/g) || []).length <= 2
+                            ? "text-3xl"
+                            : "text-base" // If post content is short enough, we can show it with large font size.
                     )}
                     ref={textAreaRef}
                     placeholder="💭 What's vibin'?"
@@ -230,6 +237,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                                 ref={fileInputRef}
                                 className="hidden"
                                 onChange={handleImageSelect}
+                                disabled={isSending}
                             />
                             <label
                                 htmlFor="filePicker"
@@ -242,8 +250,9 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                         <div className="flex flex-row flex-1 justify-end gap-3 items-center">
                             <button
                                 type="reset"
-                                className="text-zinc-200 cursor-pointer px-1 my-2 hover:text-red-400 transition"
+                                className="text-zinc-200 enabled:cursor-pointer px-1 my-2 enabled:hover:text-red-400 transition"
                                 title="Discard"
+                                disabled={isSending}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     resetForm();
@@ -253,11 +262,17 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             </button>
                             <button
                                 type="submit"
-                                disabled={!content}
-                                className="flex items-center space-x-2 bg-zinc-200 text-zinc-900 rounded-full px-4 py-2 disabled:opacity-60 enabled:cursor-pointer transition"
+                                disabled={isSending || !content}
+                                className="flex items-center justify-center w-24 text-center space-x-2 bg-zinc-200 text-zinc-900 rounded-full py-2 disabled:opacity-60 enabled:cursor-pointer transition"
                             >
-                                <FontAwesomeIcon icon={faPaperPlane} />
-                                <span>Send</span>
+                                {isSending ? (
+                                    <Spinner size="tiny" theme="light" />
+                                ) : (
+                                    <>
+                                        <FontAwesomeIcon icon={faPaperPlane} />
+                                        <span>Send</span>
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

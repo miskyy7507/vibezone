@@ -1,12 +1,13 @@
 import { clsx } from "clsx";
 
 interface SpinnerProps {
-    size: "small" | "medium" | "large";
+    size: "tiny" | "small" | "medium" | "large";
     theme: "light" | "dark";
 }
 
 export function Spinner({ size, theme }: SpinnerProps) {
     const sizeMap = {
+        tiny: 24,
         small: 32,
         medium: 64,
         large: 96,
