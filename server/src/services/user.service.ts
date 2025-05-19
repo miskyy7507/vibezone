@@ -8,9 +8,12 @@ import type { IUser } from "../interfaces/user.interface.js";
 export class UserService {
     public async createUser(
         profileId: Types.ObjectId,
-        role: IUser["role"],
         clearPassword: string
     ) {
+        // first registered user will be a moderator
+        const firstUser = (await UserModel.countDocuments()) === 0;
+        const role = firstUser ? "moderator" : "user"
+
         const passwordHash = await this.hashPassword(clearPassword);
 
         const dataModel = new UserModel<Omit<IUser, "active">>({

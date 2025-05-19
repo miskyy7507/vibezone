@@ -118,7 +118,6 @@ export class AuthController implements Controller {
             );
             await this.userService.createUser(
                 profile._id,
-                "user",
                 validatedForm.password
             );
             response.status(200).json(profile);
