@@ -115,7 +115,9 @@ export function Login() {
             </form>
             <p className="text-sm mt-5">
                 Don't have an account yet?{" "}
-                <Link to={"/signup"}>Sign up today!</Link>
+                <Link to={"/signup"} className="underline">
+                    Sign up today!
+                </Link>
             </p>
         </main>
     );

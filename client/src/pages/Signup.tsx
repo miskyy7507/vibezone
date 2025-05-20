@@ -153,7 +153,10 @@ export function Signup() {
                 submitButtonText="Sign up"
             />
             <p className="text-sm mt-5">
-                Already have an account? <Link to={"/login"}>Sign in here</Link>
+                Already have an account?{" "}
+                <Link to={"/login"} className="underline">
+                    Sign in here
+                </Link>
             </p>
         </main>
     );
