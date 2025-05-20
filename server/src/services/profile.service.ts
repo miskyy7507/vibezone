@@ -16,7 +16,7 @@ export class ProfileService {
     }
 
     public async getById(id: Types.ObjectId) {
-        return await ProfileModel.findById(id);
+        return await ProfileModel.findById(id).lean();
     }
 
     public async getByUsername(username: string) {
