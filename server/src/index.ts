@@ -9,6 +9,7 @@ import { PostController } from "./controllers/post.controller.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { ProfileController } from "./controllers/profile.controller.js";
 import { CommentController } from "./controllers/comment.controller.js";
+import { ApiDocsController } from "./controllers/apiDocs.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 // Database connection
@@ -80,6 +81,7 @@ if (config.nodeEnv === "development") {
 const app = new App(
     middleware,
     [
+        new ApiDocsController(),
         new PostController(),
         new AuthController(),
         new ProfileController(),

@@ -49,14 +49,6 @@ export class UserService {
         return result;
     }
 
-    // public async changePassword(
-    //     userId: string,
-    //     oldPassword: string,
-    //     newPassword: string
-    // ) {
-    //     // TODO:
-    // }
-
     public async deactivateAccount(profileId: Types.ObjectId) {
         return await UserModel.updateOne(
             { profileId: profileId },
