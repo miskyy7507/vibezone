@@ -42,6 +42,13 @@ export function CommentSection({postId, commentCount, focus}: {postId: string, c
         });
     }
 
+    const deleteComment = (id: string) => {
+        setComments((prev) => {
+            if (!prev) return null;
+            return prev.filter(p => p._id !== id);
+        });
+    }
+
     return (
         <section ref={commentSection} id="comments" className="flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700 scroll-mt-[64px]">
             {comments ? (
@@ -53,7 +60,7 @@ export function CommentSection({postId, commentCount, focus}: {postId: string, c
                     <CommentCreate postId={postId} addComment={addComment} focus={focus} />
 
                     {comments.map((i) => (
-                        <CommentItem key={i._id} comment={i} />
+                        <CommentItem key={i._id} comment={i} deleteCommentCb={deleteComment} />
                     ))}
                 </>
             ) : (
