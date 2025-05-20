@@ -71,7 +71,7 @@ export function PostCard({
     return (
         <article
             className={clsx(
-                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700",
+                "flex flex-col gap-3 px-5 py-4 max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700"
             )}
         >
             <div className="flex flex-row gap-3">
@@ -102,7 +102,11 @@ export function PostCard({
             <p
                 className={clsx(
                     "px-0.5 mb-1 text-zinc-100 break-words whitespace-pre-line",
-                    (!imageUrl && content.length <= 60 && ((content.match(/\n/g))||[]).length <= 2) ? "text-3xl" : "text-base" // If post content is short enough, we can show it with large font size.
+                    !imageUrl &&
+                        content.length <= 60 &&
+                        (content.match(/\n/g) || []).length <= 2
+                        ? "text-3xl"
+                        : "text-base" // If post content is short enough, we can show it with large font size.
                 )}
             >
                 {content}
@@ -152,21 +156,25 @@ export function PostCard({
                             }}
                         >
                             {link && (
-                            <DropdownLink
-                                text="Go to post"
-                                icon={faArrowUpRightFromSquare}
-                                link={`/post/${_id}`}
-                            />)}
-                            {user && (
-                            <DropdownItem
-                                text="Delete"
-                                icon={faTrashCan}
-                                onClick={() => {
-                                    void deletePost();
-                                    setMenuOpen(false);
-                                }}
-                                danger
-                            />)}
+                                <DropdownLink
+                                    text="Go to post"
+                                    icon={faArrowUpRightFromSquare}
+                                    link={`/post/${_id}`}
+                                />
+                            )}
+                            {/* show only this when logged in user is author of the post or moderator */}
+                            {(user?._id === postData.author._id ||
+                                user?.role === "moderator") && (
+                                <DropdownItem
+                                    text="Delete"
+                                    icon={faTrashCan}
+                                    onClick={() => {
+                                        void deletePost();
+                                        setMenuOpen(false);
+                                    }}
+                                    danger
+                                />
+                            )}
                         </DropdownMenu>
                     )}
                 </div>

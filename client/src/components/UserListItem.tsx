@@ -54,10 +54,11 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
     };
 
     return (
-        <article
-            className="flex flex-row max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700 hover:shadow-2xl hover:cursor-pointer transition-shadow"
-        >
-            <Link to={`/user/${user._id}`} className="flex-1 flex flex-row px-5 py-4 gap-3 items-center">
+        <article className="flex flex-row max-w-2xl w-full bg-zinc-800 rounded-xl shadow-sm ring-1 ring-zinc-700 hover:shadow-2xl hover:cursor-pointer transition-shadow">
+            <Link
+                to={`/user/${user._id}`}
+                className="flex-1 flex flex-row px-5 py-4 gap-3 items-center"
+            >
                 <ProfilePicture user={user} />
                 <div className="flex flex-col justify-center">
                     <UserNamesDisplay user={user} />
@@ -66,7 +67,7 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
                     )}
                 </div>
             </Link>
-            {authedUser && (
+            {authedUser?.role === "moderator" && (
                 <button
                     className="my-8 px-3.5 border-l border-zinc-700 cursor-pointer text-zinc-500"
                     onClick={(e) => {
@@ -85,12 +86,17 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
                         setMenuOpen(false);
                     }}
                 >
-                    <DropdownItem
-                        text="Ban user"
-                        icon={faHammer}
-                        onClick={() => {setMenuOpen(false); void banUser()}}
-                        danger
-                    />
+                    {authedUser?.role === "moderator" && (
+                        <DropdownItem
+                            text="Ban user"
+                            icon={faHammer}
+                            onClick={() => {
+                                setMenuOpen(false);
+                                void banUser();
+                            }}
+                            danger
+                        />
+                    )}
                 </DropdownMenu>
             )}
         </article>

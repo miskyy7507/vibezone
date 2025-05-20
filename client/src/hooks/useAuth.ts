@@ -4,7 +4,7 @@ import type { User } from "../interfaces/user.interface";
 
 
 interface AuthContextValue {
-    user: User | null;
+    user: (User & {role: "user" | "moderator"}) | null;
     login: (userData: User) => void;
     logout: () => void;
 }
