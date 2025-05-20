@@ -6,6 +6,13 @@ export const UserModel = model<IUser>(
     "User",
     new Schema<IUser>(
         {
+            username: {
+                type: String,
+                required: true,
+                unique: true,
+                match: /^[a-zA-Z0-9._-]{3,32}$/,
+                immutable: true
+            },
             profileId: {
                 type: Schema.Types.ObjectId,
                 ref: "Profile",
