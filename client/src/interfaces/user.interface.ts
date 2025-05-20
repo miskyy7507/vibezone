@@ -5,4 +5,5 @@ export interface User {
     profilePictureUri?: string;
     aboutDesc?: string;
     createdAt: string;
+    role? : "moderator" | "user"
 }
