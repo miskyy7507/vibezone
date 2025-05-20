@@ -91,12 +91,11 @@ export function UserPage() {
                     {user.displayName || `@${user.username}`}
                 </span>
                 {user.displayName && (
-                    <span className="text-zinc-500 text-lg">@{user.username}</span>
+                    <span className="text-zinc-500 text-lg">
+                        @{user.username}
+                    </span>
                 )}
-                <span
-                    className="text-zinc-500"
-                    title="Join date"
-                >
+                <span className="text-zinc-500" title="Join date">
                     <FontAwesomeIcon className="mr-1.5" icon={faCalendar} />
                     {new Date(user.createdAt).toLocaleString("en-GB", {
                         dateStyle: "long",
@@ -104,12 +103,23 @@ export function UserPage() {
                 </span>
             </div>
             {user.aboutDesc && (
-                <p className=" text-zinc-400 text-xl">
-                    {user.aboutDesc}
-                </p>
+                <p className=" text-zinc-400 text-xl">{user.aboutDesc}</p>
             )}
             {posts ? (
-                posts.map((post) => <PostCard postData={post} key={post._id} deletePostCb={deletePost} link />)
+                posts.length !== 0 ? (
+                    posts.map((post) => (
+                        <PostCard
+                            postData={post}
+                            key={post._id}
+                            deletePostCb={deletePost}
+                            link
+                        />
+                    ))
+                ) : (
+                    <p className="my-3 text-zinc-500">
+                        This user has not posted anything yet...
+                    </p>
+                )
             ) : (
                 <div className="flex-1 flex items-center">
                     <Spinner size="large" theme="dark"></Spinner>
