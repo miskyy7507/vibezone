@@ -64,7 +64,7 @@ export class ProfileController implements Controller {
             if (!profile) {
                 return response.status(404).json({ error: "Not found" });
             }
-            return response.status(200).json({ ...profile, role: request.session.role });
+            return response.status(200).json(profile);
         } catch (error) {
             next(error);
             return;
@@ -80,7 +80,7 @@ export class ProfileController implements Controller {
             const profile = await this.profileService.getById(
                 new Types.ObjectId(request.session.profileId)
             );
-            return response.status(200).json(profile);
+            return response.status(200).json({ ...profile, role: request.session.role });
         } catch (error) {
             next(error);
             return;
