@@ -44,7 +44,7 @@ export class AuthController implements Controller {
             return response.status(401).json({ error: "Unauthorized" });
         }
 
-        if (user.active) {
+        if (!user.active) {
             return response.status(403).json({ error: "Forbidden" })
         }
 
