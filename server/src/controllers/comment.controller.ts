@@ -78,23 +78,41 @@ export class CommentController implements Controller {
     private likeComment: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        await this.commentService.likeComment(
-            new Types.ObjectId(id),
-            new Types.ObjectId(request.session.profileId)
-        );
+        try {
+            const result = await this.commentService.likeComment(
+                new Types.ObjectId(id),
+                new Types.ObjectId(request.session.profileId)
+            );
 
-        return response.status(204).send();
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
+
+            return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
+        }
     };
 
     private unlikeComment: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        await this.commentService.unlikeComment(
-            new Types.ObjectId(id),
-            new Types.ObjectId(request.session.profileId)
-        );
+        try {
+            const result = await this.commentService.unlikeComment(
+                new Types.ObjectId(id),
+                new Types.ObjectId(request.session.profileId)
+            );
 
-        return response.status(204).send();
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
+
+            return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
+        }
     };
 
     private createPostComment: RequestHandler = async (
@@ -122,6 +140,9 @@ export class CommentController implements Controller {
                 user: new Types.ObjectId(request.session.profileId),
                 content: newComment.content,
             });
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
             return response.status(200).json(result);
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -152,6 +173,9 @@ export class CommentController implements Controller {
                 new Types.ObjectId(postId),
                 profileId
             );
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
             return response.status(200).json(result);
         } catch (error) {
             next(error);

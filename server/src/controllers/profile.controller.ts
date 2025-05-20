@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ProfileService } from "../services/profile.service.js";
 import { PostService } from "../services/post.service.js";
 import { UserService } from "../services/user.service.js";
+import { CommentService } from "../services/comment.service.js";
 import { imageUpload } from "../middleware/imageUpload.js";
 import { auth } from "../middleware/auth.js";
 import { verifyImageRealType } from "../middleware/verifyImageRealType.js";
@@ -20,6 +21,7 @@ export class ProfileController implements Controller {
     private profileService = new ProfileService();
     private postService = new PostService();
     private userService = new UserService();
+    private commentService = new CommentService();
 
     constructor() {
         this.router.get("/all", this.getAllProfiles);
@@ -163,13 +165,14 @@ export class ProfileController implements Controller {
         }
 
         try {
-            const _id = new Types.ObjectId(id);
-            const result = await this.profileService.removeProfile(_id);
+            const profileId = new Types.ObjectId(id);
+            const result = await this.profileService.removeProfile(profileId);
             if (!result) {
                 return response.status(404).json({ error: "Not found" });
             }
-            await this.postService.removeUserPosts(_id);
-            await this.userService.deactivateAccount(_id);
+            await this.commentService.removeUserComments(profileId);
+            await this.postService.removeUserPosts(profileId);
+            await this.userService.deactivateAccount(profileId);
             return response.status(204).send();
         } catch (error) {
             next(error);

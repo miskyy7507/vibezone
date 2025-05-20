@@ -89,13 +89,13 @@ export class PostService {
     }
 
     public async likePost(id: Types.ObjectId, userId: Types.ObjectId) {
-        await PostModel.findByIdAndUpdate(id, {
+        return await PostModel.findByIdAndUpdate(id, {
             $addToSet: { usersWhoLiked: userId },
         });
     }
 
     public async unlikePost(id: Types.ObjectId, userId: Types.ObjectId) {
-        await PostModel.findByIdAndUpdate(id, {
+        return await PostModel.findByIdAndUpdate(id, {
             $pull: { usersWhoLiked: userId },
         });
     }

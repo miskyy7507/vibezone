@@ -155,23 +155,41 @@ export class PostController implements Controller {
     private likePost: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        await this.postService.likePost(
-            new Types.ObjectId(id),
-            new Types.ObjectId(request.session.profileId)
-        );
+        try {
+            const result = await this.postService.likePost(
+                new Types.ObjectId(id),
+                new Types.ObjectId(request.session.profileId)
+            );
 
-        return response.status(204).send();
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
+
+            return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
+        }
     };
 
     private unlikePost: RequestHandler = async (request, response, next) => {
         const { id } = request.params;
 
-        await this.postService.unlikePost(
-            new Types.ObjectId(id),
-            new Types.ObjectId(request.session.profileId)
-        );
+        try {
+            const result = await this.postService.unlikePost(
+                new Types.ObjectId(id),
+                new Types.ObjectId(request.session.profileId)
+            );
 
-        return response.status(204).send();
+            if (!result) {
+                return response.status(404).json({ error: "Not found" });
+            }
+
+            return response.status(204).send();
+        } catch (error) {
+            next(error);
+            return;
+        }
     };
 
     private uploadImage: RequestHandler = (request, response, next) => {
