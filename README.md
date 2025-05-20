@@ -5,6 +5,28 @@
 
 Jest to serwis społecznościowy w postaci mikrobloga (podobny do twittera), w którym użytkownicy serwisu mogą postować krótkie wiadomości (do 150 znaków) na różne tematy. Ponadto jest możliwość wysyłania zdjęć do postów. Inni użytkownicy mają możliwość polubienia postów oraz komentowania na nie.
 
+## Zrzuty ekranu:
+
+Strona główna:
+
+![Strona główna](./resources/screenshot_1.png)
+
+Strona posta z komentarzami:
+
+![Strona posta z komentarzami](./resources/screenshot_2.png)
+
+Lista użytkowników:
+
+![Lista użytkowników](./resources/screenshot_3.png)
+
+Profil użytkownika:
+
+![Profil użytkownika](./resources/screenshot_4.png)
+
+Edycja profilu:
+
+![Edycja profilu](./resources/screenshot_5.png)
+
 ## Sposób uruchomienia:
 
 Najpierw sklonować to repozytorium a potem wybrać jedną z opcji:
@@ -30,7 +52,7 @@ Najpierw sklonować to repozytorium a potem wybrać jedną z opcji:
 
 Projekt wykorzystuje trzy kontenery do działania:
     - `server` - środowisko node do uruchomienia serwera API;
-    - `nginx` - reverse proxy do serwowania statycznych plików (html, css, js + wysłane zdjęcia) oraz przekierowania zapytań API do backendu;
+    - `nginx` - reverse proxy do serwowania statycznych plików (html, css, js + wysłane zdjęcia) oraz przekierowania zapytań API do backendu (pod adresem `/api/*`)
     - `mongodb` - baza danych do przechowywania wszelakich informacji (postów, komentarzy, użytkowników itd).
 Wszystkie te kontenery są ze sobą połączone za pomocą Docker Compose.
 
@@ -40,6 +62,7 @@ Wszystkie te kontenery są ze sobą połączone za pomocą Docker Compose.
 
 ## Dokumentacja API
 Dokumentacja API jest napisana w specyfikacji OpenAPI 3.0.4 i znajduje się w `./server/swagger.yaml`.
+Dostępna jest ona pod adresem `/` serwera API (np. `http://localhost:5000/`)
 
 Podgląd:
 
