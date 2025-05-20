@@ -9,7 +9,6 @@ export class ApiDocsController implements Controller {
 
     constructor() {
         this.router.use("/", swaggerUi.serve);
-        //eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.router.get("/", swaggerUi.setup(swaggerDocument));
     }
 }
