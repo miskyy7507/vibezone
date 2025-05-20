@@ -190,7 +190,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             : "text-base" // If post content is short enough, we can show it with large font size.
                     )}
                     ref={textAreaRef}
-                    placeholder="💭 What's vibin'?"
+                    placeholder="💭 What's happening right now?"
                     minRows={1}
                     maxLength={MAX_POST_LENGTH}
                     value={content}
