@@ -217,7 +217,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                allOf:
+                  - $ref: '#/components/schemas/Profile'
+                  - type: object
+                    properties:
+                      role:
+                        type: string
+                        description: Rola użytkownika - `user` albo `moderator`.
+                        example: moderator
+                    required:
+                      - role
         '400':
           description: Błąd walidacji danych.
           content:

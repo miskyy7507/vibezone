@@ -61,7 +61,7 @@ export class AuthController implements Controller {
                     next(err);
                     return;
                 }
-                response.status(200).json(profile)
+                return response.status(200).json({ ...profile, role: request.session.role });
             });
         });
     };
