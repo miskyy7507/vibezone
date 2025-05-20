@@ -27,9 +27,6 @@ export const UserModel = model<IUser>(
             },
             active: { type: Boolean, required: true, default: true },
             passwordHash: { type: String, required: true },
-        },
-        {
-            timestamps: true,
         }
     )
 );
