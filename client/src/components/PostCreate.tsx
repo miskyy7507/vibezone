@@ -182,6 +182,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                 <TextareaAutosize
                     className={clsx(
                         "px-0.5 resize-none focus:outline-0",
+                        collapsed && "flex-1",
                         !collapsed && "mb-2.5",
                         !selectedImage &&
                             content.length <= 60 &&
@@ -216,7 +217,7 @@ export function PostCreate({ addPost }: { addPost: (post: Post) => void }) {
                             <img
                                 src={selectedImagePreview}
                                 alt="Selected preview"
-                                className="object-cover w-full h-full"
+                                className="object-cover w-full"
                             />
                             <button
                                 type="button"

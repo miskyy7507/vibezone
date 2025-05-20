@@ -69,7 +69,7 @@ export function UserListItem({ user, deleteUserCb }: { user: User, deleteUserCb:
             </Link>
             {authedUser?.role === "moderator" && (
                 <button
-                    className="my-8 px-3.5 border-l border-zinc-700 cursor-pointer text-zinc-500"
+                    className="my-5 px-3.5 border-l border-zinc-700 cursor-pointer text-zinc-500"
                     onClick={(e) => {
                         e.stopPropagation();
                         setMenuOpen((p) => !p);

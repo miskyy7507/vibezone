@@ -116,7 +116,7 @@ export function PostCard({
                     <img
                         src={`${uploadsUrl}/${imageUrl}`}
                         alt="Post image"
-                        className="object-cover"
+                        className="object-cover w-full"
                     />
                 </div>
             )}
