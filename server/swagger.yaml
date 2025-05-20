@@ -1,0 +1,993 @@
+openapi: 3.0.4
+info:
+  title: Vibezone API
+  description: Ta dokumentacja opisuje API dla aplikacji Vibezone.
+  version: 0.0.0
+
+servers:
+  - url: /api
+
+tags:
+  - name: auth
+    description: Autoryzacja użytkowników
+  - name: post
+    description: Posty
+  - name: comment
+    description: Komentarze pod postami
+  - name: profile
+    description: Profile użytkowników
+
+components:
+  schemas:
+    Profile:
+      description: Profil użytkownika zawierający informacje o nim.
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unikalny identyfikator użytkownika
+          format: objectId
+        username:
+          type: string
+          description: Unikalna nazwa użytkownika
+        displayName:
+          type: string
+          description: Nazwa wyświetlana użytkownika.
+        profilePictureUri:
+          type: string
+          description: URI dla zdjęcia profilowego.
+          format: uri
+        aboutDesc:
+          type: string
+          description: Opis/życiorys użytkownika.
+        createdAt:
+          type: string
+          description: Data kiedy profil został utworzony.
+          format: date-time
+      required:
+        - _id
+        - username
+        - createdAt
+    ProfileLite:
+      description: Mniejsza wersja schematu Profile zawarty w schematach postów i komentarzy.
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unikalny identyfikator użytkownika - autora posta
+          format: objectId
+        username:
+          type: string
+          description: Unikalna nazwa użytkownika
+        displayName:
+          type: string
+          description: Opcjonalna nazwa wyświetlana użytkownika.
+        profilePictureUri:
+          type: string
+          description: Opcjonalny URI dla zdjęcia profilowego.
+          format: uri
+      required:
+        - _id
+        - username
+    Post:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unikalny identyfikator posta
+          format: objectId
+        author:
+          $ref: '#/components/schemas/ProfileLite'
+        content:
+          type: string
+          description: Treść posta.
+        imageUrl:
+          type: string
+          description: Zdjęcie posta.
+          format: uri
+        createdAt:
+          type: string
+          description: Data kiedy post został utworzony.
+          format: date-time
+        likeCount:
+          type: number
+          description: Ilość polubień posta.
+        commentCount:
+          type: number
+          description: Ilość komentarzy pod postem.
+        isLikedByUser:
+          type: boolean
+          description: Czy ten post jest polubiony przez aktualnie zautoryzowanego użytkownika. Zawsze `false` jeżeli niezalogowany.
+      required:
+        - _id
+        - author
+        - content
+        - createdAt
+        - likeCount
+        - commentCount
+    Comment:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unikalny identyfikator komentarza
+          format: objectId
+        post:
+          type: string
+          description: Referenca posta do którego komentarz należy
+          format: objectId
+        user:
+          $ref: '#/components/schemas/ProfileLite'
+        content:
+          type: string
+          description: Treść komentarza.
+        createdAt:
+          type: string
+          description: Data kiedy komentarz został utworzony.
+          format: date-time
+        likeCount:
+          type: number
+          description: Ilość polubień komentarza.
+        isLikedByUser:
+          type: boolean
+          description: Czy ten komentarz jest polubiony przez aktualnie zautoryzowanego użytkownika. Zawsze `false` jeżeli niezalogowany.
+      required:
+        - _id
+        - user
+        - content
+        - createdAt
+        - likeCount
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Unauthorized
+    ForbiddenError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Forbidden
+    NotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Not found
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Błąd wiadomości (co poszło nie tak).
+          example: Display name must not be longer than 32 characters.
+        item:
+          type: string
+          description: Pole formularza lub wyboru w którym doszło do błędu walidacji.
+          example: displayName
+      required:
+        - error
+        - item
+    MalformedIdError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Malformed id
+
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Logowanie użytkownika
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  description: Login (nazwa użytkownika, username) do logowania.
+                password:
+                  type: string
+                  description: Hasło użytkownika.
+                  format: password
+              required:
+                - login
+                - password
+      responses:
+        "200":
+          description: Pomyślne logowanie. Identyfikator sesji jest zwracany w cookie o nazwie "session".
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: session=s%3AaLeadN75vU-k4T6jkOsjnjCZYiFmJBhF.pgjK5%2BdY%2FSgSbn1C2ZmicxHZILirO3WBEMlvmLD26KI; Path=/; Expires=Mon, 19 May 2025 12:00:00 GMT; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Błąd walidacji danych.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Dane logowania są nieprawidłowe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Konto jest nieaktywne (np. po zbanowaniu użytkownika).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Wylogowanie użytkownika
+      security:
+        - sessionCookie: []
+      responses:
+        '204':
+          description: Pomyślnie wylogowano użytkownika i usunięto sesje.
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Rejestracja użytkownika
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nazwa użytkownika, wykorzystywana również jako login.
+                displayName:
+                  type: string
+                  description: Wyświetlana nazwa przy postach i komentarzach.
+                password:
+                  type: string
+                  description: Hasło użytkownika.
+                  format: password
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Pomyślnie zarejestrowano użytkownika. Zwracany jest obiekt profilu nowo utworzonego użytkownika.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Błąd walidacji danych.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /post:
+    post:
+      tags:
+        - post
+      summary: Utworzenie nowego posta
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Treść posta.
+                imageUrl:
+                  type: string
+                  description: Zdjęcie posta.
+                  format: uri
+      responses:
+        '200':
+          description: Pomyślnie utworzono nowy post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Błąd walidacji danych.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+  /post/all:
+    get:
+      tags:
+        - post
+      summary: Pobieranie wszystkich postów
+      security: []
+      responses:
+        '200':
+          description: Pomyślnie pobrano listę wszystkich postów.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /post/{id}:
+    get:
+      tags:
+        - post
+      summary: Pobranie posta o danym ID
+      security: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: ObjectId posta który ma zostać zwrócony.
+      responses:
+        '200':
+          description: Pomyślnie pobrano posta o danym `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: Nie znaleziono posta o takim `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+    delete:
+      tags:
+        - post
+      summary: Usunięcie posta o danym ID
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: ObjectId posta który ma zostać usunięty.
+      responses:
+        '204':
+          description: Pomyślnie usunięto posta o danym id.
+        '404':
+          description: Nie znaleziono posta o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Użytkownik nie ma uprawnień do usunięcia tego posta (nie jest moderatorem lub autorem posta).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+  /post/{id}/like:
+    put:
+      tags:
+        - post
+      summary: Polubienie posta
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: ObjectId posta który ma zostać polubiony.
+      responses:
+        '204':
+          description: Pomyślnie polubiono post.
+        '404':
+          description: Nie znaleziono posta o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+    delete:
+      tags:
+        - post
+      summary: Usunięcie polubienia posta
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: ObjectId posta z którego polubienie ma zostać usunięte.
+      responses:
+        '204':
+          description: Pomyślnie usunięto polubienie posta.
+        '404':
+          description: Nie znaleziono posta o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+  /post/image:
+    post:
+      tags:
+        - post
+      summary: Wysłanie zdjęcia do wykorzystania w poście
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Plik wysyłanego zdjęcia.
+              required:
+                - image
+      responses:
+        '200':
+          description: Pomyślnie przesłano zdjęcie.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imageUrl:
+                    type: string
+                    format: uri
+                    description: Ścieżka dostępowa do wysłanego zdjęcia.
+        '400':
+          description: 'Odrzucono zdjęcie. Możliwe przyczyny to: zły rodzaj pliku lub za duży rozmiar (>10MB)'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No proper file uploaded."
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+          
+  /comment/{postId}:
+    post:
+      tags:
+        - comment
+      summary: Dodanie komentarza pod postem.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: ObjectId posta pod którym komentarz ma być zostawiony
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Zawartość tekstowa komentarza.
+      responses:
+        '200':
+          description: Pomyślnie utworzono komentarz.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: Błąd walidacji danych lub nieprawidłowa forma `postId`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '404':
+          description: Nie znaleziono posta o id `postId` więc nie można było utworzyć komentarza.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+  /comment/post/{postId}:
+    get:
+      tags:
+        - comment
+      summary: Pobranie wszystkich komentarzy pod postem `postId`.
+      security: []
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          description: Id posta z którego pobrać komentarze
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '200':
+          description: Pomyślnie pobrano komentarze z posta.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '400':
+          description: Nieprawidłowa forma `postId`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Nie znaleziono posta o id `postId`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+  /comment/{id}:
+    delete:
+      tags:
+        - comment
+      summary: Usunięcie komentarza z `id`. 
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id komentarza który ma zostać usunięty
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '204':
+          description: Pomyślnie usunięto komentarz z `id`.
+        '404':
+          description: Nie znaleziono komentarza z takim `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Użytkownik nie ma uprawnień do usunięcia tego komentarza (nie jest jego autorem lub nie jest moderatorem).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+  /comment/{id}/like:
+    put:
+      tags:
+        - comment
+      summary: Polubienie komentarza
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: Identyfikator komentarza który ma zostać polubiony.
+      responses:
+        '204':
+          description: Pomyślnie polubiono komentarz.
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '404':
+          description: Nie znaleziono komentarza o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+    delete:
+      tags:
+        - comment
+      summary: Usunięcie polubienia komentarza
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: Identyfikator komentarza z którego polubienie ma zostać usunięte.
+      responses:
+        '204':
+          description: Pomyślnie usunięto polubienie komentarza.
+        '404':
+          description: Nie znaleziono komentarza o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+  /profile/all:
+    get:
+      tags:
+        - profile
+      summary: Pobranie profili wszystkich użytkowników.
+      security: []
+      responses:
+        '200':
+          description: Pomyślnie pobrano listę wszystkich profili.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+  /profile/{id}:
+    get:
+      tags:
+        - profile
+      summary: Pobranie profilu użytkownika z `id`.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: Identyfikator profilu użytkownika który ma zostać pobrany.
+      security: []
+      responses:
+        '200':
+          description: Pomyślnie pobrano profil użytkownika.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+        '404':
+          description: Nie znaleziono profilu o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+  /profile:
+    get:
+      tags:
+        - profile
+      summary: Pobranie profilu zalogowanego użytkownika.
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Pomyślnie pobrano profil zalogowanego użytkownika.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Profile'
+                  - type: object
+                    properties:
+                      role:
+                        type: string
+                        description: Rola użytkownika - `user` albo `moderator`.
+                        example: moderator
+                    required:
+                      - role
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+  /profile/update:
+    patch:
+      tags:
+        - profile
+      summary: Aktualizacja informacji profilu użytkownika.
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: >
+                Wszystkie właściwości tutaj są nullable i opcjonalne, przy czym:
+                - wartość tekstowa: informacja zostanie zaktualizowana;
+                - wartość typu `null` w miejscu właściwości: informacja zostanie usunięta z profilu;
+                - brak właściwości w zapytaniu: informacja zostanie bez zmian w profilu.
+              properties:
+                displayName:
+                  type: string
+                  description: Nazwa wyświetlana użytkownika.
+                  nullable: true
+                aboutDesc:
+                  type: string
+                  description: Opis/życiorys użytkownika.
+                  nullable: true
+      responses:
+        '200':
+          description: Pomyślnie zaktualizowano profil użytkownika. Zwracany jest obiekt profilu po edycji.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Błąd walidacji danych.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+  /profile/picture:
+    post:
+      tags:
+        - profile
+      summary: Aktualizacja zdjęcia profilowego.
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: Plik wysyłanego zdjęcia profilowego.
+              required:
+                - avatar
+      responses:
+        '200':
+          description: Pomyślnie zaktualizowano zdjęcie profilowe użytkownika. Zwracany jest obiekt profilu po edycji.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: 'Odrzucono zdjęcie. Możliwe przyczyny to: zły rodzaj pliku lub za duży rozmiar (>10MB)'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No proper file uploaded."
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+    delete:
+      tags:
+        - profile
+      summary: Usuwanie zdjęcia profilowego.
+      security:
+        - sessionCookie: []
+      responses:
+        '204':
+          description: Pomyślnie usunięto zdjęcie profilowe użytkownika. Zwracany jest obiekt profilu po edycji.
+        '401':
+          description: Użytkownik nie jest zalogowany.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+  /profile/{id}/posts:
+    get:
+      tags:
+        - profile
+      summary: Pobieranie wszystkich postów użytkownika
+      security: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: Identyfikator użytkownika które posty mają zostać zwrócone.
+      responses:
+        '200':
+          description: Pomyślnie pobrano listę wszystkich postów użytkownika.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+        '404':
+          description: Nie znaleziono profilu o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+  /profile/{id}/ban:
+    post:
+      tags:
+        - profile
+      summary: Zbanowanie użytkownika i usunięcie jego profilu, postów i komentarzy.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: Identyfikator użytkownika który ma zostać zbanowany.
+      responses:
+        '204':
+          description: Pomyślnie zbanowano użytkownika i usunięto jego danych.
+        '400':
+          description: Nieprawidłowa forma `id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MalformedIdError'
+        '404':
+          description: Nie znaleziono profilu o takim id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '403':
+          description: Użytkownik nie ma uprawnień do banowania użytkowników (nie jest moderatorem).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        
