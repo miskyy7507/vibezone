@@ -51,12 +51,13 @@ Najpierw sklonować to repozytorium a potem wybrać jedną z opcji:
 ### Pod produkcję (Docker)
 
 Projekt wykorzystuje trzy kontenery do działania:
-    - `server` - środowisko node do uruchomienia serwera API;
-    - `nginx` - reverse proxy do serwowania statycznych plików (html, css, js + wysłane zdjęcia) oraz przekierowania zapytań API do backendu (pod adresem `/api/*`)
-    - `mongodb` - baza danych do przechowywania wszelakich informacji (postów, komentarzy, użytkowników itd).
-Wszystkie te kontenery są ze sobą połączone za pomocą Docker Compose.
+- `server` - środowisko node do uruchomienia serwera API;
+- `nginx` - reverse proxy do serwowania statycznych plików (html, css, js + wysłane zdjęcia) oraz przekierowania zapytań API do backendu (pod adresem `/api/*`)
+- `mongodb` - baza danych do przechowywania wszelakich informacji (postów, komentarzy, użytkowników itd).
 
-1. Należy mieć zainstalowanego Dockera na komputerze/serwerze oraz upewnić s
+Zarządzanie i komunikacja między kontenerami jest 
+
+1. Upewnić się czy Docker i Docker Compose jest zainstalowany i uruchomiony na komputerze/serwerze;
 2. W pliku `server/.env.production` (utworzyć jeśli nie istnieje) należy ustawić zmienną `SESSION_SECRET` tak jak to opisano w punkcie 1.3 gdzie opisany jest proces przygotowania projektu pod środowisko programistyczne.
 3. Uruchomić kontenery projektu za pomocą `docker compose up --build -d`. Strona będzie dostępna pod portem 80. Można zmienić port w razie konieczności - należy zmienić wartość `ports` w `compose.yaml` np. z `80:80` na `8080:80`.
 
